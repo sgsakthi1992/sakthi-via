@@ -1,0 +1,6 @@
+{
+  "name": "VIA",
+  "description": "Application developed using springboot and other latest technologies",
+  "repository": "https://github.com/sgsakthi1992/sakthi-via",
+  "image": "heroku/java"
+}
