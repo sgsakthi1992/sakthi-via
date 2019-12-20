@@ -1,17 +1,29 @@
 package com.practice.sakthi_via.model;
 
-public class Users {
-	int id;
-	String name;
-	String username;
-	String emailId;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
-	public Users(int id, String name, String username, String emailId) {
+@Entity
+public class Users {
+	@Id
+	@GeneratedValue(strategy= GenerationType.AUTO)
+	private int id;
+	private String name;
+	private String username;
+	private String email;
+
+	public Users() {
+		super();
+	}
+
+	public Users(int id, String name, String username, String email) {
 		super();
 		this.id = id;
 		this.name = name;
 		this.username = username;
-		this.emailId = emailId;
+		this.email = email;
 	}
 
 	public int getId() {
@@ -38,17 +50,17 @@ public class Users {
 		this.username = username;
 	}
 
-	public String getEmailId() {
-		return emailId;
+	public String getEmail() {
+		return email;
 	}
 
-	public void setEmailId(String emailId) {
-		this.emailId = emailId;
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
 	@Override
 	public String toString() {
-		return "Users [id=" + id + ", name=" + name + ", username=" + username + ", emailId=" + emailId + "]";
+		return "Users [id=" + id + ", name=" + name + ", username=" + username + ", emailId=" + email + "]";
 	}
 
 }
