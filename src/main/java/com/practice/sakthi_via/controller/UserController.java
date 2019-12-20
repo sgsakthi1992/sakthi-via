@@ -15,13 +15,16 @@ import java.util.List;
 @Controller
 public class UserController {
 
-	@Autowired
-	private UserRepository userRepository;
+    @Autowired
+    private UserRepository userRepository;
 
-	@RequestMapping(value = "/getUsers", method = RequestMethod.GET)
-	public ResponseEntity<List> getUsers() {
-		Users user = new Users(1, "Gokula Sakthi", "sakthi", "sgsakthi1992@gmail.com");
-		List<Users> usersList = userRepository.findAll();
-		return ResponseEntity.status(HttpStatus.OK).body(usersList);
-	}
+    @RequestMapping(value = "/getUsers", method = RequestMethod.GET)
+    public ResponseEntity<List> getUsers() {
+        Users user = new Users(1, "Gokula Sakthi", "sakthi", "sgsakthi1992@gmail.com");
+        Users user1 = new Users(2, "Mallikarjun", "malli", "mallikarjun.bandi@gmail.com");
+        userRepository.save(user);
+		userRepository.save(user1);
+        List<Users> usersList = userRepository.findAll();
+        return ResponseEntity.status(HttpStatus.OK).body(usersList);
+    }
 }
