@@ -28,8 +28,9 @@ public class UserController {
     }
 
     @RequestMapping(value = "/createUser", method=RequestMethod.POST)
-    public Optional<Users> createUser(@RequestBody Users user){
+    public ResponseEntity<Users> createUser(@RequestBody Users user){
         userRepository.save(user);
-        return userRepository.findById(user.getId());
+        Users newUser = userRepository.findById(user.getId()).get();
+        return ResponseEntity.status(HttpStatus.OK).body(newUser);
     }
 }
