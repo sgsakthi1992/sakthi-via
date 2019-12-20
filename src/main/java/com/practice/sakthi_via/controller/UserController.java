@@ -20,10 +20,11 @@ public class UserController {
 
     @RequestMapping(value = "/getUsers", method = RequestMethod.GET)
     public ResponseEntity<List> getUsers() {
-        Users user = new Users(1, "Gokula Sakthi", "sakthi", "sgsakthi1992@gmail.com");
-        Users user1 = new Users(2, "Mallikarjun", "malli", "mallikarjun.bandi@gmail.com");
+        Users user = new Users();
+        user.setName("Gokula Sakthi");
+        user.setUsername("Sakthi");
+        user.setEmail("sgsakthi1992@gmail.com");
         userRepository.save(user);
-		userRepository.save(user1);
         List<Users> usersList = userRepository.findAll();
         return ResponseEntity.status(HttpStatus.OK).body(usersList);
     }
