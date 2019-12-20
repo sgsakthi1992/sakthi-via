@@ -13,6 +13,7 @@ import com.practice.sakthi_via.model.Users;
 import java.util.List;
 
 @Controller
+@RequestMapping("/users")
 public class UserController {
 
     @Autowired
@@ -27,5 +28,10 @@ public class UserController {
         userRepository.save(user);
         List<Users> usersList = userRepository.findAll();
         return ResponseEntity.status(HttpStatus.OK).body(usersList);
+    }
+
+    @RequestMapping(value = "/createUser", method=RequestMethod.POST)
+    public void createUser(){
+
     }
 }
