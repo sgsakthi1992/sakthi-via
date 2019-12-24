@@ -41,11 +41,12 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(user);
     }
 
-    @RequestMapping(value = "/deleteUserById/{id}", method = RequestMethod.GET)
+    @RequestMapping(value = "/deleteUserById/{id}", method = RequestMethod.DELETE)
     public ResponseEntity<String> deleteById(@PathVariable(value = "id") Integer id) throws ResourceNotFoundException {
         Users user = userRepository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException("Employee ID " + id + " not found"));
         userRepository.deleteById(id);
         return ResponseEntity.status(HttpStatus.OK).body("Success");
     }
+    
 }
