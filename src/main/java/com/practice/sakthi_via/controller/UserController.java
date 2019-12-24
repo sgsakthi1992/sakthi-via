@@ -1,18 +1,18 @@
 package com.practice.sakthi_via.controller;
 
+import com.practice.sakthi_via.exception.ResourceNotFoundException;
+import com.practice.sakthi_via.model.Users;
 import com.practice.sakthi_via.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import com.practice.sakthi_via.model.Users;
-
 import java.util.List;
-import java.util.Optional;
 
 @Controller
 @RequestMapping("/users")
@@ -27,10 +27,17 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(usersList);
     }
 
-    @RequestMapping(value = "/createUser", method=RequestMethod.POST)
-    public ResponseEntity<Users> createUser(@RequestBody Users user){
+    @RequestMapping(value = "/createUser", method = RequestMethod.POST)
+    public ResponseEntity<Users> createUser(@RequestBody Users user) {
         userRepository.save(user);
         Users newUser = userRepository.findById(user.getId()).get();
         return ResponseEntity.status(HttpStatus.OK).body(newUser);
+    }
+
+    @RequestMapping(value = "/getUserById/{id}", method = RequestMethod.GET)
+    public ResponseEntity<Users> getUserById(@PathVariable(value = "id") Integer id) throws ResourceNotFoundException {
+        Users user = userRepository.findById(id).orElseThrow(
+                () -> new ResourceNotFoundException("Employee ID " + id + " not found"));
+        return ResponseEntity.status(HttpStatus.OK).body(user);
     }
 }
