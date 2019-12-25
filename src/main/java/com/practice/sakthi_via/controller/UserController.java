@@ -60,15 +60,11 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(usersList);
     }
 
-    @RequestMapping(value = "/getUserByIdOrEmail/{id}/{email}", method = RequestMethod.GET)
-    public ResponseEntity<List> getUserByIdOrEmail(@PathVariable(value = "id") Integer id,
-                                                   @PathVariable(value = "email") String email) throws ResourceNotFoundException {
-        Users user = new Users();
-        user.setEmail(email);
-        user.setId(id);
+    @RequestMapping(value = "/getUserByUsernameOrEmail", method = RequestMethod.POST)
+    public ResponseEntity<List> getUserByUsernameOrEmail(@RequestBody Users user) {
         ExampleMatcher exampleMatcher = ExampleMatcher.matchingAny()
-                .withMatcher("email", contains())
-                .withMatcher("id", contains());
+                .withMatcher("email", contains().ignoreCase())
+                .withMatcher("username", contains().ignoreCase());
         Example<Users> example = Example.of(user, exampleMatcher);
 
         List<Users> usersList = userRepository.findAll(example);
