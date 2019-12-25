@@ -4,6 +4,8 @@ import com.practice.sakthi_via.exception.ResourceNotFoundException;
 import com.practice.sakthi_via.model.Users;
 import com.practice.sakthi_via.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -13,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.util.List;
+
+import static org.springframework.data.domain.ExampleMatcher.GenericPropertyMatchers.contains;
 
 @Controller
 @RequestMapping("/users")
@@ -53,6 +57,21 @@ public class UserController {
     public ResponseEntity<List> getUserById(@PathVariable(value = "email") String email) throws ResourceNotFoundException {
         List<Users> usersList = userRepository.findByEmail(email).orElseThrow(
                 () -> new ResourceNotFoundException("Email " + email + " not found"));
+        return ResponseEntity.status(HttpStatus.OK).body(usersList);
+    }
+
+    @RequestMapping(value = "/getUserByIdOrEmail/{id}/{email}", method = RequestMethod.GET)
+    public ResponseEntity<List> getUserByIdOrEmail(@PathVariable(value = "id") Integer id,
+                                                   @PathVariable(value = "email") String email) throws ResourceNotFoundException {
+        Users user = new Users();
+        user.setEmail(email);
+        user.setId(id);
+        ExampleMatcher exampleMatcher = ExampleMatcher.matchingAny()
+                .withMatcher("email", contains())
+                .withMatcher("id", contains());
+        Example<Users> example = Example.of(user, exampleMatcher);
+
+        List<Users> usersList = userRepository.findAll(example);
         return ResponseEntity.status(HttpStatus.OK).body(usersList);
     }
 
