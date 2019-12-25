@@ -48,5 +48,12 @@ public class UserController {
         userRepository.deleteById(id);
         return ResponseEntity.status(HttpStatus.OK).body("Success");
     }
-    
+
+    @RequestMapping(value = "/getUserByEmail/{email}", method = RequestMethod.GET)
+    public ResponseEntity<List> getUserById(@PathVariable(value = "email") String email) throws ResourceNotFoundException {
+        List<Users> usersList = userRepository.findByEmail(email).orElseThrow(
+                () -> new ResourceNotFoundException("Email " + email + " not found"));
+        return ResponseEntity.status(HttpStatus.OK).body(usersList);
+    }
+
 }
