@@ -79,6 +79,9 @@ public class UserController {
             @ApiParam(value = "Update User object", required = true) @Valid @RequestBody Users userDetails) throws ResourceNotFoundException {
         Users user = userRepository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException("User ID " + id + " not found"));
+        user.setEmail(userDetails.getEmail());
+        user.setName(userDetails.getName());
+        user.setUsername(userDetails.getUsername());
         Users updatedUser = userRepository.save(user);
         return ResponseEntity.status(HttpStatus.OK).body(updatedUser);
     }
