@@ -60,8 +60,8 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(usersList);
     }
 
-    @RequestMapping(value = "/getUserByUsernameOrEmail", method = RequestMethod.POST)
-    public ResponseEntity<List> getUserByUsernameOrEmail(@RequestBody Users user) {
+    @RequestMapping(value = "/getUserByUsernameOrEmail", method = RequestMethod.GET)
+    public ResponseEntity<List> getUserByUsernameOrEmail(Users user) {
         ExampleMatcher exampleMatcher = ExampleMatcher.matchingAny()
                 .withMatcher("email", contains().ignoreCase())
                 .withMatcher("username", contains().ignoreCase());
