@@ -73,16 +73,12 @@ public class UserController {
     }
 
     @ApiOperation(value = "Update an employee")
-    @PutMapping("/updateUser/{id}")
+    @PatchMapping("/updateUser/{id}")
     public ResponseEntity<Users> updateUser(
             @ApiParam(value = "User Id to update user object", required = true) @PathVariable(value = "id") Integer id,
             @ApiParam(value = "Update User object", required = true) @Valid @RequestBody Users userDetails) throws ResourceNotFoundException {
-        Users user = userRepository.findById(id).orElseThrow(
+        Users updatedUser = userRepository.findById(id).map(users -> userRepository.save(users)).orElseThrow(
                 () -> new ResourceNotFoundException("User ID " + id + " not found"));
-        user.setEmail(userDetails.getEmail());
-        user.setName(userDetails.getName());
-        user.setUsername(userDetails.getUsername());
-        Users updatedUser = userRepository.save(user);
         return ResponseEntity.status(HttpStatus.OK).body(updatedUser);
     }
 
