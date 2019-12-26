@@ -102,6 +102,7 @@ public class EmployeeController {
             throws ResourceNotFoundException {
         Employee updatedEmployee = employeeRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Employee ID " + id + " not found"));
+        employeeDetails.setId(id);
         employeeRepository.save(employeeDetails);
         return ResponseEntity.status(HttpStatus.OK).body(updatedEmployee);
     }
