@@ -15,7 +15,7 @@ public class SwaggerConfig {
     public Docket productApi() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .select().apis(RequestHandlerSelectors.basePackage("com.practice.sakthi_via"))
-                .paths(PathSelectors.regex("/employee.*"))
+                .paths(PathSelectors.regex("/api/v1.*"))
                 .build();
     }
 }
