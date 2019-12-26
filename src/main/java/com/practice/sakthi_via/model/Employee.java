@@ -7,7 +7,7 @@ import io.swagger.annotations.ApiModelProperty;
 import javax.persistence.*;
 
 @Entity
-@ApiModel(description = "Details about Employee")
+@ApiModel(value = "Employee Model", description = "Details about Employee")
 public class Employee {
     @Id
     @SequenceGenerator(name = "employeeIdSeq", initialValue = 40000)
