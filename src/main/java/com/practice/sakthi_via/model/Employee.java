@@ -1,12 +1,13 @@
 package com.practice.sakthi_via.model;
 
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 @Entity
-public class Users {
+public class Employee {
 	@Id
 	@GeneratedValue(strategy= GenerationType.AUTO)
 	private int id;
@@ -14,11 +15,11 @@ public class Users {
 	private String username;
 	private String email;
 
-	public Users() {
+	public Employee() {
 		super();
 	}
 
-	public Users(int id, String name, String username, String email) {
+	public Employee(int id, String name, String username, String email) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -60,7 +61,7 @@ public class Users {
 
 	@Override
 	public String toString() {
-		return "Users [id=" + id + ", name=" + name + ", username=" + username + ", emailId=" + email + "]";
+		return "Employee [id=" + id + ", name=" + name + ", username=" + username + ", emailId=" + email + "]";
 	}
 
 }
