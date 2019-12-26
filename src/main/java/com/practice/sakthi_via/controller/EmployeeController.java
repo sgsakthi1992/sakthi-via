@@ -1,6 +1,7 @@
 package com.practice.sakthi_via.controller;
 
 import com.practice.sakthi_via.exception.ResourceNotFoundException;
+import com.practice.sakthi_via.exception.UserNameFoundException;
 import com.practice.sakthi_via.model.Employee;
 import com.practice.sakthi_via.repository.EmployeeRepository;
 import com.practice.sakthi_via.service.EmployeeService;
@@ -43,9 +44,10 @@ public class EmployeeController {
             @ApiResponse(code = 403, message = "Username not available")
     })
     public ResponseEntity<Employee> createEmployee(
-            @ApiParam(value = "Employee details", required = true) @RequestBody Employee employee) {
+            @ApiParam(value = "Employee details", required = true) @RequestBody Employee employee)
+            throws UserNameFoundException {
         if(employeeService.checkUsername(employee.getUsername()))
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(employee);
+            throw new UserNameFoundException("Username not available");
         employeeRepository.save(employee);
         Employee newEmployee = employeeRepository.findById(employee.getId()).get();
         return ResponseEntity.status(HttpStatus.OK).body(newEmployee);
