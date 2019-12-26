@@ -3,6 +3,7 @@ package com.practice.sakthi_via.controller;
 import com.practice.sakthi_via.exception.ResourceNotFoundException;
 import com.practice.sakthi_via.model.Employee;
 import com.practice.sakthi_via.repository.EmployeeRepository;
+import com.practice.sakthi_via.service.EmployeeService;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
@@ -25,6 +26,9 @@ public class EmployeeController {
     @Autowired
     private EmployeeRepository employeeRepository;
 
+    @Autowired
+    private EmployeeService employeeService;
+
     @ApiOperation("Retrieve all the employees")
     @GetMapping("/employees")
     public ResponseEntity<List> getEmployee() {
@@ -34,8 +38,14 @@ public class EmployeeController {
 
     @ApiOperation("Create Employee")
     @PostMapping("/employees")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Employee created successfully"),
+            @ApiResponse(code = 403, message = "Username not available")
+    })
     public ResponseEntity<Employee> createEmployee(
             @ApiParam(value = "Employee details", required = true) @RequestBody Employee employee) {
+        if(employeeService.checkUsername(employee.getUsername()))
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(employee);
         employeeRepository.save(employee);
         Employee newEmployee = employeeRepository.findById(employee.getId()).get();
         return ResponseEntity.status(HttpStatus.OK).body(newEmployee);
