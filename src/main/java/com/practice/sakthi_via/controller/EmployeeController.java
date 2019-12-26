@@ -67,7 +67,7 @@ public class EmployeeController {
     }
 
     @ApiOperation("Get Employee Details By Email")
-    @GetMapping("/employees/{email}")
+    @GetMapping("/employeesByEmail/{email}")
     public ResponseEntity<List> getEmployeeByEmail(
             @ApiParam(value = "Email to retrieve Employee Details", required = true)
             @PathVariable(value = "email") String email)
