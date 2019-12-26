@@ -1,19 +1,26 @@
 package com.practice.sakthi_via.model;
 
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
+import javax.persistence.*;
 
 @Entity
+@ApiModel(description = "Details about Employee")
 public class Employee {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator(name = "employeeIdSeq", initialValue = 40000)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "employeeIdSeq")
+    @ApiModelProperty(notes = "Auto generated Employee Id")
     private long id;
+    @ApiModelProperty(notes = "Employee name")
     private String name;
+    @ApiModelProperty(notes = "Employee username")
     private String username;
+    @ApiModelProperty(notes = "Employee email id")
     private String email;
+    @ApiModelProperty(notes = "Employee Age")
     private int age;
 
     public Employee() {

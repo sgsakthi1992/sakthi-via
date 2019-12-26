@@ -95,15 +95,24 @@ public class EmployeeController {
     }
 
     @ApiOperation(value = "Update Employee Details")
-    @PatchMapping("/employees/{id}")
+    @PutMapping("/employees/{id}")
     public ResponseEntity<Employee> updateEmployee(
             @ApiParam(value = "User Id to update employee object", required = true) @PathVariable(value = "id") Long id,
             @ApiParam(value = "Update employee object", required = true) @Valid @RequestBody Employee employeeDetails)
             throws ResourceNotFoundException {
         Employee updatedEmployee = employeeRepository.findById(id)
+                .map(employee -> {
+                    if (employeeDetails.getEmail() != null)
+                        employee.setEmail(employeeDetails.getEmail());
+                    if(employeeDetails.getAge() != 0)
+                        employee.setAge(employeeDetails.getAge());
+                    if(employeeDetails.getName() != null)
+                        employee.setName(employeeDetails.getName());
+                    if(employeeDetails.getUsername() != null)
+                        employee.setUsername(employeeDetails.getUsername());
+                    return employeeRepository.save(employee);
+                })
                 .orElseThrow(() -> new ResourceNotFoundException("Employee ID " + id + " not found"));
-        employeeDetails.setId(id);
-        employeeRepository.save(employeeDetails);
         return ResponseEntity.status(HttpStatus.OK).body(updatedEmployee);
     }
 
