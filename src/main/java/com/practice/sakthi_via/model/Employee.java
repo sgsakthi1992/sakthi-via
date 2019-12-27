@@ -7,6 +7,7 @@ import io.swagger.annotations.ApiModelProperty;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @ApiModel(value = "Employee Model", description = "Details about Employee")
@@ -31,7 +32,7 @@ public class Employee {
     private String email;
 
     @ApiModelProperty(notes = "Employee age")
-    @NotEmpty(message = "Age is required")
+    @NotNull(message = "Age is required")
 
     private int age;
 

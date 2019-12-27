@@ -46,7 +46,7 @@ public class EmployeeController {
     public ResponseEntity<Employee> createEmployee(
             @ApiParam(value = "Employee details", required = true) @RequestBody Employee employee)
             throws UserNameFoundException {
-        if(employeeService.checkUsername(employee.getUsername()))
+        if (employeeService.checkUsername(employee.getUsername()))
             throw new UserNameFoundException("Username not available");
         employeeRepository.save(employee);
         Employee newEmployee = employeeRepository.findById(employee.getId()).get();
@@ -92,8 +92,10 @@ public class EmployeeController {
     @ApiOperation("Get Employee Details either by Email or Username")
     @GetMapping("/employeesByUsernameOrEmail")
     public ResponseEntity<List> getEmployeeByUsernameOrEmail(
-            @ApiParam(value = "Email to retrieve Employee Details", required = false) @RequestParam String username,
-            @ApiParam(value = "Username to retrieve Employee Details", required = false) @RequestParam String email) {
+            @ApiParam(value = "Email to retrieve Employee Details", required = false)
+            @Valid @RequestParam(required = false) String username,
+            @ApiParam(value = "Username to retrieve Employee Details", required = false)
+            @Valid @RequestParam(required = false) String email) {
         Employee employee = new Employee();
         employee.setUsername(username);
         employee.setEmail(email);
@@ -116,11 +118,11 @@ public class EmployeeController {
                 .map(employee -> {
                     if (employeeDetails.getEmail() != null)
                         employee.setEmail(employeeDetails.getEmail());
-                    if(employeeDetails.getAge() != 0)
+                    if (employeeDetails.getAge() != 0)
                         employee.setAge(employeeDetails.getAge());
-                    if(employeeDetails.getName() != null)
+                    if (employeeDetails.getName() != null)
                         employee.setName(employeeDetails.getName());
-                    if(employeeDetails.getUsername() != null)
+                    if (employeeDetails.getUsername() != null)
                         employee.setUsername(employeeDetails.getUsername());
                     return employeeRepository.save(employee);
                 })
