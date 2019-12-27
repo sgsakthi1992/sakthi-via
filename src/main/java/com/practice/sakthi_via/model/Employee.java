@@ -44,7 +44,7 @@ public class Employee {
         super();
     }
 
-    public Employee(long id, String name, String username, String email, int age) {
+    public Employee(Long id, String name, String username, String email, Integer age) {
         super();
         this.id = id;
         this.name = name;
