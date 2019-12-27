@@ -112,18 +112,20 @@ public class EmployeeController {
     @PutMapping("/employees/{id}")
     public ResponseEntity<Employee> updateEmployee(
             @ApiParam(value = "User Id to update employee object", required = true) @PathVariable(value = "id") Long id,
-            @ApiParam(value = "Update employee object", required = true) @Valid @RequestBody Employee employeeDetails)
-            throws ResourceNotFoundException {
+            @ApiParam(value = "Email Id to update", required = false) @Valid @RequestParam(value = "email") String email,
+            @ApiParam(value = "Name to update", required = false) @Valid @RequestParam(value = "name") String name,
+            @ApiParam(value = "Age to update", required = false) @Valid @RequestParam(value = "age") int age)
+            throws Exception {
+        if(email == null && name == null && age ==0)
+            throw new Exception("Nothing to update");
         Employee updatedEmployee = employeeRepository.findById(id)
                 .map(employee -> {
-                    if (employeeDetails.getEmail() != null)
-                        employee.setEmail(employeeDetails.getEmail());
-                    if (employeeDetails.getAge() != 0)
-                        employee.setAge(employeeDetails.getAge());
-                    if (employeeDetails.getName() != null)
-                        employee.setName(employeeDetails.getName());
-                    if (employeeDetails.getUsername() != null)
-                        employee.setUsername(employeeDetails.getUsername());
+                    if (email != null)
+                        employee.setEmail(email);
+                    if (age != 0)
+                        employee.setAge(age);
+                    if (name != null)
+                        employee.setName(name);
                     return employeeRepository.save(employee);
                 })
                 .orElseThrow(() -> new ResourceNotFoundException("Employee ID " + id + " not found"));
