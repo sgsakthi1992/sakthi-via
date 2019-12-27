@@ -5,6 +5,8 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
 
 @Entity
 @ApiModel(value = "Employee Model", description = "Details about Employee")
@@ -14,13 +16,23 @@ public class Employee {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "employeeIdSeq")
     @ApiModelProperty(notes = "Auto generated Employee Id")
     private long id;
+
     @ApiModelProperty(notes = "Employee name")
+    @NotEmpty(message = "Name is required")
     private String name;
+
     @ApiModelProperty(notes = "Employee username")
+    @NotEmpty(message = "Username is required")
     private String username;
+
     @ApiModelProperty(notes = "Employee email id")
+    @NotEmpty(message = "Email id is required")
+    @Email(message = "Not a valid email address")
     private String email;
-    @ApiModelProperty(notes = "Employee Age")
+
+    @ApiModelProperty(notes = "Employee age")
+    @NotEmpty(message = "Age is required")
+
     private int age;
 
     public Employee() {
