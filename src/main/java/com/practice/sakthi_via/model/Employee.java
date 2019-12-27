@@ -17,7 +17,7 @@ public class Employee {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "employeeIdSeq")
     @Column(updatable = false)
     @ApiModelProperty(notes = "Auto generated Employee Id")
-    private long id;
+    private Long id;
 
     @NotEmpty(message = "Name is required")
     @Column
@@ -38,7 +38,7 @@ public class Employee {
     @NotNull(message = "Age is required")
     @Column
     @ApiModelProperty(notes = "Employee age")
-    private int age;
+    private Integer age;
 
     public Employee() {
         super();
@@ -53,11 +53,11 @@ public class Employee {
         this.age = age;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -85,11 +85,11 @@ public class Employee {
         this.email = email;
     }
 
-    public int getAge() {
+    public Integer getAge() {
         return age;
     }
 
-    public void setAge(int age) {
+    public void setAge(Integer age) {
         this.age = age;
     }
 
