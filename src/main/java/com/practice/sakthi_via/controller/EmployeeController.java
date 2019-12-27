@@ -117,7 +117,7 @@ public class EmployeeController {
             @RequestParam(value = "email", required = false) String email,
             @ApiParam(value = "Name to update", required = false)
             @RequestParam(value = "name", required = false) String name,
-            @ApiParam(value = "Age to update", required = false)
+            @ApiParam(value = "Age to update", required = false, defaultValue = "0")
             @RequestParam(value = "age", required = false) int age)
             throws Exception {
         if((email == null) && name == null && age ==0)
