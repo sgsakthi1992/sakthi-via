@@ -112,11 +112,14 @@ public class EmployeeController {
     @PutMapping("/employees/{id}")
     public ResponseEntity<Employee> updateEmployee(
             @ApiParam(value = "User Id to update employee object", required = true) @PathVariable(value = "id") Long id,
-            @ApiParam(value = "Email Id to update", required = false) @Valid @RequestParam(value = "email") String email,
-            @ApiParam(value = "Name to update", required = false) @Valid @RequestParam(value = "name") String name,
-            @ApiParam(value = "Age to update", required = false) @Valid @RequestParam(value = "age") int age)
+            @ApiParam(value = "Email Id to update", required = false)
+            @Valid @RequestParam(value = "email", required = false) String email,
+            @ApiParam(value = "Name to update", required = false)
+            @Valid @RequestParam(value = "name", required = false) String name,
+            @ApiParam(value = "Age to update", required = false)
+            @Valid @RequestParam(value = "age", required = false) int age)
             throws Exception {
-        if(email == null && name == null && age ==0)
+        if((email == null) && name == null && age ==0)
             throw new Exception("Nothing to update");
         Employee updatedEmployee = employeeRepository.findById(id)
                 .map(employee -> {
