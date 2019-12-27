@@ -110,26 +110,14 @@ public class EmployeeController {
 
     @ApiOperation(value = "Update Employee Details")
     @PutMapping("/employees/{id}")
-    public ResponseEntity<Employee> updateEmployee(
+    public ResponseEntity<Employee> updateEmployeeEmail(
             @ApiParam(value = "User Id to update employee object", required = true)
             @Valid @PathVariable(value = "id") Long id,
             @ApiParam(value = "Email Id to update", required = false)
-            @Valid @RequestParam(value = "email", required = false) String email,
-            @ApiParam(value = "Name to update", required = false)
-            @Valid @RequestParam(value = "name", required = false) String name,
-            @ApiParam(value = "Age to update", required = false, defaultValue = "0")
-            @Valid @RequestParam(value = "age", required = false) int age)
-            throws Exception {
-        if ((email == null) && name == null && age == 0)
-            throw new Exception("Nothing to update");
+            @Valid @RequestParam(value = "email") String email) throws ResourceNotFoundException {
         Employee updatedEmployee = employeeRepository.findById(id)
                 .map(employee -> {
-                    if (email != null)
                         employee.setEmail(email);
-                    if (age != 0)
-                        employee.setAge(age);
-                    if (name != null)
-                        employee.setName(name);
                     return employeeRepository.save(employee);
                 })
                 .orElseThrow(() -> new ResourceNotFoundException("Employee ID " + id + " not found"));
