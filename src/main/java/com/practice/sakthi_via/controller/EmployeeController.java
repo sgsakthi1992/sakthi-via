@@ -110,14 +110,15 @@ public class EmployeeController {
 
     @ApiOperation(value = "Update Employee Details")
     @PutMapping("/employees/{id}")
+    @Valid
     public ResponseEntity<Employee> updateEmployee(
             @ApiParam(value = "User Id to update employee object", required = true) @PathVariable(value = "id") Long id,
             @ApiParam(value = "Email Id to update", required = false)
-            @Valid @RequestParam(value = "email", required = false) String email,
+            @RequestParam(value = "email", required = false) String email,
             @ApiParam(value = "Name to update", required = false)
-            @Valid @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "name", required = false) String name,
             @ApiParam(value = "Age to update", required = false)
-            @Valid @RequestParam(value = "age", required = false) int age)
+            @RequestParam(value = "age", required = false) int age)
             throws Exception {
         if((email == null) && name == null && age ==0)
             throw new Exception("Nothing to update");
