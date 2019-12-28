@@ -45,7 +45,7 @@ public class EmployeeController {
             @ApiResponse(code = 403, message = "Username not available")
     })
     public ResponseEntity<Employee> createEmployee(
-            @ApiParam(value = "Employee details", required = true) @RequestBody Employee employee)
+            @ApiParam(value = "Employee details", required = true) @Valid @RequestBody Employee employee)
             throws UserNameFoundException {
         if (employeeService.checkUsername(employee.getUsername()))
             throw new UserNameFoundException("Username not available");
