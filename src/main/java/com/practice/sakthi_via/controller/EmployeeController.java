@@ -15,6 +15,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Email;
 import java.util.List;
 
 import static org.springframework.data.domain.ExampleMatcher.GenericPropertyMatchers.contains;
@@ -114,7 +115,7 @@ public class EmployeeController {
             @ApiParam(value = "User Id to update employee object", required = true)
             @Valid @PathVariable(value = "id") Long id,
             @ApiParam(value = "Email Id to update", required = false)
-            @Valid @RequestParam(value = "email") String email) throws ResourceNotFoundException {
+            @Email @RequestParam(value = "email") String email) throws ResourceNotFoundException {
         Employee updatedEmployee = employeeRepository.findById(id)
                 .map(employee -> {
                         employee.setEmail(email);
