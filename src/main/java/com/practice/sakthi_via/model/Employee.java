@@ -81,6 +81,7 @@ public class Employee {
         return email;
     }
 
+    @Email(message = "Not a valid email address")
     public void setEmail(String email) {
         this.email = email;
     }
