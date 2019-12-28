@@ -15,28 +15,28 @@ public class Employee {
     @Id
     @SequenceGenerator(name = "employeeIdSeq", initialValue = 40000)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "employeeIdSeq")
-    @Column(updatable = false)
+    @Column(nullable = false)
     @ApiModelProperty(notes = "Auto generated Employee Id")
     private Long id;
 
     @NotEmpty(message = "Name is required")
-    @Column
+    @Column(nullable = false)
     @ApiModelProperty(notes = "Employee name")
     private String name;
 
     @NotEmpty(message = "Username is required")
-    @Column(updatable = false)
+    @Column(nullable = false)
     @ApiModelProperty(notes = "Employee username")
     private String username;
 
     @NotEmpty(message = "Email id is required")
     @Email(message = "Not a valid email address")
-    @Column
+    @Column(nullable = false)
     @ApiModelProperty(notes = "Employee email id")
     private String email;
 
     @NotNull(message = "Age is required")
-    @Column
+    @Column(nullable = false)
     @ApiModelProperty(notes = "Employee age")
     private Integer age;
 
@@ -81,7 +81,6 @@ public class Employee {
         return email;
     }
 
-    @Email(message = "Not a valid email address")
     public void setEmail(String email) {
         this.email = email;
     }

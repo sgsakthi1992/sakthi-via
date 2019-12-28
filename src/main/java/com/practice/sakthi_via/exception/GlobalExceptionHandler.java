@@ -2,24 +2,18 @@ package com.practice.sakthi_via.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.TransactionSystemException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.context.request.WebRequest;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-import java.util.Set;
+import java.util.Date;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(TransactionSystemException.class)
-    public final ResponseEntity<Object> handleConstraintViolationException(Exception e){
-        Throwable cause = (TransactionSystemException) e.getCause();
-        if(cause instanceof ConstraintViolationException){
-            Set<ConstraintViolation<?>> constraintViolations = ((ConstraintViolationException) cause).getConstraintViolations();
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(constraintViolations);
-        }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    @ExceptionHandler(Exception.class)
+    public final ResponseEntity<?> globalExceptionHandler(Exception e, WebRequest webRequest){
+        ErrorDetails errorDetails = new ErrorDetails(new Date(), e.getMessage(), webRequest.getDescription(false));
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorDetails);
     }
 }
