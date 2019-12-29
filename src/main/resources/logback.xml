@@ -29,7 +29,7 @@
         <suffixPattern>sakthi-via: %logger %msg</suffixPattern>
     </appender>
 
-    <root level="INFO">
+    <root level="DEBUG">
         <appender-ref ref="FILE"/>
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="PAPERTRAIL" />
