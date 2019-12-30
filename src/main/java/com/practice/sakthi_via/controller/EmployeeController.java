@@ -1,7 +1,7 @@
 package com.practice.sakthi_via.controller;
 
 import com.practice.sakthi_via.exception.ResourceNotFoundException;
-import com.practice.sakthi_via.exception.UserNameFoundException;
+import com.practice.sakthi_via.exception.UserNameExistsException;
 import com.practice.sakthi_via.model.Employee;
 import com.practice.sakthi_via.repository.EmployeeRepository;
 import com.practice.sakthi_via.service.EmployeeService;
@@ -13,15 +13,17 @@ import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Email;
 import java.util.List;
 
 import static org.springframework.data.domain.ExampleMatcher.GenericPropertyMatchers.contains;
 
-@Controller
+@RestController
+@Validated
 @RequestMapping("/api/v1")
 @Api("Employee Management System")
 public class EmployeeController {
@@ -50,11 +52,14 @@ public class EmployeeController {
     })
     public ResponseEntity<Employee> createEmployee(
             @ApiParam(value = "Employee details", required = true) @Valid @RequestBody Employee employee)
-            throws UserNameFoundException {
-        if (employeeService.checkUsername(employee.getUsername()))
-            throw new UserNameFoundException("Username not available");
+            throws UserNameExistsException {
+        if (employeeService.checkUsername(employee.getUsername())) {
+            logger.error("Username already exist");
+            throw new UserNameExistsException("Username not available");
+        }
         employeeRepository.save(employee);
         Employee newEmployee = employeeRepository.findById(employee.getId()).get();
+        logger.debug("New Employee details: " + employee.toString());
         return ResponseEntity.status(HttpStatus.OK).body(newEmployee);
     }
 
@@ -68,7 +73,11 @@ public class EmployeeController {
             @ApiParam(value = "Id to retrieve Employee Details", required = true) @PathVariable(value = "id") Long id)
             throws ResourceNotFoundException {
         Employee employee = employeeRepository.findById(id).orElseThrow(
-                () -> new ResourceNotFoundException("Employee ID " + id + " not found"));
+                () -> {
+                    logger.error("Employee ID " + id + " not found");
+                    return new ResourceNotFoundException("Employee ID " + id + " not found");
+                });
+        logger.debug("Employee details: " + employee.toString());
         return ResponseEntity.status(HttpStatus.OK).body(employee);
     }
 
@@ -78,8 +87,12 @@ public class EmployeeController {
             @ApiParam(value = "Id to delete Employee details", required = true) @PathVariable(value = "id") Long id)
             throws ResourceNotFoundException {
         Employee employee = employeeRepository.findById(id).orElseThrow(
-                () -> new ResourceNotFoundException("Employee ID " + id + " not found"));
+                () -> {
+                    logger.error("Employee ID " + id + " not found");
+                    return new ResourceNotFoundException("Employee ID " + id + " not found");
+                });
         employeeRepository.deleteById(id);
+        logger.debug("Delete success");
         return ResponseEntity.status(HttpStatus.OK).body("Success");
     }
 
@@ -87,10 +100,13 @@ public class EmployeeController {
     @GetMapping("/employeesByEmail/{email}")
     public ResponseEntity<List> getEmployeeByEmail(
             @ApiParam(value = "Email to retrieve Employee Details", required = true)
-            @PathVariable(value = "email") String email)
+            @Email @PathVariable(value = "email") String email)
             throws ResourceNotFoundException {
         List<Employee> employeeList = employeeRepository.findByEmail(email).orElseThrow(
-                () -> new ResourceNotFoundException("Email " + email + " not found"));
+                () -> {
+                    logger.error("Email " + email + " not found");
+                    return new ResourceNotFoundException("Email " + email + " not found");
+                });
         return ResponseEntity.status(HttpStatus.OK).body(employeeList);
     }
 
@@ -100,7 +116,7 @@ public class EmployeeController {
             @ApiParam(value = "Email to retrieve Employee Details", required = false)
             @Valid @RequestParam(required = false) String username,
             @ApiParam(value = "Username to retrieve Employee Details", required = false)
-            @Valid @RequestParam(required = false) String email) {
+            @Email @Valid @RequestParam(required = false) String email) throws ResourceNotFoundException {
         Employee employee = new Employee();
         employee.setUsername(username);
         employee.setEmail(email);
@@ -110,6 +126,11 @@ public class EmployeeController {
         Example<Employee> example = Example.of(employee, exampleMatcher);
 
         List<Employee> employeeList = employeeRepository.findAll(example);
+        if (employeeList.isEmpty()) {
+            logger.error("Employee not found with Username: " + username + "or Email: " + email);
+            throw new ResourceNotFoundException("Employee not found with Username: " + username + "or Email: " + email);
+        }
+        logger.debug("Employee list: " + employeeList);
         return ResponseEntity.status(HttpStatus.OK).body(employeeList);
     }
 
@@ -128,7 +149,10 @@ public class EmployeeController {
                     emp.setAge(employee.getAge());
                     return employeeRepository.save(employee);
                 })
-                .orElseThrow(() -> new ResourceNotFoundException("Employee ID " + id + " not found"));
+                .orElseThrow(() -> {
+                    logger.error("Employee ID " + id + " not found");
+                    return new ResourceNotFoundException("Employee ID " + id + " not found");
+                });
         return ResponseEntity.status(HttpStatus.OK).body(updatedEmployee);
     }
 
