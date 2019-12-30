@@ -29,9 +29,13 @@
         <suffixPattern>sakthi-via: %logger %msg</suffixPattern>
     </appender>
 
-    <root level="DEBUG">
+    <logger name="com.practice.sakthi_via" level="DEBUG">
+        <appernder-ref ref="PAPERTRAIL"/>
+    </logger>
+
+    <root level="ERROR">
         <appender-ref ref="FILE"/>
         <appender-ref ref="STDOUT"/>
-        <appender-ref ref="PAPERTRAIL" />
+        <appender-ref ref="PAPERTRAIL"/>
     </root>
 </configuration>
