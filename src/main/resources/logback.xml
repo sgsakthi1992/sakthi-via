@@ -30,7 +30,7 @@
     </appender>
 
     <logger name="com.practice.sakthi_via" level="DEBUG">
-        <appernder-ref ref="PAPERTRAIL"/>
+        <appender-ref ref="PAPERTRAIL"/>
     </logger>
 
     <root level="ERROR">
