@@ -37,6 +37,9 @@ public class EmployeeController {
     Logger logger = LoggerFactory.getLogger(EmployeeController.class);
 
     @ApiOperation("Retrieve all the employees")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Successfully retrieved employee")
+    })
     @GetMapping("/employees")
     public ResponseEntity<List> getEmployee() {
         List<Employee> employeeList = employeeRepository.findAll();
@@ -47,6 +50,7 @@ public class EmployeeController {
     @ApiOperation("Create Employee")
     @ApiResponses({
             @ApiResponse(code = 200, message = "Employee created successfully"),
+            @ApiResponse(code = 400, message = "Employee details has invalid values"),
             @ApiResponse(code = 403, message = "Username not available")
     })
     @PostMapping("/employees")
@@ -82,6 +86,10 @@ public class EmployeeController {
     }
 
     @ApiOperation("Delete Employee by Id")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Successfully deleted employee details"),
+            @ApiResponse(code = 404, message = "Employee Id not found")
+    })
     @DeleteMapping("/employees/{id}")
     public ResponseEntity<String> deleteEmployeeById(
             @ApiParam(value = "Id to delete Employee details", required = true) @PathVariable(value = "id") Long id)
@@ -99,13 +107,13 @@ public class EmployeeController {
     @ApiOperation("Get Employee Details By Email")
     @ApiResponses({
             @ApiResponse(code = 200, message = "Successfully retrieved employee details"),
-            @ApiResponse(code = 400, message = "Not a valid Email Id"),
+            @ApiResponse(code = 400, message = "Not a valid Email address"),
             @ApiResponse(code = 404, message = "Employee email not found")
     })
     @GetMapping("/employeesByEmail/{email}")
     public ResponseEntity<List> getEmployeeByEmail(
             @ApiParam(value = "Email to retrieve Employee Details", required = true)
-            @Email @PathVariable(value = "email") String email)
+            @Email(message = "Not a valid Email address") @PathVariable(value = "email") String email)
             throws ResourceNotFoundException {
         List<Employee> employeeList = employeeRepository.findByEmail(email).orElseThrow(
                 () -> {
@@ -116,12 +124,18 @@ public class EmployeeController {
     }
 
     @ApiOperation("Get Employee Details either by Email or Username")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Successfully retrieved employee details"),
+            @ApiResponse(code = 400, message = "Not a valid email address"),
+            @ApiResponse(code = 404, message = "Username and email id not found")
+    })
     @GetMapping("/employeesByUsernameOrEmail")
     public ResponseEntity<List> getEmployeeByUsernameOrEmail(
             @ApiParam(value = "Email to retrieve Employee Details", required = false)
             @Valid @RequestParam(required = false) String username,
             @ApiParam(value = "Username to retrieve Employee Details", required = false)
-            @Email @Valid @RequestParam(required = false) String email) throws ResourceNotFoundException {
+            @Email(message = "Not a valid Email address") @Valid @RequestParam(required = false) String email)
+            throws ResourceNotFoundException {
         Employee employee = new Employee();
         employee.setUsername(username);
         employee.setEmail(email);
@@ -140,6 +154,11 @@ public class EmployeeController {
     }
 
     @ApiOperation(value = "Update Employee Details")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Successfully updated employee details"),
+            @ApiResponse(code = 400, message = "Employee details has invalid values"),
+            @ApiResponse(code = 404, message = "Employee Id not found")
+    })
     @PutMapping("/employees/{id}")
     public ResponseEntity<Employee> updateEmployee(
             @ApiParam(value = "User Id to update employee object", required = true)
