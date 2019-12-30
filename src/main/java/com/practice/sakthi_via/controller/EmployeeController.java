@@ -45,11 +45,11 @@ public class EmployeeController {
     }
 
     @ApiOperation("Create Employee")
-    @PostMapping("/employees")
     @ApiResponses({
             @ApiResponse(code = 200, message = "Employee created successfully"),
             @ApiResponse(code = 403, message = "Username not available")
     })
+    @PostMapping("/employees")
     public ResponseEntity<Employee> createEmployee(
             @ApiParam(value = "Employee details", required = true) @Valid @RequestBody Employee employee)
             throws UserNameExistsException {
@@ -97,6 +97,11 @@ public class EmployeeController {
     }
 
     @ApiOperation("Get Employee Details By Email")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Successfully retrieved employee details"),
+            @ApiResponse(code = 400, message = "Not a valid Email Id"),
+            @ApiResponse(code = 404, message = "Employee email not found")
+    })
     @GetMapping("/employeesByEmail/{email}")
     public ResponseEntity<List> getEmployeeByEmail(
             @ApiParam(value = "Email to retrieve Employee Details", required = true)

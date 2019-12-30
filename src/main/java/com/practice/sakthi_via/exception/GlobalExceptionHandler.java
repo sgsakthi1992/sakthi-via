@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 
+import javax.validation.ConstraintViolationException;
 import java.util.Date;
 
 @ControllerAdvice
@@ -21,6 +22,12 @@ public class GlobalExceptionHandler {
     public final ResponseEntity<?> userNameExistsException(Exception e, WebRequest webRequest) {
         ErrorDetails errorDetails = new ErrorDetails(new Date(), e.getMessage(), webRequest.getDescription(false));
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorDetails);
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public final ResponseEntity<?> constraintViolationException(Exception e, WebRequest webRequest) {
+        ErrorDetails errorDetails = new ErrorDetails(new Date(), e.getMessage(), webRequest.getDescription(false));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDetails);
     }
 
     @ExceptionHandler(Exception.class)
