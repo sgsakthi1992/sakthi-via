@@ -20,6 +20,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import java.util.List;
+import java.util.Optional;
 
 import static org.springframework.data.domain.ExampleMatcher.GenericPropertyMatchers.contains;
 
@@ -171,10 +172,10 @@ public class EmployeeController {
                     logger.error("Employee ID " + id + " not found");
                     return new ResourceNotFoundException("Employee ID " + id + " not found");
                 });
-
-        Employee updatedEmployee = employeeRepository.updateEmployeeEmail(id, email);
-        logger.debug("Updated employee: " + updatedEmployee);
-        return ResponseEntity.status(HttpStatus.OK).body(updatedEmployee);
+        employeeRepository.updateEmployeeEmail(id, email);
+        Optional<Employee> updatedEmployee = employeeRepository.findById(id);
+        logger.debug("Updated employee: " + updatedEmployee.get());
+        return ResponseEntity.status(HttpStatus.OK).body(updatedEmployee.get());
     }
 
 }
