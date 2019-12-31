@@ -166,15 +166,15 @@ public class EmployeeController {
             @PathVariable(value = "id") Long id,
             @ApiParam(value = "Email address to update", required = true)
             @Email @RequestParam String email) throws ResourceNotFoundException {
-        Employee employee = employeeRepository.findById(id)
+        employeeRepository.findById(id)
                 .orElseThrow(() -> {
                     logger.error("Employee ID " + id + " not found");
                     return new ResourceNotFoundException("Employee ID " + id + " not found");
                 });
-        employee.setEmail(email);
-        logger.debug("Updated employee: "+ employee);
-        employeeRepository.save(employee);
-        return ResponseEntity.status(HttpStatus.OK).body(employee);
+
+        Employee updatedEmployee = employeeRepository.updateEmployeeEmail(id, email);
+        logger.debug("Updated employee: " + updatedEmployee);
+        return ResponseEntity.status(HttpStatus.OK).body(updatedEmployee);
     }
 
 }
