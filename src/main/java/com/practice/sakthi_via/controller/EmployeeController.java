@@ -162,7 +162,7 @@ public class EmployeeController {
             @ApiResponse(code = 404, message = "Employee Id not found")
     })
     @PutMapping("/employees/{id}")
-    public ResponseEntity<Employee> updateEmployeeEmail(
+    public ResponseEntity<String> updateEmployeeEmail(
             @ApiParam(value = "User Id to update employee email id", required = true)
             @PathVariable(value = "id") Long id,
             @ApiParam(value = "Email address to update", required = true)
@@ -173,9 +173,8 @@ public class EmployeeController {
                     return new ResourceNotFoundException("Employee ID " + id + " not found");
                 });
         employeeRepository.updateEmployeeEmail(id, email);
-        Optional<Employee> updatedEmployee = employeeRepository.findById(id);
-        logger.debug("Updated employee: " + updatedEmployee.get());
-        return ResponseEntity.status(HttpStatus.OK).body(updatedEmployee.get());
+        logger.debug("Updated employee successfully");
+        return ResponseEntity.status(HttpStatus.OK).body("Success");
     }
 
 }
