@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
 import java.util.List;
 
 import static org.springframework.data.domain.ExampleMatcher.GenericPropertyMatchers.contains;
@@ -160,18 +161,15 @@ public class EmployeeController {
             @ApiResponse(code = 404, message = "Employee Id not found")
     })
     @PutMapping("/employees/{id}")
-    public ResponseEntity<Employee> updateEmployee(
+    public ResponseEntity<Employee> updateEmployeeEmail(
             @ApiParam(value = "User Id to update employee object", required = true)
             @PathVariable(value = "id") Long id,
-            @ApiParam(value = "Email object to update", required = true)
-            @Valid @RequestBody Employee employee) throws ResourceNotFoundException {
+            @ApiParam(value = "Email address to update", required = true)
+            @Email @RequestParam String email) throws ResourceNotFoundException {
         Employee updatedEmployee = employeeRepository.findById(id)
                 .map(emp -> {
-                    emp.setUsername(employee.getUsername());
-                    emp.setName(employee.getUsername());
-                    emp.setEmail(employee.getEmail());
-                    emp.setAge(employee.getAge());
-                    return employeeRepository.save(employee);
+                    emp.setEmail(email);
+                    return employeeRepository.save(emp);
                 })
                 .orElseThrow(() -> {
                     logger.error("Employee ID " + id + " not found");
