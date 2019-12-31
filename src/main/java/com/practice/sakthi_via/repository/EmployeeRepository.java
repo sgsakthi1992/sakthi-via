@@ -18,6 +18,6 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
     Employee findByUsername(String username);
 
     @Modifying
-    @Query("UPDATE EMPLOYEE e SET c.email = :email where c.id = :id")
+    @Query("UPDATE EMPLOYEE e SET e.email = :email where e.id = :id")
     Employee updateEmployeeEmail(@Param("id") Long id, @Param("email") String email);
 }
