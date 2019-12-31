@@ -1,6 +1,7 @@
 package com.practice.sakthi_via.model;
 
 
+import com.practice.sakthi_via.validator.Username;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -24,6 +25,7 @@ public class Employee {
     @ApiModelProperty(notes = "Employee name")
     private String name;
 
+    @Username
     @NotEmpty(message = "Username is required")
     @Column(nullable = false)
     @ApiModelProperty(notes = "Employee username")

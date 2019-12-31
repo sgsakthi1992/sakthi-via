@@ -15,10 +15,10 @@ public class EmployeeService {
 
     Logger logger = LoggerFactory.getLogger(EmployeeService.class);
 
-    public boolean checkUsername(String username) {
-        Employee employee = employeeRepository.findByUsername(username);
+    public boolean checkUsername(String userName) {
+        Employee employee = employeeRepository.findByUsername(userName);
         if (employee != null) {
-            logger.debug("Username " + username + " exists");
+            logger.debug("Username " + userName + " exists");
             return true;
         }
         return false;
