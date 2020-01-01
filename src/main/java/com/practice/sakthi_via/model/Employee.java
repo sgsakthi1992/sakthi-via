@@ -6,9 +6,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import javax.persistence.*;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.*;
 
 @Entity
 @ApiModel(value = "Employee Model", description = "Details about Employee")
@@ -27,8 +25,9 @@ public class Employee {
 
     @Username
     @NotEmpty(message = "Username is required")
-    @Column(nullable = false)
-    @ApiModelProperty(notes = "Employee username")
+    @Size(min = 4, max = 10, message = "Username must have minimum 4 and maximum 10 characters")
+    @Column(nullable = false, updatable = false)
+    @ApiModelProperty(notes = "Employee unique username minimum 4 and maximum 10 characters")
     private String username;
 
     @NotEmpty(message = "Email id is required")
@@ -39,6 +38,7 @@ public class Employee {
 
     @NotNull(message = "Age is required")
     @Column(nullable = false)
+    @Min(value = 20, message = "Employee must be 20 years old")
     @ApiModelProperty(notes = "Employee age")
     private Integer age;
 
