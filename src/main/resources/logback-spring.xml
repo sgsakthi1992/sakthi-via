@@ -21,13 +21,27 @@
             <totalSizeCap>100MB</totalSizeCap>
         </rollingPolicy>
     </appender>
+    
+    <springProfile name="dev">
+        <logger name="com.practice.sakthi_via" level="DEBUG">
+            <appender-ref ref="STDOUT"/>
+            <appender-ref ref="FILE"/>
+        </logger>
+        <root level="ERROR">
+            <appender-ref ref="FILE"/>
+            <appender-ref ref="STDOUT"/>
+        </root>
+    </springProfile>
 
-    <logger name="com.practice.sakthi_via" level="DEBUG">
-        <appender-ref ref="STDOUT"/>
-    </logger>
+    <springProfile name="prod">
+        <logger name="com.practice.sakthi_via" level="INFO">
+            <appender-ref ref="STDOUT"/>
+            <appender-ref ref="FILE"/>
+        </logger>
+        <root level="ERROR">
+            <appender-ref ref="FILE"/>
+            <appender-ref ref="STDOUT"/>
+        </root>
+    </springProfile>
 
-    <root level="ERROR">
-        <appender-ref ref="FILE"/>
-        <appender-ref ref="STDOUT"/>
-    </root>
 </configuration>
