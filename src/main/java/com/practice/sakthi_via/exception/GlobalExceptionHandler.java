@@ -19,25 +19,21 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public final ResponseEntity<?> resourceNotFoundException(Exception e, WebRequest webRequest) {
+        logger.error(e.getMessage());
         ErrorDetails errorDetails = new ErrorDetails(new Date(), e.getMessage(), webRequest.getDescription(false));
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorDetails);
     }
 
-    @ExceptionHandler(UserNameExistsException.class)
-    public final ResponseEntity<?> userNameExistsException(Exception e, WebRequest webRequest) {
-        ErrorDetails errorDetails = new ErrorDetails(new Date(), e.getMessage(), webRequest.getDescription(false));
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorDetails);
-    }
-
     @ExceptionHandler({ConstraintViolationException.class, MethodArgumentNotValidException.class})
     public final ResponseEntity<?> constraintViolationException(Exception e, WebRequest webRequest) {
+        logger.error(e.getMessage());
         ErrorDetails errorDetails = new ErrorDetails(new Date(), e.getMessage(), webRequest.getDescription(false));
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDetails);
     }
 
     @ExceptionHandler(Exception.class)
     public final ResponseEntity<?> globalExceptionHandler(Exception e, WebRequest webRequest) {
-        e.printStackTrace();
+        logger.error(e.getMessage());
         ErrorDetails errorDetails = new ErrorDetails(new Date(), e.getMessage(), webRequest.getDescription(false));
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorDetails);
     }

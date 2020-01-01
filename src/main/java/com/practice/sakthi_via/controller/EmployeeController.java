@@ -1,10 +1,8 @@
 package com.practice.sakthi_via.controller;
 
 import com.practice.sakthi_via.exception.ResourceNotFoundException;
-import com.practice.sakthi_via.exception.UserNameExistsException;
 import com.practice.sakthi_via.model.Employee;
 import com.practice.sakthi_via.repository.EmployeeRepository;
-import com.practice.sakthi_via.service.EmployeeService;
 import io.swagger.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,9 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
-import javax.validation.constraints.NotEmpty;
 import java.util.List;
-import java.util.Optional;
 
 import static org.springframework.data.domain.ExampleMatcher.GenericPropertyMatchers.contains;
 
@@ -32,9 +28,6 @@ public class EmployeeController {
 
     @Autowired
     private EmployeeRepository employeeRepository;
-
-    @Autowired
-    private EmployeeService employeeService;
 
     Logger logger = LoggerFactory.getLogger(EmployeeController.class);
 
@@ -52,17 +45,11 @@ public class EmployeeController {
     @ApiOperation("Create Employee")
     @ApiResponses({
             @ApiResponse(code = 200, message = "Employee created successfully"),
-            @ApiResponse(code = 400, message = "Employee details has invalid values"),
-            @ApiResponse(code = 403, message = "Username not available")
+            @ApiResponse(code = 400, message = "Employee details has invalid values")
     })
     @PostMapping("/employees")
     public ResponseEntity<Employee> createEmployee(
-            @ApiParam(value = "Employee details", required = true) @Valid @RequestBody Employee employee)
-            throws UserNameExistsException {
-        if (employeeService.checkUsername(employee.getUsername())) {
-            logger.error("Username already exist");
-            throw new UserNameExistsException("Username not available");
-        }
+            @ApiParam(value = "Employee details", required = true) @Valid @RequestBody Employee employee) {
         employeeRepository.save(employee);
         Employee newEmployee = employeeRepository.findById(employee.getId()).get();
         logger.debug("New Employee details: " + employee.toString());
