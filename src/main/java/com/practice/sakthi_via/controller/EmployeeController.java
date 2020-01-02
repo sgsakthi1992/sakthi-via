@@ -83,7 +83,7 @@ public class EmployeeController {
     public ResponseEntity<String> deleteEmployeeById(
             @ApiParam(value = "Id to delete Employee details", required = true) @PathVariable(value = "id") Long id)
             throws ResourceNotFoundException {
-        Employee employee = employeeRepository.findById(id).orElseThrow(
+        employeeRepository.findById(id).orElseThrow(
                 () -> {
                     logger.error("Employee ID " + id + " not found");
                     return new ResourceNotFoundException("Employee ID " + id + " not found");
