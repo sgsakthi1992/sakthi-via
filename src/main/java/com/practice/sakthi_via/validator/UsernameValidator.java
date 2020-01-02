@@ -13,6 +13,6 @@ public class UsernameValidator implements ConstraintValidator<Username, String> 
 
     @Override
     public boolean isValid(String userName, ConstraintValidatorContext constraintValidatorContext) {
-        return !employeeService.checkUsername(userName);
+        return employeeService.checkUsername(userName);
     }
 }

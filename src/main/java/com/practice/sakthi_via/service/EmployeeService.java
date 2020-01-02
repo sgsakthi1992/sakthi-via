@@ -19,8 +19,8 @@ public class EmployeeService {
         Employee employee = employeeRepository.findByUsername(userName);
         if (employee != null) {
             logger.debug("Username " + userName + " exists");
-            return true;
+            return false;
         }
-        return false;
+        return true;
     }
 }
