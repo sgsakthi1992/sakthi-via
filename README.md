@@ -34,3 +34,9 @@ This application provides GET, POST, PUT and DELETE Request methods to manipulat
 * IntelliJ
 * Git `https://github.com/sgsakthi1992/sakthi-via`
 * CI & CD: Local Jenkins setup to deploy the code in GIT to Heroku
+
+**Testing**
+* Unit and Integration tests
+* Mocking with Mockito
+* Hamcrest for assertions
+* @SpringBootTest and MockMvc in integration tests with in-memory h2 database
