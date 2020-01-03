@@ -1,4 +1,4 @@
-package com.practice.sakthi_via;
+package com.practice.sakthi_via.unit;
 
 import com.practice.sakthi_via.model.Employee;
 import com.practice.sakthi_via.repository.EmployeeRepository;

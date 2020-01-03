@@ -1,4 +1,4 @@
-package com.practice.sakthi_via;
+package com.practice.sakthi_via.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
