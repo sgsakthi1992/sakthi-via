@@ -5,6 +5,7 @@ import com.practice.sakthi_via.repository.EmployeeRepository;
 import com.practice.sakthi_via.service.EmployeeService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,14 +13,22 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SpringBootTest
-@TestPropertySource(locations = "classpath:application-integration-test.properties")
+@ExtendWith(SpringExtension.class)
 public class EmployeeServiceTest {
 
+    @TestConfiguration
+    static class EmployeeServiceTestConfiguration{
+        @Bean
+        public EmployeeService employeeService(){
+            return new EmployeeService();
+        }
+
+    }
     @Autowired
     EmployeeService employeeService;
 
