@@ -40,3 +40,4 @@ This application provides GET, POST, PUT and DELETE Request methods to manipulat
 * Mocking with Mockito
 * Hamcrest for assertions
 * @SpringBootTest and MockMvc in integration tests with in-memory h2 database
+* JaCoCo for code coverage

@@ -15,6 +15,8 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.Optional;
+
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -34,27 +36,28 @@ public class EmployeeAPITest {
     @Autowired
     EmployeeRepository employeeRepository;
 
-    Employee employee = new Employee();
-
-    public void createEmployee() {
-        employee.setName("Sakthi");
-        employee.setEmail("sgsakthi1992@gmail.com");
-        employee.setUsername("sgsakthi");
-        employee.setAge(27);
+    public Optional<Employee> createEmployee(String name, String email, String username, Integer age) {
+        Employee employee = new Employee();
+        employee.setName(name);
+        employee.setEmail(email);
+        employee.setUsername(username);
+        employee.setAge(age);
         employeeRepository.save(employee);
+        return employeeRepository.findById(employee.getId());
     }
 
     @Test
     public void whenGetEmployees_thenReturnJsonArray() throws Exception {
-        createEmployee();
+        Optional<Employee> employee = createEmployee("Employee1", "employee1@gmail.com", "employee1", 27);
         mockMvc.perform(get("/api/v1/employees"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[0].name", is(employee.getName())));
+                .andExpect(jsonPath("$[0].name", is(employee.get().getName())));
     }
 
     @Test
     public void whenPostEmployees_thenReturnNewEmployee() throws Exception {
+        Employee employee = new Employee();
         employee.setName("Employee 2");
         employee.setEmail("employee2@gmail.com");
         employee.setUsername("employee2");
@@ -73,15 +76,17 @@ public class EmployeeAPITest {
 
     @Test
     public void whenPostEmployeesWithExistingUsername_thenThrowsValidationException() throws Exception {
-        createEmployee();
-        employee.setName("Employee 2");
-        employee.setEmail("employee2@gmail.com");
-        employee.setUsername("sgsakthi");
-        employee.setAge(25);
+        Optional<Employee> employee = createEmployee("Employee3", "employee3@gmail.com",
+                "employee3", 27);
+        Employee newEmployee = new Employee();
+        newEmployee.setName("Employee 4");
+        newEmployee.setEmail("employee4@gmail.com");
+        newEmployee.setUsername("employee3");
+        newEmployee.setAge(25);
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
         ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
-        String requestJson = ow.writeValueAsString(employee);
+        String requestJson = ow.writeValueAsString(newEmployee);
 
         mockMvc.perform(post("/api/v1/employees")
                 .contentType(MediaType.APPLICATION_JSON)
