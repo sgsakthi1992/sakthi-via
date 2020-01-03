@@ -5,15 +5,17 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.practice.sakthi_via.model.Employee;
 import com.practice.sakthi_via.repository.EmployeeRepository;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.Optional;
 
@@ -24,10 +26,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestPropertySource(locations = "classpath:application-integration-test.properties")
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class EmployeeAPITest {
 
     @Autowired
@@ -47,16 +49,22 @@ public class EmployeeAPITest {
     }
 
     @Test
-    public void whenGetEmployees_thenReturnJsonArray() throws Exception {
-        Optional<Employee> employee = createEmployee("Employee1", "employee1@gmail.com", "employee1", 27);
-        mockMvc.perform(get("/api/v1/employees"))
-                .andExpect(status().isOk())
+    @Order(1)
+    public void testGetEmployees() throws Exception {
+        //GIVEN
+        Optional<Employee> employee = createEmployee
+                ("Employee1", "employee1@gmail.com", "employee1", 27);
+        //WHEN
+        ResultActions resultActions = mockMvc.perform(get("/api/v1/employees"));
+        //THEN
+        validateOkResponse(resultActions)
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].name", is(employee.get().getName())));
     }
 
     @Test
-    public void whenPostEmployees_thenReturnNewEmployee() throws Exception {
+    public void testPostEmployee() throws Exception {
+        //GIVEN
         Employee employee = new Employee();
         employee.setName("Employee 2");
         employee.setEmail("employee2@gmail.com");
@@ -67,15 +75,18 @@ public class EmployeeAPITest {
         ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
         String requestJson = ow.writeValueAsString(employee);
 
-        mockMvc.perform(post("/api/v1/employees")
+        //WHEN
+        ResultActions resultActions = mockMvc.perform(post("/api/v1/employees")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(requestJson))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("name", is(employee.getName())));
+                .content(requestJson));
+
+        //THEN
+        validateOkResponse(resultActions).andExpect(jsonPath("name", is(employee.getName())));
     }
 
     @Test
-    public void whenPostEmployeesWithExistingUsername_thenThrowsValidationException() throws Exception {
+    public void testCreateWithExistingUserName() throws Exception {
+        //GIVEN
         Optional<Employee> employee = createEmployee("Employee3", "employee3@gmail.com",
                 "employee3", 27);
         Employee newEmployee = new Employee();
@@ -88,9 +99,20 @@ public class EmployeeAPITest {
         ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
         String requestJson = ow.writeValueAsString(newEmployee);
 
-        mockMvc.perform(post("/api/v1/employees")
+        //WHEN
+        ResultActions resultActions = mockMvc.perform(post("/api/v1/employees")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(requestJson))
-                .andExpect(status().isBadRequest());
+                .content(requestJson));
+
+        //THEN
+        validateBadRequestResponse(resultActions);
+    }
+
+    private ResultActions validateOkResponse(ResultActions resultActions) throws Exception {
+        return resultActions.andExpect(status().isOk());
+    }
+
+    private void validateBadRequestResponse(ResultActions resultActions) throws Exception {
+        resultActions.andExpect(status().isBadRequest());
     }
 }

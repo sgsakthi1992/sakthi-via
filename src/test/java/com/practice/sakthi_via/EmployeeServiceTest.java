@@ -3,30 +3,22 @@ package com.practice.sakthi_via;
 import com.practice.sakthi_via.model.Employee;
 import com.practice.sakthi_via.repository.EmployeeRepository;
 import com.practice.sakthi_via.service.EmployeeService;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.TestPropertySource;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@RunWith(SpringRunner.class)
+@SpringBootTest
+@TestPropertySource(locations = "classpath:application-integration-test.properties")
 public class EmployeeServiceTest {
-
-    @TestConfiguration
-    static class EmployeeServiceTestContextConfiguration {
-
-        @Bean
-        public EmployeeService employeeService() {
-            return new EmployeeService();
-        }
-    }
 
     @Autowired
     EmployeeService employeeService;
@@ -34,7 +26,7 @@ public class EmployeeServiceTest {
     @MockBean
     EmployeeRepository employeeRepository;
 
-    @Before
+    @BeforeEach
     public void setup() {
         Employee employee;
         employee = new Employee();

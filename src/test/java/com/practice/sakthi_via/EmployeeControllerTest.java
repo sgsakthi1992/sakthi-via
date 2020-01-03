@@ -6,17 +6,16 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.practice.sakthi_via.model.Employee;
 import com.practice.sakthi_via.repository.EmployeeRepository;
 import com.practice.sakthi_via.service.EmployeeService;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.stream.Collectors;
@@ -30,7 +29,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(SpringRunner.class)
+@SpringBootTest
 @WebMvcTest
 public class EmployeeControllerTest {
 
@@ -47,9 +46,10 @@ public class EmployeeControllerTest {
 
     @MockBean
     EmployeeRepository employeeRepository;
+
     Employee employee = new Employee();
 
-    @Before
+    @BeforeEach
     public void setup() {
         employee.setId((long) 40000);
         employee.setName("Sakthi");
@@ -83,4 +83,5 @@ public class EmployeeControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("name", is(employee.getName())));
     }
+
 }

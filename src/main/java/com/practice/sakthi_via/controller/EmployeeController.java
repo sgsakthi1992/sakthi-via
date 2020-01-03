@@ -26,10 +26,14 @@ import static org.springframework.data.domain.ExampleMatcher.GenericPropertyMatc
 @Api("Employee Management System")
 public class EmployeeController {
 
-    @Autowired
-    private EmployeeRepository employeeRepository;
+    private final EmployeeRepository employeeRepository;
 
-    Logger logger = LoggerFactory.getLogger(EmployeeController.class);
+    private static final Logger logger = LoggerFactory.getLogger(EmployeeController.class);
+
+    @Autowired
+    public EmployeeController(EmployeeRepository employeeRepository) {
+        this.employeeRepository = employeeRepository;
+    }
 
     @ApiOperation("Retrieve all the employees")
     @ApiResponses({

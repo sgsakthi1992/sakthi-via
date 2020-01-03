@@ -10,10 +10,14 @@ import org.springframework.stereotype.Service;
 @Service
 public class EmployeeService {
 
-    @Autowired
-    EmployeeRepository employeeRepository;
+    private EmployeeRepository employeeRepository;
 
-    Logger logger = LoggerFactory.getLogger(EmployeeService.class);
+    @Autowired
+    public void setEmployeeRepository(EmployeeRepository employeeRepository) {
+        this.employeeRepository = employeeRepository;
+    }
+
+    private static final Logger logger = LoggerFactory.getLogger(EmployeeService.class);
 
     public boolean checkUsername(String userName) {
         Employee employee = employeeRepository.findByUsername(userName);
