@@ -106,6 +106,18 @@
 					</execution>
 				</executions>
 				<configuration>
+					<rules>
+						<rule>
+							<element>PACKAGE</element>
+							<limits>
+								<limit>
+									<counter>LINE</counter>
+									<value>COVEREDRATIO</value>
+									<minimum>0.30</minimum>
+								</limit>
+							</limits>
+						</rule>
+					</rules>
 					<excludes>
 						<exclude>**/model/*</exclude>
 						<exclude>com/practice/sakthi_via/SpringbootApplication.class</exclude>
