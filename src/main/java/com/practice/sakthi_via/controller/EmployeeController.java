@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
 import java.util.List;
+import java.util.Optional;
 
 import static org.springframework.data.domain.ExampleMatcher.GenericPropertyMatchers.contains;
 
@@ -55,9 +56,7 @@ public class EmployeeController {
     public ResponseEntity<Employee> createEmployee(
             @ApiParam(value = "Employee details", required = true) @Valid @RequestBody Employee employee) {
         employeeRepository.save(employee);
-        Employee newEmployee = employeeRepository.findById(employee.getId()).get();
-        logger.debug("New Employee details: " + employee.toString());
-        return ResponseEntity.status(HttpStatus.OK).body(newEmployee);
+        return ResponseEntity.status(HttpStatus.OK).body(employee);
     }
 
     @ApiOperation("Get Employee details by Id")
@@ -87,12 +86,12 @@ public class EmployeeController {
     public ResponseEntity<String> deleteEmployeeById(
             @ApiParam(value = "Id to delete Employee details", required = true) @PathVariable(value = "id") Long id)
             throws ResourceNotFoundException {
-        employeeRepository.findById(id).orElseThrow(
+        Employee employee = employeeRepository.findById(id).orElseThrow(
                 () -> {
                     logger.error("Employee ID " + id + " not found");
                     return new ResourceNotFoundException("Employee ID " + id + " not found");
                 });
-        employeeRepository.deleteById(id);
+        employeeRepository.delete(employee);
         logger.debug("Delete success");
         return ResponseEntity.status(HttpStatus.OK).body("Success");
     }
@@ -158,13 +157,13 @@ public class EmployeeController {
             @PathVariable(value = "id") Long id,
             @ApiParam(value = "Email address to update", required = true)
             @Email(message = "Not a well-formed email address") @RequestParam String email) throws ResourceNotFoundException {
-        employeeRepository.findById(id)
+        Employee employee = employeeRepository.findById(id)
                 .orElseThrow(() -> {
                     logger.error("Employee ID " + id + " not found");
                     return new ResourceNotFoundException("Employee ID " + id + " not found");
                 });
-        employeeRepository.updateEmployeeEmail(id, email);
-        logger.debug("Updated employee successfully");
+        employeeRepository.updateEmployeeEmail(employee.getId(), email);
+        logger.debug("Updated employee email successfully");
         return ResponseEntity.status(HttpStatus.OK).body("Success");
     }
 
