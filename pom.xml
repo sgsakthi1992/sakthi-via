@@ -138,6 +138,13 @@
                         <goals>
                             <goal>report</goal>
                         </goals>
+                        <configuration>
+                            <excludes>
+                                <exclude>com/practice/sakthi_via/SpringbootApplication.class</exclude>
+                                <exclude>**/model/*</exclude>
+                                <exclude>**/config/*</exclude>
+                            </excludes>
+                        </configuration>
                     </execution>
                     <execution>
                         <id>coverage-check</id>
@@ -150,12 +157,14 @@
                                     <element>CLASS</element>
                                     <excludes>
                                         <exclude>com/practice/sakthi_via/SpringbootApplication.class</exclude>
+                                        <exclude>**/model/*</exclude>
+                                        <exclude>**/config/*</exclude>
                                     </excludes>
                                     <limits>
                                         <limit>
                                             <counter>LINE</counter>
                                             <value>COVEREDRATIO</value>
-                                            <minimum>30%</minimum>
+                                            <minimum>50%</minimum>
                                         </limit>
                                     </limits>
                                 </rule>

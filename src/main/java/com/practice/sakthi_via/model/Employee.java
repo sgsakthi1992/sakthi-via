@@ -31,7 +31,7 @@ public class Employee {
     private String username;
 
     @NotEmpty(message = "Email id is required")
-    @Email(message = "Not a valid email address")
+    @Email(message = "Not a well-formed email address")
     @Column(nullable = false)
     @ApiModelProperty(notes = "Employee email id")
     private String email;

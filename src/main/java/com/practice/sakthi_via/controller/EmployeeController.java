@@ -157,7 +157,7 @@ public class EmployeeController {
             @ApiParam(value = "User Id to update employee email id", required = true)
             @PathVariable(value = "id") Long id,
             @ApiParam(value = "Email address to update", required = true)
-            @Email @RequestParam String email) throws ResourceNotFoundException {
+            @Email(message = "Not a well-formed email address") @RequestParam String email) throws ResourceNotFoundException {
         employeeRepository.findById(id)
                 .orElseThrow(() -> {
                     logger.error("Employee ID " + id + " not found");

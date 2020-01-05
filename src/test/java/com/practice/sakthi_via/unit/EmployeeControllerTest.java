@@ -12,24 +12,22 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest
@@ -61,16 +59,20 @@ public class EmployeeControllerTest {
     }
 
     @Test
-    public void whenGetEmployees_thenReturnJsonArray() throws Exception {
+    public void testGetEmployee() throws Exception {
+        //GIVEN
         when(employeeRepository.findAll()).thenReturn(Stream.of(employee).collect(Collectors.toList()));
-        mockMvc.perform(get("/api/v1/employees"))
-                .andExpect(status().isOk())
+        //WHEN
+        ResultActions resultActions = mockMvc.perform(get("/api/v1/employees"));
+        //THEN
+        validateOkResponse(resultActions)
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].name", is(employee.getName())));
     }
 
     @Test
-    public void whenPostEmployees_thenReturnNewEmployee() throws Exception {
+    public void testPostEmployee() throws Exception {
+        //GIVEN
         when(employeeRepository.save(Mockito.any(Employee.class))).thenReturn(employee);
         when(employeeRepository.findById(employee.getId())).thenReturn(java.util.Optional.ofNullable(employee));
 
@@ -79,11 +81,124 @@ public class EmployeeControllerTest {
         ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
         String requestJson = ow.writeValueAsString(employee);
 
-        mockMvc.perform(post("/api/v1/employees")
+        //WHEN
+        ResultActions resultActions = mockMvc.perform(post("/api/v1/employees")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(requestJson))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("name", is(employee.getName())));
+                .content(requestJson));
+
+        //THEN
+        validateOkResponse(resultActions).andExpect(jsonPath("name", is(employee.getName())));
+    }
+
+    @Test
+    public void testGetEmployeeById() throws Exception {
+        //GIVEN
+        when(employeeRepository.findById(employee.getId())).thenReturn(java.util.Optional.ofNullable(employee));
+
+        //WHEN
+        ResultActions resultActions = mockMvc.perform(get("/api/v1/employees/" + employee.getId()));
+
+        //THEN
+        validateOkResponse(resultActions).andExpect(jsonPath("name", is(employee.getName())));
+    }
+
+    @Test
+    public void testGetEmployeeWithInvalidId() throws Exception {
+        //GIVEN
+        Long id = 1L;
+        when(employeeRepository.findById(id)).thenReturn(java.util.Optional.empty());
+
+        //WHEN
+        ResultActions resultActions = mockMvc.perform(get("/api/v1/employees/" + id));
+
+        //THEN
+        String expectedMessage = "Employee ID " + id + " not found";
+        validateNotFoundResponse(resultActions, expectedMessage);
+    }
+
+    @Test
+    public void testDeleteEmployeeById() throws Exception {
+        //GIVEN
+        when(employeeRepository.findById(employee.getId())).thenReturn(java.util.Optional.ofNullable(employee));
+        doNothing().when(employeeRepository).deleteById(employee.getId());
+
+        //WHEN
+        ResultActions resultActions = mockMvc.perform(delete("/api/v1/employees/" + employee.getId()));
+
+        //THEN
+        validateOkResponse(resultActions).andExpect(content().string(containsString("Success")));
+    }
+
+    @Test
+    public void testDeleteEmployeeWithInvalidId() throws Exception {
+        //GIVEN
+        Long id = 1L;
+        when(employeeRepository.findById(id)).thenReturn(java.util.Optional.empty());
+
+        //WHEN
+        ResultActions resultActions = mockMvc.perform(delete("/api/v1/employees/" + id));
+
+        //THEN
+        String expectedMessage = "Employee ID " + id + " not found";
+        validateNotFoundResponse(resultActions, expectedMessage);
+    }
+
+    @Test
+    public void testUpdateEmployeeEmailById() throws Exception {
+        //GIVEN
+        when(employeeRepository.findById(employee.getId())).thenReturn(java.util.Optional.ofNullable(employee));
+        when(employeeRepository.updateEmployeeEmail(employee.getId(), "newemail@gmail.com")).thenReturn(1);
+
+        //WHEN
+        ResultActions resultActions = mockMvc.perform(put("/api/v1/employees/" + employee.getId())
+                .param("email", "newemail@gmail.com"));
+
+        //THEN
+        validateOkResponse(resultActions).andExpect(content().string(containsString("Success")));
+    }
+
+    @Test
+    public void testUpdateEmployeeEmailWithInvalidId() throws Exception {
+        //GIVEN
+        Long id = 1L;
+        when(employeeRepository.findById(id)).thenReturn(java.util.Optional.empty());
+
+        //WHEN
+        ResultActions resultActions = mockMvc.perform(put("/api/v1/employees/" + id)
+                .param("email", "newemail@gmail.com"));
+
+        //THEN
+        String expectedMessage = "Employee ID " + id + " not found";
+        validateNotFoundResponse(resultActions, expectedMessage);
+    }
+
+    @Test
+    public void testUpdateEmployeeEmailWithInvalidEmail() throws Exception {
+        //GIVEN
+        Long id = 1L;
+        when(employeeRepository.findById(id)).thenReturn(java.util.Optional.empty());
+
+        //WHEN
+        ResultActions resultActions = mockMvc.perform(put("/api/v1/employees/" + id)
+                .param("email", "newemail"));
+
+        //THEN
+        String expectedMessage = "Not a well-formed email address";
+        validateBadRequestResponse(resultActions, expectedMessage);
+    }
+
+    private ResultActions validateOkResponse(ResultActions resultActions) throws Exception {
+        return resultActions.andExpect(status().isOk());
+    }
+
+    private void validateNotFoundResponse(ResultActions resultActions, String expectedMessage) throws Exception {
+        resultActions.andExpect(status().isNotFound())
+                .andExpect(jsonPath("message", containsStringIgnoringCase(expectedMessage)));
+    }
+
+    private void validateBadRequestResponse(ResultActions resultActions, String expectedMessage) throws Exception {
+        resultActions.andExpect(status().isBadRequest())
+                .andExpect(jsonPath("message", containsStringIgnoringCase(expectedMessage)));
     }
 
 }
