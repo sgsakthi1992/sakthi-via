@@ -60,7 +60,7 @@ public class EmployeeController {
         ModelMapper modelMapper = new ModelMapper();
         Employee employee = modelMapper.map(employeeDto, Employee.class);
         employeeRepository.save(employee);
-        logger.debug(employee.toString());
+        logger.debug("Created Employee: {}", employee);
         return ResponseEntity.status(HttpStatus.OK).body(employee);
     }
 

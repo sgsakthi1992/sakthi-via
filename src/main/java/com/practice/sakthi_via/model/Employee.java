@@ -17,7 +17,6 @@ public class Employee {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "employeeIdSeq")
     @Column(nullable = false)
     @ApiModelProperty(notes = "Auto generated Employee Id")
-    @NotNull
     private Long id;
 
     @NotEmpty(message = "Name is required")
