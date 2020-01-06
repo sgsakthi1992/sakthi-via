@@ -37,7 +37,6 @@ public class Employee {
     @ApiModelProperty(notes = "Employee email id")
     private String email;
 
-    @NotNull(message = "Age is required")
     @Column(nullable = false)
     @Min(value = 20, message = "Employee must be 20 years old")
     @ApiModelProperty(notes = "Employee age")
@@ -50,6 +49,10 @@ public class Employee {
         this.username = username;
         this.email = email;
         this.age = age;
+    }
+
+    public Employee() {
+        super();
     }
 
     public Long getId() {

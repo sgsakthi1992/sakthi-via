@@ -18,7 +18,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
 @DataJpaTest
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class EmployeeRepositoryTest {
 
     @Autowired
@@ -40,24 +39,31 @@ public class EmployeeRepositoryTest {
     }
 
     @Test
-    public void whenValidUsername_thenEmployeeShouldBeFound() {
+    public void testFindByUsername() {
+        //GIVEN
+        //WHEN
         Employee foundEmployee = employeeRepository.findByUsername(USERNAME);
-        System.out.println(foundEmployee);
-        assertEquals(foundEmployee.getUsername(), USERNAME);
+        //THEN
+        assertEquals(USERNAME, foundEmployee.getUsername());
     }
 
     @Test
-    public void whenValidEmail_thenEmployeeShouldBeFound() {
+    public void testFindByEmail() {
+        //GIVEN
+        //WHEN
         Optional<List> employeeList = employeeRepository.findByEmail(EMAIL);
-        System.out.println(employeeList);
+        //THEN
         assertTrue(employeeList.isPresent());
     }
 
     @Test
-    public void whenUpdateEmail_thenOldEmailShouldNotBeFound() {
+    public void testUpdateEmail() {
+        //GIVEN
         Employee employee = employeeRepository.findByUsername(USERNAME);
         employeeRepository.updateEmployeeEmail(employee.getId(), "newemail@gmail.com");
+        //WHEN
         Optional<List> employeeList = employeeRepository.findByEmail(EMAIL);
+        //THEN
         assertFalse(employeeList.isPresent());
     }
 

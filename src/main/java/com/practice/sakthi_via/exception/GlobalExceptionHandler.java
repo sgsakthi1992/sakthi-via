@@ -21,21 +21,21 @@ public class GlobalExceptionHandler {
     private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public final ResponseEntity<?> resourceNotFoundException(Exception e, WebRequest webRequest) {
+    public final ResponseEntity<ErrorDetails> resourceNotFoundException(Exception e, WebRequest webRequest) {
         logger.error("ResourceNotFoundException : ", e);
         ErrorDetails errorDetails = new ErrorDetails(new Date(), e.getMessage(), webRequest.getDescription(false));
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorDetails);
     }
 
     @ExceptionHandler({ConstraintViolationException.class})
-    public final ResponseEntity<?> constraintViolationException(ConstraintViolationException e, WebRequest webRequest) {
+    public final ResponseEntity<ErrorDetails> constraintViolationException(ConstraintViolationException e, WebRequest webRequest) {
         logger.error("ConstraintViolationException : ", e);
         ErrorDetails errorDetails = new ErrorDetails(new Date(), e.getMessage(), webRequest.getDescription(false));
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDetails);
     }
 
     @ExceptionHandler({MethodArgumentNotValidException.class})
-    public final ResponseEntity<?> methodArgumentNotValidException(MethodArgumentNotValidException e, WebRequest webRequest) {
+    public final ResponseEntity<ErrorDetails> methodArgumentNotValidException(MethodArgumentNotValidException e, WebRequest webRequest) {
         BindingResult result = e.getBindingResult();
         List<FieldError> fieldErrors = result.getFieldErrors();
         logger.error("MethodArgumentNotValidException {}", fieldErrors);
@@ -44,7 +44,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public final ResponseEntity<?> globalExceptionHandler(Exception e, WebRequest webRequest) {
+    public final ResponseEntity<ErrorDetails> globalExceptionHandler(Exception e, WebRequest webRequest) {
         logger.error("GlobalExceptionHandler :", e);
         ErrorDetails errorDetails = new ErrorDetails(new Date(), e.getMessage(), webRequest.getDescription(false));
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorDetails);
