@@ -105,7 +105,7 @@ public class EmployeeController {
     @GetMapping("/employeesByEmail/{email}")
     public ResponseEntity<List> getEmployeeByEmail(
             @ApiParam(value = "Email to retrieve Employee Details", required = true)
-            @Email(message = Constants.EMAIL_VALIDATION_MSG) @PathVariable(value = "email") String email)
+            @Email(message = Constants.EMAIL_VALIDATION_MSG) @Valid @PathVariable(value = "email") String email)
             throws ResourceNotFoundException {
         List employeeList = employeeRepository.findByEmail(email).orElseThrow(
                 () -> {
@@ -126,7 +126,7 @@ public class EmployeeController {
             @ApiParam(value = "Email to retrieve Employee Details", required = false)
             @Valid @RequestParam(required = false) String username,
             @ApiParam(value = "Username to retrieve Employee Details", required = false)
-            @Email(message = Constants.EMAIL_VALIDATION_MSG) @RequestParam(required = false) String email)
+            @Email(message = Constants.EMAIL_VALIDATION_MSG) @Valid @RequestParam(required = false) String email)
             throws ResourceNotFoundException {
         Employee employee = new Employee();
         employee.setUsername(username);
@@ -155,9 +155,9 @@ public class EmployeeController {
     @PutMapping("/employees/{id}")
     public ResponseEntity<String> updateEmployeeEmail(
             @ApiParam(value = "User Id to update employee email id", required = true)
-            @PathVariable(value = "id") Long id,
+            @Valid @PathVariable(value = "id") Long id,
             @ApiParam(value = "Email address to update", required = true)
-            @Email(message = Constants.EMAIL_VALIDATION_MSG) @RequestParam String email)
+            @Email(message = Constants.EMAIL_VALIDATION_MSG) @Valid @RequestParam String email)
             throws ResourceNotFoundException {
         Employee employee = employeeRepository.findById(id)
                 .orElseThrow(() -> {

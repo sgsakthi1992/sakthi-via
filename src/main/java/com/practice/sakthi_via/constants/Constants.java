@@ -1,7 +1,5 @@
 package com.practice.sakthi_via.constants;
 
-import java.util.Locale;
-
 public final class Constants {
     //LOGGERS
     public static final String EMPLOYEE_ID_NOT_FOUND_MSG = "Employee Id {} not found";
@@ -18,4 +16,8 @@ public final class Constants {
     public static final String EMPLOYEE_DELETE_SUCCESS = "Successfully deleted employee details";
     public static final String EMPLOYEE_USERNAME_OR_EMAIL_NOT_FOUND = "Employee Username or email id not found";
     public static final String EMPLOYEE_EMAIL_NOT_FOUND = "Employee email not found";
+
+    private Constants(){
+
+    }
 }

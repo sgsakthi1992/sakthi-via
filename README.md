@@ -33,7 +33,7 @@ This application provides GET, POST, PUT and DELETE Request methods to manipulat
 * Maven for dependency management
 * IntelliJ
 * Git `https://github.com/sgsakthi1992/sakthi-via`
-* CI & CD: Local Jenkins setup to deploy the code in GIT to Heroku
+* CI & CD: TravisCI to deploy the code in GIT to Heroku (Only if Code Coverage rule is met). Runs SonarQube and uploads the result to configured SonarCloud
 
 **Testing**
 * Unit and Integration tests
@@ -41,3 +41,4 @@ This application provides GET, POST, PUT and DELETE Request methods to manipulat
 * Hamcrest for assertions
 * @SpringBootTest and MockMvc in integration tests with in-memory h2 database
 * JaCoCo for code coverage
+* SonarQube for code quality
