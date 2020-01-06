@@ -3,6 +3,7 @@ package com.practice.sakthi_via.unit;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.practice.sakthi_via.constants.Constants;
 import com.practice.sakthi_via.model.Employee;
 import com.practice.sakthi_via.repository.EmployeeRepository;
 import com.practice.sakthi_via.service.EmployeeService;
@@ -112,8 +113,7 @@ public class EmployeeControllerTest {
         ResultActions resultActions = mockMvc.perform(get("/api/v1/employees/" + id));
 
         //THEN
-        String expectedMessage = "Employee ID " + id + " not found";
-        validateNotFoundResponse(resultActions, expectedMessage);
+        validateNotFoundResponse(resultActions, Constants.EMPLOYEE_ID_NOT_FOUND);
     }
 
     @Test
@@ -139,8 +139,7 @@ public class EmployeeControllerTest {
         ResultActions resultActions = mockMvc.perform(delete("/api/v1/employees/" + id));
 
         //THEN
-        String expectedMessage = "Employee ID " + id + " not found";
-        validateNotFoundResponse(resultActions, expectedMessage);
+        validateNotFoundResponse(resultActions, Constants.EMPLOYEE_ID_NOT_FOUND);
     }
 
     @Test
@@ -168,8 +167,7 @@ public class EmployeeControllerTest {
                 .param("email", "newemail@gmail.com"));
 
         //THEN
-        String expectedMessage = "Employee ID " + id + " not found";
-        validateNotFoundResponse(resultActions, expectedMessage);
+        validateNotFoundResponse(resultActions, Constants.EMPLOYEE_ID_NOT_FOUND);
     }
 
     @Test
