@@ -1,6 +1,7 @@
 package com.practice.sakthi_via.model;
 
 
+import com.practice.sakthi_via.constants.Constants;
 import com.practice.sakthi_via.validator.Username;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -31,7 +32,7 @@ public class Employee {
     private String username;
 
     @NotEmpty(message = "Email id is required")
-    @Email(message = "Not a well-formed email address")
+    @Email(message = Constants.EMAIL_VALIDATION_MSG)
     @Column(nullable = false)
     @ApiModelProperty(notes = "Employee email id")
     private String email;
@@ -41,10 +42,6 @@ public class Employee {
     @Min(value = 20, message = "Employee must be 20 years old")
     @ApiModelProperty(notes = "Employee age")
     private Integer age;
-
-    public Employee() {
-        super();
-    }
 
     public Employee(Long id, String name, String username, String email, Integer age) {
         super();

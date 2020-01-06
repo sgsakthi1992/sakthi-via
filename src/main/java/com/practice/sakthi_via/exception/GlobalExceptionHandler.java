@@ -38,7 +38,7 @@ public class GlobalExceptionHandler {
     public final ResponseEntity<?> methodArgumentNotValidException(MethodArgumentNotValidException e, WebRequest webRequest) {
         BindingResult result = e.getBindingResult();
         List<FieldError> fieldErrors = result.getFieldErrors();
-        logger.error("MethodArgumentNotValidException {}", fieldErrors.toString());
+        logger.error("MethodArgumentNotValidException {}", fieldErrors);
         ErrorDetails errorDetails = new ErrorDetails(new Date(), fieldErrors.toString(), webRequest.getDescription(false));
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDetails);
     }
