@@ -141,9 +141,9 @@
                         <configuration>
                             <excludes>
                                 <exclude>com/practice/sakthi_via/SpringbootApplication.class</exclude>
+                                <exclude>com/practice/sakthi_via/constants/Constants.class</exclude>
                                 <exclude>**/model/*</exclude>
                                 <exclude>**/config/*</exclude>
-                                <exclude>**/constants/*</exclude>
                             </excludes>
                         </configuration>
                     </execution>
@@ -157,16 +157,16 @@
                                 <rule>
                                     <element>CLASS</element>
                                     <excludes>
-                                        <exclude>com/practice/sakthi_via/SpringbootApplication.class</exclude>
-                                        <exclude>**/model/*</exclude>
-                                        <exclude>**/config/*</exclude>
-                                        <exclude>**/constants/*</exclude>
+                                        <exclude>com.practice.sakthi_via.SpringbootApplication</exclude>
+                                        <exclude>com.practice.sakthi_via.constants.Constants</exclude>
+                                        <exclude>com.practice.sakthi_via.model.Employee</exclude>
+                                        <exclude>com.practice.sakthi_via.config.SwaggerConfig</exclude>
                                     </excludes>
                                     <limits>
                                         <limit>
                                             <counter>LINE</counter>
                                             <value>COVEREDRATIO</value>
-                                            <minimum>30%</minimum>
+                                            <minimum>50%</minimum>
                                         </limit>
                                     </limits>
                                 </rule>
