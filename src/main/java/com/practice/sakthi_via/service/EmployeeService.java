@@ -22,7 +22,7 @@ public class EmployeeService {
     public boolean checkUsername(String userName) {
         Employee employee = employeeRepository.findByUsername(userName);
         if (employee != null) {
-            logger.debug("Username " + userName + " exists");
+            logger.debug("Username {} exists", userName);
             return false;
         }
         return true;

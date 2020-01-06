@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
 import java.util.List;
-import java.util.Optional;
 
 import static org.springframework.data.domain.ExampleMatcher.GenericPropertyMatchers.contains;
 
@@ -43,7 +42,7 @@ public class EmployeeController {
     @GetMapping("/employees")
     public ResponseEntity<List> getEmployee() {
         List<Employee> employeeList = employeeRepository.findAll();
-        logger.debug("List of employees :" + employeeList);
+        logger.debug("List of employees : {}", employeeList);
         return ResponseEntity.status(HttpStatus.OK).body(employeeList);
     }
 
@@ -70,10 +69,10 @@ public class EmployeeController {
             throws ResourceNotFoundException {
         Employee employee = employeeRepository.findById(id).orElseThrow(
                 () -> {
-                    logger.error("Employee ID " + id + " not found");
+                    logger.error("Employee ID {} not found", id);
                     return new ResourceNotFoundException("Employee ID " + id + " not found");
                 });
-        logger.debug("Employee details: " + employee.toString());
+        logger.debug("Employee details: {}", employee.toString());
         return ResponseEntity.status(HttpStatus.OK).body(employee);
     }
 
@@ -88,7 +87,7 @@ public class EmployeeController {
             throws ResourceNotFoundException {
         Employee employee = employeeRepository.findById(id).orElseThrow(
                 () -> {
-                    logger.error("Employee ID " + id + " not found");
+                    logger.error("Employee ID {} not found", id);
                     return new ResourceNotFoundException("Employee ID " + id + " not found");
                 });
         employeeRepository.delete(employee);
@@ -107,9 +106,9 @@ public class EmployeeController {
             @ApiParam(value = "Email to retrieve Employee Details", required = true)
             @Email(message = "Not a valid Email address") @PathVariable(value = "email") String email)
             throws ResourceNotFoundException {
-        List<Employee> employeeList = employeeRepository.findByEmail(email).orElseThrow(
+        List employeeList = employeeRepository.findByEmail(email).orElseThrow(
                 () -> {
-                    logger.error("Email " + email + " not found");
+                    logger.error("Email {} not found", email);
                     return new ResourceNotFoundException("Email " + email + " not found");
                 });
         return ResponseEntity.status(HttpStatus.OK).body(employeeList);
@@ -124,7 +123,7 @@ public class EmployeeController {
     @GetMapping("/employeesByUsernameOrEmail")
     public ResponseEntity<List> getEmployeeByUsernameOrEmail(
             @ApiParam(value = "Email to retrieve Employee Details", required = false)
-            @Valid @RequestParam(required = false) String username,
+            @RequestParam(required = false) String username,
             @ApiParam(value = "Username to retrieve Employee Details", required = false)
             @Email(message = "Not a valid Email address") @Valid @RequestParam(required = false) String email)
             throws ResourceNotFoundException {
@@ -138,10 +137,10 @@ public class EmployeeController {
 
         List<Employee> employeeList = employeeRepository.findAll(example);
         if (employeeList.isEmpty()) {
-            logger.error("Employee not found with Username: " + username + "or Email: " + email);
+            logger.error("Employee not found with Username: {} or Email: {}", username, email);
             throw new ResourceNotFoundException("Employee not found with Username: " + username + "or Email: " + email);
         }
-        logger.debug("Employee list: " + employeeList);
+        logger.debug("Employee list: {}", employeeList);
         return ResponseEntity.status(HttpStatus.OK).body(employeeList);
     }
 
@@ -159,7 +158,7 @@ public class EmployeeController {
             @Email(message = "Not a well-formed email address") @RequestParam String email) throws ResourceNotFoundException {
         Employee employee = employeeRepository.findById(id)
                 .orElseThrow(() -> {
-                    logger.error("Employee ID " + id + " not found");
+                    logger.error("Employee ID {} not found", id);
                     return new ResourceNotFoundException("Employee ID " + id + " not found");
                 });
         employeeRepository.updateEmployeeEmail(employee.getId(), email);
