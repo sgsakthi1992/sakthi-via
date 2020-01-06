@@ -143,6 +143,7 @@
                                 <exclude>com/practice/sakthi_via/SpringbootApplication.class</exclude>
                                 <exclude>**/model/*</exclude>
                                 <exclude>**/config/*</exclude>
+                                <exclude>**/constants/*</exclude>
                             </excludes>
                         </configuration>
                     </execution>
@@ -159,6 +160,7 @@
                                         <exclude>com/practice/sakthi_via/SpringbootApplication.class</exclude>
                                         <exclude>**/model/*</exclude>
                                         <exclude>**/config/*</exclude>
+                                        <exclude>**/constants/*</exclude>
                                     </excludes>
                                     <limits>
                                         <limit>
