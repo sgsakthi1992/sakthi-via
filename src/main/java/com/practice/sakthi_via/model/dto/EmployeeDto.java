@@ -1,68 +1,34 @@
-package com.practice.sakthi_via.model;
-
+package com.practice.sakthi_via.model.dto;
 
 import com.practice.sakthi_via.constants.Constants;
 import com.practice.sakthi_via.validator.Username;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-import javax.persistence.*;
-import javax.validation.constraints.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 
-@Entity
-@ApiModel(value = "Employee Model", description = "Details about Employee")
-public class Employee {
-    @Id
-    @SequenceGenerator(name = "employeeIdSeq", initialValue = 40000)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "employeeIdSeq")
-    @Column(nullable = false)
-    @ApiModelProperty(notes = "Auto generated Employee Id")
-    @NotNull
-    private Long id;
+public class EmployeeDto {
 
     @NotEmpty(message = "Name is required")
-    @Column(nullable = false)
     @ApiModelProperty(notes = "Employee name")
     private String name;
 
     @Username
     @NotEmpty(message = "Username is required")
     @Size(min = 4, max = 10, message = "Username must have minimum 4 and maximum 10 characters")
-    @Column(nullable = false, updatable = false)
     @ApiModelProperty(notes = "Employee unique username minimum 4 and maximum 10 characters")
     private String username;
 
     @NotEmpty(message = "Email id is required")
     @Email(message = Constants.EMAIL_VALIDATION_MSG)
-    @Column(nullable = false)
     @ApiModelProperty(notes = "Employee email id")
     private String email;
 
-    @Column(nullable = false)
     @Min(value = 20, message = "Employee must be 20 years old")
     @ApiModelProperty(notes = "Employee age")
     private Integer age;
-
-    public Employee(Long id, String name, String username, String email, Integer age) {
-        super();
-        this.id = id;
-        this.name = name;
-        this.username = username;
-        this.email = email;
-        this.age = age;
-    }
-
-    public Employee() {
-        super();
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getName() {
         return name;
@@ -98,13 +64,11 @@ public class Employee {
 
     @Override
     public String toString() {
-        return "Employee{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
+        return "EmployeeDto{" +
+                "name='" + name + '\'' +
                 ", username='" + username + '\'' +
                 ", email='" + email + '\'' +
                 ", age=" + age +
                 '}';
     }
-
 }

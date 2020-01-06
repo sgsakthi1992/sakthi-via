@@ -3,8 +3,10 @@ package com.practice.sakthi_via.controller;
 import com.practice.sakthi_via.constants.Constants;
 import com.practice.sakthi_via.exception.ResourceNotFoundException;
 import com.practice.sakthi_via.model.Employee;
+import com.practice.sakthi_via.model.dto.EmployeeDto;
 import com.practice.sakthi_via.repository.EmployeeRepository;
 import io.swagger.annotations.*;
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,8 +56,11 @@ public class EmployeeController {
     })
     @PostMapping("/employees")
     public ResponseEntity<Employee> createEmployee(
-            @ApiParam(value = "Employee details", required = true) @Valid @RequestBody Employee employee) {
+            @ApiParam(value = "Employee details", required = true) @Valid @RequestBody EmployeeDto employeeDto) {
+        ModelMapper modelMapper = new ModelMapper();
+        Employee employee = modelMapper.map(employeeDto, Employee.class);
         employeeRepository.save(employee);
+        logger.debug(employee.toString());
         return ResponseEntity.status(HttpStatus.OK).body(employee);
     }
 
