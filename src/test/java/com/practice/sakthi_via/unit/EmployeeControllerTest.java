@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.practice.sakthi_via.constants.Constants;
 import com.practice.sakthi_via.model.Employee;
 import com.practice.sakthi_via.repository.EmployeeRepository;
-import com.practice.sakthi_via.service.EmployeeService;
+import com.practice.sakthi_via.facade.EmployeeFacade;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,8 +37,8 @@ public class EmployeeControllerTest {
     @TestConfiguration
     static class EmployeeServiceTestContextConfiguration {
         @Bean
-        public EmployeeService employeeService() {
-            return new EmployeeService();
+        public EmployeeFacade employeeService() {
+            return new EmployeeFacade();
         }
     }
 

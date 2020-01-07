@@ -9,16 +9,27 @@ import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
+/**
+ * Swagger Configuration Class.
+ *
+ * @author Sakthi_Subramaniam
+ */
+
 @Configuration
 @EnableSwagger2
-public class SwaggerConfig {
+public final class SwaggerConfig {
+    /**
+     * @return Docket.
+     */
     @Bean
     public Docket productApi() {
-        return new Docket(DocumentationType.SWAGGER_2).apiInfo(new  ApiInfoBuilder()
-                .description("VIA Employee Management API")
-                .version("0.1")
-                .build())
-                .select().apis(RequestHandlerSelectors.basePackage("com.practice.sakthi_via"))
+        return new Docket(DocumentationType.SWAGGER_2)
+                .apiInfo(new ApiInfoBuilder()
+                        .description("VIA Employee Management API")
+                        .version("0.1")
+                        .build())
+                .select().apis(RequestHandlerSelectors
+                        .basePackage("com.practice.sakthi_via"))
                 .paths(PathSelectors.regex("/api/v1.*"))
                 .build();
     }

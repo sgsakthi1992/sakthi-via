@@ -2,26 +2,31 @@ package com.practice.sakthi_via.controller;
 
 import com.practice.sakthi_via.constants.Constants;
 import com.practice.sakthi_via.exception.ResourceNotFoundException;
+import com.practice.sakthi_via.facade.EmployeeFacade;
 import com.practice.sakthi_via.model.Employee;
 import com.practice.sakthi_via.model.dto.EmployeeDto;
-import com.practice.sakthi_via.repository.EmployeeRepository;
-import io.swagger.annotations.*;
-import org.modelmapper.ModelMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
 import java.util.List;
-
-import static org.springframework.data.domain.ExampleMatcher.GenericPropertyMatchers.contains;
 
 @RestController
 @Validated
@@ -29,149 +34,192 @@ import static org.springframework.data.domain.ExampleMatcher.GenericPropertyMatc
 @Api("Employee Management System")
 public class EmployeeController {
 
-    private final EmployeeRepository employeeRepository;
+    /**
+     * EmployeeFacade object.
+     */
+    private EmployeeFacade employeeFacade;
 
-    private static final Logger logger = LoggerFactory.getLogger(EmployeeController.class);
-
+    /**
+     * Setter to Employee facade object.
+     *
+     * @param employeeFacade EmployeeFacade object
+     */
     @Autowired
-    public EmployeeController(EmployeeRepository employeeRepository) {
-        this.employeeRepository = employeeRepository;
+    public void setEmployeeFacade(final EmployeeFacade employeeFacade) {
+        this.employeeFacade = employeeFacade;
     }
 
+    /**
+     * API to retrieve all the employees.
+     *
+     * @return Response Entity with List of Employees in body
+     */
     @ApiOperation("Retrieve all the employees")
     @ApiResponses({
-            @ApiResponse(code = 200, message = Constants.EMPLOYEE_RETRIEVE_SUCCESS)
+            @ApiResponse(code = Constants.HTTP_STATUS_OK,
+                    message = Constants.EMPLOYEE_RETRIEVE_SUCCESS)
     })
     @GetMapping("/employees")
-    public ResponseEntity<List> getEmployee() {
-        List<Employee> employeeList = employeeRepository.findAll();
-        logger.debug("List of employees : {}", employeeList);
+    public ResponseEntity<List> getEmployees() {
+        List<Employee> employeeList = employeeFacade.getEmployees();
         return ResponseEntity.status(HttpStatus.OK).body(employeeList);
     }
 
+    /**
+     * API to create new employee.
+     *
+     * @param employeeDto Employee details
+     * @return ResponseEntity with Employee details in body
+     */
     @ApiOperation("Create Employee")
     @ApiResponses({
-            @ApiResponse(code = 200, message = Constants.EMPLOYEE_CREATE_SUCCESS),
-            @ApiResponse(code = 400, message = Constants.INVALID_EMPLOYEE_VALUES)
+            @ApiResponse(code = Constants.HTTP_STATUS_OK,
+                    message = Constants.EMPLOYEE_CREATE_SUCCESS),
+            @ApiResponse(code = Constants.HTTP_STATUS_BAD_REQUEST,
+                    message = Constants.INVALID_EMPLOYEE_VALUES)
     })
     @PostMapping("/employees")
     public ResponseEntity<Employee> createEmployee(
-            @ApiParam(value = "Employee details", required = true) @Valid @RequestBody EmployeeDto employeeDto) {
-        ModelMapper modelMapper = new ModelMapper();
-        Employee employee = modelMapper.map(employeeDto, Employee.class);
-        employeeRepository.save(employee);
-        logger.debug("Created Employee: {}", employee);
+            @ApiParam(value = "Employee details", required = true)
+            @Valid @RequestBody final EmployeeDto employeeDto) {
+        Employee employee = employeeFacade.createEmployee(employeeDto);
         return ResponseEntity.status(HttpStatus.OK).body(employee);
     }
 
+    /**
+     * API to get employee details by id.
+     *
+     * @param id Employee id
+     * @return ResponseEntity with Employee details in body
+     * @throws ResourceNotFoundException id not found
+     */
     @ApiOperation("Get Employee details by Id")
     @ApiResponses({
-            @ApiResponse(code = 200, message = Constants.EMPLOYEE_RETRIEVE_SUCCESS),
-            @ApiResponse(code = 404, message = Constants.EMPLOYEE_ID_NOT_FOUND)
+            @ApiResponse(code = Constants.HTTP_STATUS_OK,
+                    message = Constants.EMPLOYEE_RETRIEVE_SUCCESS),
+            @ApiResponse(code = Constants.HTTP_STATUS_NOT_FOUND,
+                    message = Constants.EMPLOYEE_ID_NOT_FOUND)
     })
     @GetMapping(value = "/employees/{id}")
     public ResponseEntity<Employee> getEmployeeById(
-            @ApiParam(value = "Id to retrieve Employee Details", required = true) @PathVariable(value = "id") Long id)
+            @ApiParam(value = "Id to retrieve Employee Details",
+                    required = true)
+            @PathVariable(value = "id") final Long id)
             throws ResourceNotFoundException {
-        Employee employee = employeeRepository.findById(id).orElseThrow(
-                () -> {
-                    logger.error(Constants.EMPLOYEE_ID_NOT_FOUND_MSG, id);
-                    return new ResourceNotFoundException(Constants.EMPLOYEE_ID_NOT_FOUND);
-                });
-        logger.debug("Employee details: {}", employee);
+        Employee employee = employeeFacade.getEmployeeById(id);
         return ResponseEntity.status(HttpStatus.OK).body(employee);
     }
 
+    /**
+     * API to delete employee details.
+     *
+     * @param id Employee id
+     * @return ResponseEntity with String message in body
+     * @throws ResourceNotFoundException id not found
+     */
     @ApiOperation("Delete Employee by Id")
     @ApiResponses({
-            @ApiResponse(code = 200, message = Constants.EMPLOYEE_DELETE_SUCCESS),
-            @ApiResponse(code = 404, message = Constants.EMPLOYEE_ID_NOT_FOUND)
+            @ApiResponse(code = Constants.HTTP_STATUS_OK,
+                    message = Constants.EMPLOYEE_DELETE_SUCCESS),
+            @ApiResponse(code = Constants.HTTP_STATUS_NOT_FOUND,
+                    message = Constants.EMPLOYEE_ID_NOT_FOUND)
     })
     @DeleteMapping("/employees/{id}")
     public ResponseEntity<String> deleteEmployeeById(
-            @ApiParam(value = "Id to delete Employee details", required = true) @PathVariable(value = "id") Long id)
+            @ApiParam(value = "Id to delete Employee details", required = true)
+            @PathVariable(value = "id") final Long id)
             throws ResourceNotFoundException {
-        Employee employee = employeeRepository.findById(id).orElseThrow(
-                () -> {
-                    logger.error(Constants.EMPLOYEE_ID_NOT_FOUND_MSG, id);
-                    return new ResourceNotFoundException(Constants.EMPLOYEE_ID_NOT_FOUND);
-                });
-        employeeRepository.delete(employee);
-        logger.debug("Delete success");
-        return ResponseEntity.status(HttpStatus.OK).body("Success");
+        String message = employeeFacade.deleteEmployeeById(id);
+        return ResponseEntity.status(HttpStatus.OK).body(message);
     }
 
+    /**
+     * API to get employee details by Email.
+     *
+     * @param email Employee email
+     * @return Response Entity with List of Employees in body
+     * @throws ResourceNotFoundException email not found
+     */
     @ApiOperation("Get Employee Details By Email")
     @ApiResponses({
-            @ApiResponse(code = 200, message = Constants.EMPLOYEE_RETRIEVE_SUCCESS),
-            @ApiResponse(code = 400, message = Constants.EMAIL_VALIDATION_MSG),
-            @ApiResponse(code = 404, message = Constants.EMPLOYEE_EMAIL_NOT_FOUND)
+            @ApiResponse(code = Constants.HTTP_STATUS_OK,
+                    message = Constants.EMPLOYEE_RETRIEVE_SUCCESS),
+            @ApiResponse(code = Constants.HTTP_STATUS_BAD_REQUEST,
+                    message = Constants.EMAIL_VALIDATION_MSG),
+            @ApiResponse(code = Constants.HTTP_STATUS_NOT_FOUND,
+                    message = Constants.EMPLOYEE_EMAIL_NOT_FOUND)
     })
     @GetMapping("/employeesByEmail/{email}")
     public ResponseEntity<List> getEmployeeByEmail(
-            @ApiParam(value = "Email to retrieve Employee Details", required = true)
-            @Email(message = Constants.EMAIL_VALIDATION_MSG) @Valid @PathVariable(value = "email") String email)
+            @ApiParam(value = "Email to retrieve Employee Details",
+                    required = true)
+            @Email(message = Constants.EMAIL_VALIDATION_MSG) @Valid
+            @PathVariable(value = "email") final String email)
             throws ResourceNotFoundException {
-        List employeeList = employeeRepository.findByEmail(email).orElseThrow(
-                () -> {
-                    logger.error(Constants.EMPLOYEE_EMAIL_NOT_FOUND_MSG, email);
-                    return new ResourceNotFoundException(Constants.EMPLOYEE_EMAIL_NOT_FOUND);
-                });
+        List employeeList = employeeFacade.getEmployeeByEmail(email);
         return ResponseEntity.status(HttpStatus.OK).body(employeeList);
     }
 
+    /**
+     * API to get employee details either by username or email.
+     *
+     * @param username Employee username
+     * @param email Employee email
+     * @return Response Entity with List of Employees in body
+     * @throws ResourceNotFoundException emails & username not found
+     */
     @ApiOperation("Get Employee Details either by Email or Username")
     @ApiResponses({
-            @ApiResponse(code = 200, message = Constants.EMPLOYEE_RETRIEVE_SUCCESS),
-            @ApiResponse(code = 400, message = Constants.EMAIL_VALIDATION_MSG),
-            @ApiResponse(code = 404, message = Constants.EMPLOYEE_USERNAME_OR_EMAIL_NOT_FOUND)
+            @ApiResponse(code = Constants.HTTP_STATUS_OK,
+                    message = Constants.EMPLOYEE_RETRIEVE_SUCCESS),
+            @ApiResponse(code = Constants.HTTP_STATUS_BAD_REQUEST,
+                    message = Constants.EMAIL_VALIDATION_MSG),
+            @ApiResponse(code = Constants.HTTP_STATUS_NOT_FOUND,
+                    message = Constants.EMPLOYEE_USERNAME_OR_EMAIL_NOT_FOUND)
     })
     @GetMapping("/employeesByUsernameOrEmail")
     public ResponseEntity<List> getEmployeeByUsernameOrEmail(
-            @ApiParam(value = "Email to retrieve Employee Details", required = false)
-            @Valid @RequestParam(required = false) String username,
-            @ApiParam(value = "Username to retrieve Employee Details", required = false)
-            @Email(message = Constants.EMAIL_VALIDATION_MSG) @Valid @RequestParam(required = false) String email)
+            @ApiParam(value = "Email to retrieve Employee Details",
+                    required = false)
+            @Valid @RequestParam(required = false) final String username,
+            @ApiParam(value = "Username to retrieve Employee Details",
+                    required = false)
+            @Email(message = Constants.EMAIL_VALIDATION_MSG) @Valid
+            @RequestParam(required = false) final String email)
             throws ResourceNotFoundException {
-        Employee employee = new Employee();
-        employee.setUsername(username);
-        employee.setEmail(email);
-        ExampleMatcher exampleMatcher = ExampleMatcher.matchingAny()
-                .withMatcher("email", contains().ignoreCase())
-                .withMatcher("username", contains().ignoreCase());
-        Example<Employee> example = Example.of(employee, exampleMatcher);
-
-        List<Employee> employeeList = employeeRepository.findAll(example);
-        if (employeeList.isEmpty()) {
-            logger.error(Constants.EMPLOYEE_USERNAME_OR_EMAIL_NOT_FOUND_MSG, username, email);
-            throw new ResourceNotFoundException(
-                    String.format(Constants.EMPLOYEE_USERNAME_OR_EMAIL_NOT_FOUND, username, email));
-        }
-        logger.debug("Employee list: {}", employeeList);
+        List<Employee> employeeList = employeeFacade
+                .getEmployeeByUsernameOrEmail(username, email);
         return ResponseEntity.status(HttpStatus.OK).body(employeeList);
     }
 
+    /**
+     * API to update Employee email.
+     *
+     * @param id Employee id
+     * @param email Email to update
+     * @return ResponseEntity String
+     * @throws ResourceNotFoundException id not found
+     */
     @ApiOperation(value = "Update Employee Email")
     @ApiResponses({
-            @ApiResponse(code = 200, message = Constants.EMPLOYEE_EMAIL_UPDATED_SUCCESS),
-            @ApiResponse(code = 400, message = Constants.EMAIL_VALIDATION_MSG),
-            @ApiResponse(code = 404, message = Constants.EMPLOYEE_ID_NOT_FOUND)
+            @ApiResponse(code = Constants.HTTP_STATUS_OK,
+                    message = Constants.EMPLOYEE_EMAIL_UPDATED_SUCCESS),
+            @ApiResponse(code = Constants.HTTP_STATUS_BAD_REQUEST,
+                    message = Constants.EMAIL_VALIDATION_MSG),
+            @ApiResponse(code = Constants.HTTP_STATUS_NOT_FOUND,
+                    message = Constants.EMPLOYEE_ID_NOT_FOUND)
     })
     @PutMapping("/employees/{id}")
     public ResponseEntity<String> updateEmployeeEmail(
-            @ApiParam(value = "User Id to update employee email id", required = true)
-            @Valid @PathVariable(value = "id") Long id,
+            @ApiParam(value = "User Id to update employee email id",
+                    required = true)
+            @Valid @PathVariable(value = "id") final Long id,
             @ApiParam(value = "Email address to update", required = true)
-            @Email(message = Constants.EMAIL_VALIDATION_MSG) @Valid @RequestParam String email)
+            @Email(message = Constants.EMAIL_VALIDATION_MSG)
+            @Valid @RequestParam final String email)
             throws ResourceNotFoundException {
-        Employee employee = employeeRepository.findById(id)
-                .orElseThrow(() -> {
-                    logger.error(Constants.EMPLOYEE_ID_NOT_FOUND_MSG, id);
-                    return new ResourceNotFoundException(Constants.EMPLOYEE_ID_NOT_FOUND);
-                });
-        employeeRepository.updateEmployeeEmail(employee.getId(), email);
-        logger.debug("Updated employee email successfully");
-        return ResponseEntity.status(HttpStatus.OK).body("Success");
+        String message = employeeFacade.updateEmployeeEmail(id, email);
+        return ResponseEntity.status(HttpStatus.OK).body(message);
     }
 
 }

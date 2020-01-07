@@ -15,38 +15,85 @@ import javax.validation.ConstraintViolationException;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * Class to handle the exceptions.
+ *
+ * @author Sakthi_Subramaniam
+ */
 @ControllerAdvice
 public class GlobalExceptionHandler {
+    /**
+     * Logger Object to log the details.
+     */
+    private static final Logger LOGGER =
+            LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-    private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
-
+    /**
+     * To handle ResourceNotFoundException.
+     *
+     * @param e          Exception
+     * @param webRequest WebRequest
+     * @return ResponseEntity with the error details in body
+     */
     @ExceptionHandler(ResourceNotFoundException.class)
-    public final ResponseEntity<ErrorDetails> resourceNotFoundException(Exception e, WebRequest webRequest) {
-        logger.error("ResourceNotFoundException : ", e);
-        ErrorDetails errorDetails = new ErrorDetails(new Date(), e.getMessage(), webRequest.getDescription(false));
+    public final ResponseEntity<ErrorDetails> resourceNotFoundException(
+            final Exception e, final WebRequest webRequest) {
+        LOGGER.error("ResourceNotFoundException : ", e);
+        ErrorDetails errorDetails = new ErrorDetails(
+                new Date(), e.getMessage(), webRequest.getDescription(false));
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorDetails);
     }
 
+    /**
+     * To handle ConstraintViolationException.
+     *
+     * @param e          Exception
+     * @param webRequest WebRequest
+     * @return ResponseEntity with the error details in body
+     */
     @ExceptionHandler({ConstraintViolationException.class})
-    public final ResponseEntity<ErrorDetails> constraintViolationException(ConstraintViolationException e, WebRequest webRequest) {
-        logger.error("ConstraintViolationException : ", e);
-        ErrorDetails errorDetails = new ErrorDetails(new Date(), e.getMessage(), webRequest.getDescription(false));
+    public final ResponseEntity<ErrorDetails> constraintViolationException(
+            final ConstraintViolationException e, final WebRequest webRequest) {
+        LOGGER.error("ConstraintViolationException : ", e);
+        ErrorDetails errorDetails = new ErrorDetails(
+                new Date(), e.getMessage(), webRequest.getDescription(false));
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDetails);
     }
 
+    /**
+     * To handle MethodArgumentNotValidException.
+     *
+     * @param e          Exception
+     * @param webRequest WebRequest
+     * @return ResponseEntity with the error details in body
+     */
     @ExceptionHandler({MethodArgumentNotValidException.class})
-    public final ResponseEntity<ErrorDetails> methodArgumentNotValidException(MethodArgumentNotValidException e, WebRequest webRequest) {
+    public final ResponseEntity<ErrorDetails> methodArgumentNotValidException(
+            final MethodArgumentNotValidException e,
+            final WebRequest webRequest) {
         BindingResult result = e.getBindingResult();
         List<FieldError> fieldErrors = result.getFieldErrors();
-        logger.error("MethodArgumentNotValidException {}", fieldErrors);
-        ErrorDetails errorDetails = new ErrorDetails(new Date(), fieldErrors.toString(), webRequest.getDescription(false));
+        LOGGER.error("MethodArgumentNotValidException {}", fieldErrors);
+        ErrorDetails errorDetails = new ErrorDetails(
+                new Date(), fieldErrors.toString(),
+                webRequest.getDescription(false));
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDetails);
     }
 
+    /**
+     * To handle all the Exceptions, except the exceptions defined separately.
+     *
+     * @param e          Exception
+     * @param webRequest WebRequest
+     * @return ResponseEntity with the error details in body
+     */
     @ExceptionHandler(Exception.class)
-    public final ResponseEntity<ErrorDetails> globalExceptionHandler(Exception e, WebRequest webRequest) {
-        logger.error("GlobalExceptionHandler :", e);
-        ErrorDetails errorDetails = new ErrorDetails(new Date(), e.getMessage(), webRequest.getDescription(false));
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorDetails);
+    public final ResponseEntity<ErrorDetails> globalExceptionHandler(
+            final Exception e, final WebRequest webRequest) {
+        LOGGER.error("GlobalExceptionHandler :", e);
+        ErrorDetails errorDetails = new ErrorDetails(
+                new Date(), e.getMessage(), webRequest.getDescription(false));
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(errorDetails);
     }
 }

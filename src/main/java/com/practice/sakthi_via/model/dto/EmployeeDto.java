@@ -11,64 +11,149 @@ import javax.validation.constraints.Size;
 
 public class EmployeeDto {
 
+    /**
+     * Employee name.
+     */
     @NotEmpty(message = "Name is required")
     @ApiModelProperty(notes = "Employee name")
     private String name;
 
+    /**
+     * Employee username.
+     */
     @Username
     @NotEmpty(message = "Username is required")
-    @Size(min = 4, max = 10, message = "Username must have minimum 4 and maximum 10 characters")
-    @ApiModelProperty(notes = "Employee unique username minimum 4 and maximum 10 characters")
+    @Size(min = Constants.EMPLOYEE_USERNAME_MIN_VALUE,
+            max = Constants.EMPLOYEE_USERNAME_MAX_VALUE,
+            message = Constants.EMPLOYEE_USERNAME_SIZE)
+    @ApiModelProperty(notes = Constants.EMPLOYEE_USERNAME_SIZE)
     private String username;
 
+    /**
+     * Employee Email.
+     */
     @NotEmpty(message = "Email id is required")
     @Email(message = Constants.EMAIL_VALIDATION_MSG)
     @ApiModelProperty(notes = "Employee email id")
     private String email;
 
-    @Min(value = 20, message = "Employee must be 20 years old")
+    /**
+     * Employee Age.
+     */
+    @Min(value = Constants.EMPLOYEE_AGE_MIN_VALUE,
+            message = Constants.EMPLOYEE_MINIMUM_AGE)
     @ApiModelProperty(notes = "Employee age")
     private Integer age;
 
+    /**
+     * Parameterized constructor.
+     *
+     * @param name
+     * @param username
+     * @param email
+     * @param age
+     */
+    public EmployeeDto(final String name,
+                       final String username, final String email,
+                       final Integer age) {
+        super();
+        this.name = name;
+        this.username = username;
+        this.email = email;
+        this.age = age;
+    }
+
+    /**
+     * Default constructor.
+     */
+    public EmployeeDto() {
+        super();
+    }
+
+    /**
+     * Getter for Employee Name.
+     *
+     * @return name
+     */
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
+    /**
+     * Setter for Employee Name.
+     *
+     * @param name
+     */
+    public void setName(final String name) {
         this.name = name;
     }
 
+    /**
+     * Getter for Employee Username.
+     *
+     * @return username
+     */
     public String getUsername() {
         return username;
     }
 
-    public void setUsername(String username) {
+    /**
+     * Setter for Employee Username.
+     *
+     * @param username
+     */
+    public void setUsername(final String username) {
         this.username = username;
     }
 
+    /**
+     * Getter for Employee Email.
+     *
+     * @return email
+     */
     public String getEmail() {
         return email;
     }
 
-    public void setEmail(String email) {
+    /**
+     * Setter for Employee email.
+     *
+     * @param email
+     */
+    public void setEmail(final String email) {
         this.email = email;
     }
 
+    /**
+     * Getter for Employee age.
+     *
+     * @return age
+     */
     public Integer getAge() {
         return age;
     }
 
-    public void setAge(Integer age) {
+    /**
+     * Setter for Employee age.
+     *
+     * @param age
+     */
+    public void setAge(final Integer age) {
         this.age = age;
     }
 
+    /**
+     * Overridden toString method.
+     *
+     * @return String
+     */
     @Override
     public String toString() {
-        return "EmployeeDto{" +
-                "name='" + name + '\'' +
-                ", username='" + username + '\'' +
-                ", email='" + email + '\'' +
-                ", age=" + age +
-                '}';
+        return "Employee{"
+                + ", name='" + name + '\''
+                + ", username='" + username + '\''
+                + ", email='" + email + '\''
+                + ", age=" + age
+                + '}';
     }
 }
