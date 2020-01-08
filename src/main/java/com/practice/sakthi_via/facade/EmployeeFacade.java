@@ -2,6 +2,7 @@ package com.practice.sakthi_via.facade;
 
 import com.practice.sakthi_via.constants.Constants;
 import com.practice.sakthi_via.exception.ResourceNotFoundException;
+import com.practice.sakthi_via.mail.EmailService;
 import com.practice.sakthi_via.model.Employee;
 import com.practice.sakthi_via.model.dto.EmployeeDto;
 import com.practice.sakthi_via.repository.EmployeeRepository;
@@ -26,9 +27,13 @@ import static org.springframework.data.domain.ExampleMatcher.GenericPropertyMatc
 public class EmployeeFacade {
 
     /**
-     * EmployeeRepository Object.
+     * EmployeeRepository object.
      */
     private EmployeeRepository employeeRepository;
+    /**
+     * EmailService object.
+     */
+    private EmailService emailService;
 
     /**
      * Setter for EmployeeRepository object.
@@ -39,6 +44,16 @@ public class EmployeeFacade {
     public void setEmployeeRepository(
             final EmployeeRepository employeeRepository) {
         this.employeeRepository = employeeRepository;
+    }
+
+    /**
+     * Setter for EmailService object.
+     *
+     * @param emailService EmailService object
+     */
+    @Autowired
+    public void setEmailService(final EmailService emailService) {
+        this.emailService = emailService;
     }
 
     /**
@@ -86,6 +101,8 @@ public class EmployeeFacade {
         Employee employee = convertEmployeeDtoToEmployee(employeeDto);
         employeeRepository.save(employee);
         LOGGER.debug("Created Employee: {}", employee);
+        emailService.sendMail(employee.getEmail(),
+                "Employee created in SAKTHI-VIA", employee.toString());
         return employee;
     }
 

@@ -2,17 +2,22 @@ package com.practice.sakthi_via.unit;
 
 import com.practice.sakthi_via.exception.ResourceNotFoundException;
 import com.practice.sakthi_via.facade.EmployeeFacade;
+import com.practice.sakthi_via.mail.EmailService;
+import com.practice.sakthi_via.mail.impl.EmailServiceImpl;
 import com.practice.sakthi_via.model.Employee;
 import com.practice.sakthi_via.model.dto.EmployeeDto;
 import com.practice.sakthi_via.repository.EmployeeRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.Example;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.List;
@@ -30,6 +35,16 @@ public class EmployeeFacadeTest {
         public EmployeeFacade employeeFacade() {
             return new EmployeeFacade();
         }
+
+        @Bean
+        public EmailService emailService() {
+            return new EmailServiceImpl();
+        }
+
+        @Bean
+        public JavaMailSender javaMailSender() {
+            return new JavaMailSenderImpl();
+        }
     }
 
     @Autowired
@@ -37,6 +52,9 @@ public class EmployeeFacadeTest {
 
     @MockBean
     EmployeeRepository employeeRepository;
+
+    @MockBean
+    EmailService emailService;
 
     @Test
     public void testCheckUserName() {

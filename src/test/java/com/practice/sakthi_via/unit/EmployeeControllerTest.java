@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.practice.sakthi_via.constants.Constants;
+import com.practice.sakthi_via.mail.EmailService;
+import com.practice.sakthi_via.mail.impl.EmailServiceImpl;
 import com.practice.sakthi_via.model.Employee;
 import com.practice.sakthi_via.repository.EmployeeRepository;
 import com.practice.sakthi_via.facade.EmployeeFacade;
@@ -17,6 +19,8 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -40,6 +44,16 @@ public class EmployeeControllerTest {
         public EmployeeFacade employeeService() {
             return new EmployeeFacade();
         }
+
+        @Bean
+        public EmailService emailService() {
+            return new EmailServiceImpl();
+        }
+
+        @Bean
+        public JavaMailSender javaMailSender() {
+            return new JavaMailSenderImpl();
+        }
     }
 
     @Autowired
@@ -47,6 +61,9 @@ public class EmployeeControllerTest {
 
     @MockBean
     EmployeeRepository employeeRepository;
+
+    @MockBean
+    EmailService emailService;
 
     Employee employee = new Employee();
 
@@ -76,6 +93,8 @@ public class EmployeeControllerTest {
         //GIVEN
         when(employeeRepository.save(Mockito.any(Employee.class))).thenReturn(employee);
         when(employeeRepository.findById(employee.getId())).thenReturn(java.util.Optional.ofNullable(employee));
+        doNothing().when(emailService).sendMail(employee.getEmail(),
+                "Employee created in SAKTHI-VIA", employee.toString());
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
