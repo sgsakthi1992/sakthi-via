@@ -85,7 +85,6 @@ public class EmployeeFacade {
     public Employee createEmployee(final EmployeeDto employeeDto) {
         Employee employee = convertEmployeeDtoToEmployee(employeeDto);
         employeeRepository.save(employee);
-        System.out.println(employee);
         LOGGER.debug("Created Employee: {}", employee);
         return employee;
     }
@@ -191,6 +190,7 @@ public class EmployeeFacade {
                 .withMatcher("email", contains().ignoreCase())
                 .withMatcher("username", contains().ignoreCase());
         Example<Employee> example = Example.of(employee, exampleMatcher);
+        LOGGER.debug("Example Employee: {}", example.getProbe());
         return example;
     }
 
