@@ -162,6 +162,10 @@ public class EmployeeFacade {
     public List<Employee> getEmployeeByUsernameOrEmail(
             final String username, final String email)
             throws ResourceNotFoundException {
+        if (username == null && email == null) {
+            throw new ResourceNotFoundException(
+                    Constants.EMPLOYEE_USERNAME_OR_EMAIL_NOT_FOUND);
+        }
         final Example<Employee> example = getExample(username, email);
         List<Employee> employeeList = employeeRepository.findAll(example);
         if (employeeList.isEmpty()) {
