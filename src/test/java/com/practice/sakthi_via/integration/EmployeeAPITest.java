@@ -28,7 +28,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@TestPropertySource(locations = "classpath:application-integration-test.properties")
+@TestPropertySource(properties = {
+        "spring.datasource.url = jdbc:h2:mem:test",
+        "spring.jpa.properties.hibernate.dialect = org.hibernate.dialect.H2Dialect",
+        "spring.datasource.driverClassName = org.h2.Driver"
+})
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class EmployeeAPITest {
 
