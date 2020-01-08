@@ -15,6 +15,8 @@ import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.springframework.data.domain.ExampleMatcher.GenericPropertyMatchers.contains;
 
@@ -102,7 +104,7 @@ public class EmployeeFacade {
         employeeRepository.save(employee);
         LOGGER.debug("Created Employee: {}", employee);
         emailService.sendMail(employee.getEmail(),
-                "Employee created in SAKTHI-VIA", employee.toString());
+                "Employee created in SAKTHI-VIA", employee);
         return employee;
     }
 

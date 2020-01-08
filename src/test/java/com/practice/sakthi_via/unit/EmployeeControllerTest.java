@@ -94,7 +94,7 @@ public class EmployeeControllerTest {
         when(employeeRepository.save(Mockito.any(Employee.class))).thenReturn(employee);
         when(employeeRepository.findById(employee.getId())).thenReturn(java.util.Optional.ofNullable(employee));
         doNothing().when(emailService).sendMail(employee.getEmail(),
-                "Employee created in SAKTHI-VIA", employee.toString());
+                "Employee created in SAKTHI-VIA", employee);
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);

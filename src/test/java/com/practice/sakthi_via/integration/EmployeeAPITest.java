@@ -71,7 +71,7 @@ public class EmployeeAPITest {
         //GIVEN
         Employee employee = new Employee();
         employee.setName("Employee 2");
-        employee.setEmail("employee2@gmail.com");
+        employee.setEmail("sgsakthi1992@gmail.com");
         employee.setUsername("employee2");
         employee.setAge(25);
         ObjectMapper mapper = new ObjectMapper();

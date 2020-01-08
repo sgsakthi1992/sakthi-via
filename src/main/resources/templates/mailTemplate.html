@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+</head>
+<body>
+<h2>Employee Created in SAKTHI-VIA Application</h2>
+<br/>
+<p>Employee Details:</p>
+<br/>
+<table>
+    <thead>
+    <tr>
+        <th>Employee Id</th>
+        <th>Name</th>
+        <th>Username</th>
+        <th>Age</th>
+        <th>Email</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td><span th:text="${id}"></span></td>
+        <td><span th:text="${name}"></span></td>
+        <td><span th:text="${username}"></span></td>
+        <td><span th:text="${age}"></span></td>
+        <td><span th:text="${email}"></span></td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>
