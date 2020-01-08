@@ -163,14 +163,7 @@ public class EmployeeFacade {
     public List<Employee> getEmployeeByUsernameOrEmail(
             final String username, final String email)
             throws ResourceNotFoundException {
-        Employee employee = new Employee();
-        employee.setUsername(username);
-        employee.setEmail(email);
-        ExampleMatcher exampleMatcher = ExampleMatcher.matchingAny()
-                .withMatcher("email", contains().ignoreCase())
-                .withMatcher("username", contains().ignoreCase());
-        Example<Employee> example = Example.of(employee, exampleMatcher);
-
+        final Example<Employee> example = getExample(username, email);
         List<Employee> employeeList = employeeRepository.findAll(example);
         if (employeeList.isEmpty()) {
             LOGGER.error(Constants.EMPLOYEE_USERNAME_OR_EMAIL_NOT_FOUND_MSG,
@@ -180,6 +173,25 @@ public class EmployeeFacade {
         }
         LOGGER.debug("Employee list: {}", employeeList);
         return employeeList;
+    }
+
+    /**
+     * Get Example.
+     *
+     * @param username Employee username
+     * @param email    Employee email
+     * @return Example of Employee
+     */
+    public Example<Employee> getExample(final String username,
+                                        final String email) {
+        Employee employee = new Employee();
+        employee.setUsername(username);
+        employee.setEmail(email);
+        ExampleMatcher exampleMatcher = ExampleMatcher.matchingAny()
+                .withMatcher("email", contains().ignoreCase())
+                .withMatcher("username", contains().ignoreCase());
+        Example<Employee> example = Example.of(employee, exampleMatcher);
+        return example;
     }
 
     /**
