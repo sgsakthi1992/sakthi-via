@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.mail.MessagingException;
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
 import java.util.List;
@@ -70,6 +71,7 @@ public class EmployeeController {
      *
      * @param employeeDto Employee details
      * @return ResponseEntity with Employee details in body
+     * @throws MessagingException
      */
     @ApiOperation("Create Employee")
     @ApiResponses({
@@ -81,7 +83,8 @@ public class EmployeeController {
     @PostMapping("/employees")
     public ResponseEntity<Employee> createEmployee(
             @ApiParam(value = "Employee details", required = true)
-            @Valid @RequestBody final EmployeeDto employeeDto) {
+            @Valid @RequestBody final EmployeeDto employeeDto)
+            throws MessagingException {
         Employee employee = employeeFacade.createEmployee(employeeDto);
         return ResponseEntity.status(HttpStatus.OK).body(employee);
     }

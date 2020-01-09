@@ -11,11 +11,15 @@ package com.practice.sakthi_via.mail.impl;
 import com.practice.sakthi_via.mail.EmailService;
 import com.practice.sakthi_via.model.Employee;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
+import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
-import org.thymeleaf.spring5.SpringTemplateEngine;
+
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+import java.nio.charset.StandardCharsets;
 
 @Component
 public class EmailServiceImpl implements EmailService {
@@ -26,7 +30,7 @@ public class EmailServiceImpl implements EmailService {
     /**
      * Thymeleaf TemplateEngine Object.
      */
-    private SpringTemplateEngine templateEngine;
+    private TemplateEngine templateEngine;
 
     /**
      * Setter for JavaMailSender object.
@@ -45,8 +49,7 @@ public class EmailServiceImpl implements EmailService {
      * @param templateEngine TemplateEngine object
      */
     @Autowired
-    public void setTemplateEngine(
-            final SpringTemplateEngine templateEngine) {
+    public void setTemplateEngine(final TemplateEngine templateEngine) {
         this.templateEngine = templateEngine;
     }
 
@@ -56,16 +59,20 @@ public class EmailServiceImpl implements EmailService {
      * @param to       To address
      * @param subject  From address
      * @param employee Employee details
+     * @throws MessagingException exception
      */
     @Override
     public void sendMail(final String to, final String subject,
-                         final Employee employee) {
+                         final Employee employee) throws MessagingException {
         String body = build("mailTemplate", employee);
-        SimpleMailMessage mailMessage = new SimpleMailMessage();
-        mailMessage.setTo(to);
-        mailMessage.setSubject(subject);
-        mailMessage.setText(body);
-        javaMailSender.send(mailMessage);
+        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage,
+                MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
+                StandardCharsets.UTF_8.name());
+        mimeMessageHelper.setTo(to);
+        mimeMessageHelper.setSubject(subject);
+        mimeMessageHelper.setText(body, true);
+        javaMailSender.send(mimeMessage);
     }
 
     private String build(final String template,

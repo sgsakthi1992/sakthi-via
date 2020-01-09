@@ -20,6 +20,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import javax.mail.MessagingException;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -90,7 +91,7 @@ public class EmployeeFacadeTest {
     }
 
     @Test
-    public void testCreateEmployee() {
+    public void testCreateEmployee() throws MessagingException {
         //GIVEN
         EmployeeDto employeeDto = new EmployeeDto("Employee 1",
                 "employee1", "emp1@gmail.com", 25);

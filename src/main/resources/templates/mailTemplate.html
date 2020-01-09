@@ -1,31 +1,42 @@
-<!DOCTYPE html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
+    <title>Sending Email with Thymeleaf HTML Template</title>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+    <link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
+
+    <!-- use the font -->
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            font-size: 48px;
+        }
+
+    </style>
 </head>
-<body>
-<h2>Employee Created in SAKTHI-VIA Application</h2>
-<br/>
-<p>Employee Details:</p>
-<br/>
-<table>
-    <thead>
+<body style="margin: 0; padding: 0;">
+
+<table align="center" border="0" cellpadding="0" cellspacing="0" width="600" style="border-collapse: collapse;">
     <tr>
-        <th>Employee Id</th>
-        <th>Name</th>
-        <th>Username</th>
-        <th>Age</th>
-        <th>Email</th>
+        <td align="center" bgcolor="#78ab46" style="padding: 40px 0 30px 0;">
+            <h2>SAKTHI VIA</h2>
+        </td>
     </tr>
-    </thead>
-    <tbody>
     <tr>
-        <td><span th:text="${id}"></span></td>
-        <td><span th:text="${name}"></span></td>
-        <td><span th:text="${username}"></span></td>
-        <td><span th:text="${age}"></span></td>
-        <td><span th:text="${email}"></span></td>
+        <td bgcolor="#eaeaea" style="padding: 40px 30px 40px 30px;">
+            <p><b>Dear <span th:text="${name}"></span>,</b></p>
+            <p>Thanks for signing up in our application.</p>
+            <p>Details:</p>
+            <p>USERNAME: <span th:text="${username}"></span></p>
+            <p>AGE: <span th:text="${age}"></span></p>
+            <p>EMAIL: <span th:text="${email}"></span></p>
+        </td>
     </tr>
-    </tbody>
 </table>
+
 </body>
 </html>

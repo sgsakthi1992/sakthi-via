@@ -14,6 +14,7 @@ import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 
+import javax.mail.MessagingException;
 import java.util.List;
 
 import static org.springframework.data.domain.ExampleMatcher.GenericPropertyMatchers.contains;
@@ -96,8 +97,10 @@ public class EmployeeFacade {
      *
      * @param employeeDto Employee details
      * @return Employee
+     * @throws MessagingException exception
      */
-    public Employee createEmployee(final EmployeeDto employeeDto) {
+    public Employee createEmployee(final EmployeeDto employeeDto)
+            throws MessagingException {
         Employee employee = convertEmployeeDtoToEmployee(employeeDto);
         employeeRepository.save(employee);
         LOGGER.debug("Created Employee: {}", employee);
