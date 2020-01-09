@@ -10,7 +10,6 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -41,12 +40,11 @@ public class EmployeeController {
     private EmployeeFacade employeeFacade;
 
     /**
-     * Setter to Employee facade object.
+     * Constructor to bind EmployeeFacade object.
      *
-     * @param employeeFacade EmployeeFacade object
+     * @param employeeFacade
      */
-    @Autowired
-    public void setEmployeeFacade(final EmployeeFacade employeeFacade) {
+    public EmployeeController(final EmployeeFacade employeeFacade) {
         this.employeeFacade = employeeFacade;
     }
 
@@ -71,7 +69,7 @@ public class EmployeeController {
      *
      * @param employeeDto Employee details
      * @return ResponseEntity with Employee details in body
-     * @throws MessagingException
+     * @throws MessagingException exception
      */
     @ApiOperation("Create Employee")
     @ApiResponses({
@@ -167,7 +165,7 @@ public class EmployeeController {
      * API to get employee details either by username or email.
      *
      * @param username Employee username
-     * @param email Employee email
+     * @param email    Employee email
      * @return Response Entity with List of Employees in body
      * @throws ResourceNotFoundException emails & username not found
      */
@@ -198,7 +196,7 @@ public class EmployeeController {
     /**
      * API to update Employee email.
      *
-     * @param id Employee id
+     * @param id    Employee id
      * @param email Email to update
      * @return ResponseEntity String
      * @throws ResourceNotFoundException id not found

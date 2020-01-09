@@ -155,7 +155,7 @@
                             <excludes>
                                 <exclude>com/practice/sakthi_via/SpringbootApplication.class</exclude>
                                 <exclude>com/practice/sakthi_via/constants/Constants.class</exclude>
-                                <exclude>**/model/*</exclude>
+                                <exclude>**/model/**</exclude>
                                 <exclude>**/config/*</exclude>
                             </excludes>
                         </configuration>
@@ -173,6 +173,8 @@
                                         <exclude>com.practice.sakthi_via.SpringbootApplication</exclude>
                                         <exclude>com.practice.sakthi_via.constants.Constants</exclude>
                                         <exclude>com.practice.sakthi_via.model.Employee</exclude>
+                                        <exclude>com.practice.sakthi_via.model.Mail</exclude>
+                                        <exclude>com.practice.sakthi_via.model.dto.EmployeeDto</exclude>
                                         <exclude>com.practice.sakthi_via.config.SwaggerConfig</exclude>
                                     </excludes>
                                     <limits>
