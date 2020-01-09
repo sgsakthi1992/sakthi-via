@@ -9,7 +9,7 @@
 package com.practice.sakthi_via.mail.impl;
 
 import com.practice.sakthi_via.mail.EmailService;
-import com.practice.sakthi_via.model.Employee;
+import com.practice.sakthi_via.model.Mail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -20,6 +20,7 @@ import org.thymeleaf.context.Context;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
 @Component
 public class EmailServiceImpl implements EmailService {
@@ -56,33 +57,26 @@ public class EmailServiceImpl implements EmailService {
     /**
      * Implementation of Send mail method.
      *
-     * @param to       To address
-     * @param subject  From address
-     * @param employee Employee details
-     * @throws MessagingException exception
+     * @param mail Mail model object
+     * @throws MessagingException
      */
     @Override
-    public void sendMail(final String to, final String subject,
-                         final Employee employee) throws MessagingException {
-        String body = build("mailTemplate", employee);
+    public void sendMail(final Mail mail) throws MessagingException {
+        String body = build("mailTemplate", mail.getContent());
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage,
                 MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
                 StandardCharsets.UTF_8.name());
-        mimeMessageHelper.setTo(to);
-        mimeMessageHelper.setSubject(subject);
+        mimeMessageHelper.setTo(mail.getTo());
+        mimeMessageHelper.setSubject(mail.getSubject());
         mimeMessageHelper.setText(body, true);
         javaMailSender.send(mimeMessage);
     }
 
     private String build(final String template,
-                         final Employee employee) {
+                         final Map content) {
         Context context = new Context();
-        context.setVariable("id", employee.getId());
-        context.setVariable("name", employee.getName());
-        context.setVariable("username", employee.getUsername());
-        context.setVariable("age", employee.getAge());
-        context.setVariable("email", employee.getEmail());
+        context.setVariables(content);
         return templateEngine.process(template, context);
     }
 }

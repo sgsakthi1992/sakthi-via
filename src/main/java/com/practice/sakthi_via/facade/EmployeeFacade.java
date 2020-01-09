@@ -4,6 +4,7 @@ import com.practice.sakthi_via.constants.Constants;
 import com.practice.sakthi_via.exception.ResourceNotFoundException;
 import com.practice.sakthi_via.mail.EmailService;
 import com.practice.sakthi_via.model.Employee;
+import com.practice.sakthi_via.model.Mail;
 import com.practice.sakthi_via.model.dto.EmployeeDto;
 import com.practice.sakthi_via.repository.EmployeeRepository;
 import org.modelmapper.ModelMapper;
@@ -15,7 +16,9 @@ import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.springframework.data.domain.ExampleMatcher.GenericPropertyMatchers.contains;
 
@@ -104,8 +107,15 @@ public class EmployeeFacade {
         Employee employee = convertEmployeeDtoToEmployee(employeeDto);
         employeeRepository.save(employee);
         LOGGER.debug("Created Employee: {}", employee);
-        emailService.sendMail(employee.getEmail(),
-                "Employee created in SAKTHI-VIA", employee);
+        Map content = new HashMap<>();
+        content.put("name", employee.getName());
+        content.put("username", employee.getUsername());
+        content.put("age", employee.getAge());
+        content.put("email", employee.getEmail());
+
+        Mail mail = new Mail(employee.getEmail(),
+                "Employee created in SAKTHI-VIA", content);
+        emailService.sendMail(mail);
         return employee;
     }
 

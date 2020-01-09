@@ -1,6 +1,6 @@
 package com.practice.sakthi_via.mail;
 
-import com.practice.sakthi_via.model.Employee;
+import com.practice.sakthi_via.model.Mail;
 
 import javax.mail.MessagingException;
 
@@ -9,11 +9,8 @@ public interface EmailService {
     /**
      * Send mail abstract method.
      *
-     * @param to       To address
-     * @param subject  From address
-     * @param employee Employee details
+     * @param mail Mail model object
      * @throws MessagingException exception
      */
-    void sendMail(String to, String subject, Employee employee)
-            throws MessagingException;
+    void sendMail(Mail mail) throws MessagingException;
 }

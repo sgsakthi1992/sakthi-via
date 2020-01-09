@@ -7,6 +7,7 @@ import com.practice.sakthi_via.constants.Constants;
 import com.practice.sakthi_via.mail.EmailService;
 import com.practice.sakthi_via.mail.impl.EmailServiceImpl;
 import com.practice.sakthi_via.model.Employee;
+import com.practice.sakthi_via.model.Mail;
 import com.practice.sakthi_via.repository.EmployeeRepository;
 import com.practice.sakthi_via.facade.EmployeeFacade;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,6 +26,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -93,8 +96,15 @@ public class EmployeeControllerTest {
         //GIVEN
         when(employeeRepository.save(Mockito.any(Employee.class))).thenReturn(employee);
         when(employeeRepository.findById(employee.getId())).thenReturn(java.util.Optional.ofNullable(employee));
-        doNothing().when(emailService).sendMail(employee.getEmail(),
-                "Employee created in SAKTHI-VIA", employee);
+        Map content = new HashMap<>();
+        content.put("name", employee.getName());
+        content.put("username", employee.getUsername());
+        content.put("age", employee.getAge());
+        content.put("email", employee.getEmail());
+
+        Mail mail = new Mail(employee.getEmail(),
+                "Employee created in SAKTHI-VIA", content);
+        doNothing().when(emailService).sendMail(mail);
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
