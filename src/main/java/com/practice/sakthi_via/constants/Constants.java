@@ -105,6 +105,10 @@ public final class Constants {
      */
     public static final int HTTP_STATUS_NOT_FOUND = 404;
     /**
+     * Email Subject.
+     */
+    public static final String EMAIL_SUBJECT = "Welcome to SAKTHI-VIA!!";
+    /**
      * Private Constructor, caller will never create object for Constants class.
      */
     private Constants() {

@@ -3,24 +3,29 @@ package com.practice.sakthi_via.integration;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.icegreen.greenmail.util.GreenMail;
+import com.icegreen.greenmail.util.ServerSetup;
+import com.practice.sakthi_via.constants.Constants;
 import com.practice.sakthi_via.model.Employee;
 import com.practice.sakthi_via.repository.EmployeeRepository;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+import java.io.IOException;
 import java.util.Optional;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -28,11 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@TestPropertySource(properties = {
-        "spring.datasource.url = jdbc:h2:mem:test",
-        "spring.jpa.properties.hibernate.dialect = org.hibernate.dialect.H2Dialect",
-        "spring.datasource.driverClassName = org.h2.Driver"
-})
+@ActiveProfiles("test")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class EmployeeAPITest {
 
@@ -50,6 +51,14 @@ public class EmployeeAPITest {
         employee.setAge(age);
         employeeRepository.save(employee);
         return employeeRepository.findById(employee.getId());
+    }
+    private static GreenMail greenMail;
+    private static void setupSMTP() {
+        greenMail = new GreenMail(new ServerSetup(2525, "127.0.0.1", "smtp"));
+        greenMail.start();
+    }
+    private static void tearDownSMTP() {
+        greenMail.stop();
     }
 
     @Test
@@ -69,6 +78,8 @@ public class EmployeeAPITest {
     @Test
     public void testPostEmployee() throws Exception {
         //GIVEN
+        setupSMTP();
+
         Employee employee = new Employee();
         employee.setName("Employee 2");
         employee.setEmail("sgsakthi1992@gmail.com");
@@ -86,6 +97,9 @@ public class EmployeeAPITest {
 
         //THEN
         validateOkResponse(resultActions).andExpect(jsonPath("name", is(employee.getName())));
+        validateEmailResponse(employee);
+
+        tearDownSMTP();
     }
 
     @Test
@@ -118,5 +132,16 @@ public class EmployeeAPITest {
 
     private void validateBadRequestResponse(ResultActions resultActions) throws Exception {
         resultActions.andExpect(status().isBadRequest());
+    }
+
+    private void validateEmailResponse(Employee employee) throws MessagingException, IOException {
+        boolean ok = greenMail.waitForIncomingEmail(1);
+        if(ok) {
+            MimeMessage receivedMessage = greenMail.getReceivedMessages()[0];
+            assertEquals(employee.getEmail(), receivedMessage.getAllRecipients()[0].toString());
+            assertEquals(Constants.EMAIL_SUBJECT, receivedMessage.getSubject());
+        } else{
+            fail("Email not sent");
+        }
     }
 }

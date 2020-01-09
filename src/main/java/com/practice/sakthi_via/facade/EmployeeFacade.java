@@ -114,7 +114,7 @@ public class EmployeeFacade {
         content.put("email", employee.getEmail());
 
         Mail mail = new Mail(employee.getEmail(),
-                "Employee created in SAKTHI-VIA", content);
+                Constants.EMAIL_SUBJECT, content);
         emailService.sendMail(mail);
         return employee;
     }
