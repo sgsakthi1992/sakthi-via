@@ -9,6 +9,7 @@ import com.practice.sakthi_via.facade.EmployeeFacade;
 import com.practice.sakthi_via.model.Employee;
 import com.practice.sakthi_via.model.dto.EmployeeDto;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -50,6 +51,7 @@ public class EmployeeControllerTest {
     }
 
     @Test
+    @DisplayName("Fetch Employee")
     public void testGetEmployee() throws Exception {
         //GIVEN
         when(employeeFacade.getEmployees()).thenReturn(
@@ -65,6 +67,7 @@ public class EmployeeControllerTest {
     }
 
     @Test
+    @DisplayName("Create Employee with valid details")
     public void testPostEmployee() throws Exception {
         //GIVEN
         EmployeeDto employeeDto = new EmployeeDto("Employee 1",
@@ -88,6 +91,94 @@ public class EmployeeControllerTest {
     }
 
     @Test
+    @DisplayName("Create Employee with invalid Email")
+    public void testPostEmployeeWithInvalidEmailId() throws Exception {
+        //GIVEN
+        EmployeeDto employeeDto = new EmployeeDto("Employee 1",
+                "employee1", "emp1", 25);
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
+        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
+        String requestJson = ow.writeValueAsString(employeeDto);
+
+        when(employeeFacade.createEmployee(Mockito.any(EmployeeDto.class))).thenReturn(employee);
+        when(employeeFacade.checkUsername(employeeDto.getUsername())).thenReturn(true);
+
+        //WHEN
+        ResultActions resultActions = mockMvc.perform(post("/api/v1/employees")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestJson));
+
+        //THEN
+        validateBadRequestResponse(resultActions, Constants.EMAIL_VALIDATION_MSG);
+    }
+
+    @Test
+    @DisplayName("Create Employee with less than allowed Username length")
+    public void testPostEmployeeWithMinUsernameSize() throws Exception {
+        //GIVEN
+        EmployeeDto employeeDto = new EmployeeDto("Employee 1",
+                "emp", "emp1", 25);
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
+        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
+        String requestJson = ow.writeValueAsString(employeeDto);
+
+        //WHEN
+        ResultActions resultActions = mockMvc.perform(post("/api/v1/employees")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestJson));
+
+        //THEN
+        validateBadRequestResponse(resultActions, Constants.EMPLOYEE_USERNAME_SIZE);
+    }
+
+    @Test
+    @DisplayName("Create Employee with more than allowed Username length")
+    public void testPostEmployeeWithMaxUsernameSize() throws Exception {
+        //GIVEN
+        EmployeeDto employeeDto = new EmployeeDto("Employee 1",
+                "employee1_username", "emp1", 25);
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
+        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
+        String requestJson = ow.writeValueAsString(employeeDto);
+
+        //WHEN
+        ResultActions resultActions = mockMvc.perform(post("/api/v1/employees")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestJson));
+
+        //THEN
+        validateBadRequestResponse(resultActions, Constants.EMPLOYEE_USERNAME_SIZE);
+    }
+
+    @Test
+    @DisplayName("Create Employee with less than allowed Age")
+    public void testPostEmployeeWithInvalidAge() throws Exception {
+        //GIVEN
+        EmployeeDto employeeDto = new EmployeeDto("Employee 1",
+                "employee1", "emp1", 0);
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
+        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
+        String requestJson = ow.writeValueAsString(employeeDto);
+
+        //WHEN
+        ResultActions resultActions = mockMvc.perform(post("/api/v1/employees")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestJson));
+
+        //THEN
+        validateBadRequestResponse(resultActions, Constants.EMPLOYEE_MINIMUM_AGE);
+    }
+
+    @Test
+    @DisplayName("Fetch Employee with valid Id")
     public void testGetEmployeeById() throws Exception {
         //GIVEN
         when(employeeFacade.getEmployeeById(employee.getId())).thenReturn(employee);
@@ -100,6 +191,7 @@ public class EmployeeControllerTest {
     }
 
     @Test
+    @DisplayName("Fetch Employee with invalid Id")
     public void testGetEmployeeWithInvalidId() throws Exception {
         //GIVEN
         Long id = 1L;
@@ -114,6 +206,7 @@ public class EmployeeControllerTest {
     }
 
     @Test
+    @DisplayName("Delete Employee with Id")
     public void testDeleteEmployeeById() throws Exception {
         //GIVEN
         when(employeeFacade.deleteEmployeeById(employee.getId())).thenReturn("Success");
@@ -126,6 +219,7 @@ public class EmployeeControllerTest {
     }
 
     @Test
+    @DisplayName("Delete Employee with Invalid Id")
     public void testDeleteEmployeeWithInvalidId() throws Exception {
         //GIVEN
         Long id = 1L;
@@ -140,6 +234,7 @@ public class EmployeeControllerTest {
     }
 
     @Test
+    @DisplayName("Update Employee Email with Id")
     public void testUpdateEmployeeEmailById() throws Exception {
         //GIVEN
         when(employeeFacade.updateEmployeeEmail(employee.getId(), "newemail@gmail.com")).thenReturn("Success");
@@ -153,6 +248,7 @@ public class EmployeeControllerTest {
     }
 
     @Test
+    @DisplayName("Update Employee Email with invalid Id")
     public void testUpdateEmployeeEmailWithInvalidId() throws Exception {
         //GIVEN
         Long id = 1L;
@@ -168,6 +264,7 @@ public class EmployeeControllerTest {
     }
 
     @Test
+    @DisplayName("Update Employee invalid Email with Id")
     public void testUpdateEmployeeEmailWithInvalidEmail() throws Exception {
         //GIVEN
         //WHEN
@@ -179,6 +276,7 @@ public class EmployeeControllerTest {
     }
 
     @Test
+    @DisplayName("Fetch Employee with Email")
     public void testGetEmployeeByEmail() throws Exception {
         //GIVEN
         when(employeeFacade.getEmployeeByEmail(employee.getEmail()))
@@ -192,6 +290,7 @@ public class EmployeeControllerTest {
     }
 
     @Test
+    @DisplayName("Fetch Employee with not available Email")
     public void testGetEmployeeByEmailWithNewEmail() throws Exception {
         //GIVEN
         String email = "newemail@gmail.com";
@@ -206,6 +305,7 @@ public class EmployeeControllerTest {
     }
 
     @Test
+    @DisplayName("Fetch Employee with invalid Email")
     public void testGetEmployeeByEmailWithInvalidEmail() throws Exception {
         //GIVEN
         String email = "newemail";
@@ -218,6 +318,7 @@ public class EmployeeControllerTest {
     }
 
     @Test
+    @DisplayName("Fetch Employee with Username or Email")
     public void testGetEmployeeByUsernameOrEmail() throws Exception {
         //GIVEN
         when(employeeFacade.getEmployeeByUsernameOrEmail(employee.getUsername(), employee.getEmail()))
@@ -232,6 +333,7 @@ public class EmployeeControllerTest {
     }
 
     @Test
+    @DisplayName("Fetch Employee with Username or Email with invalid Email")
     public void testGetEmployeeByUsernameOrEmailWithInvalidEmail() throws Exception {
         //GIVEN
         //WHEN
