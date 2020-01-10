@@ -1,5 +1,6 @@
 package com.practice.sakthi_via.integration;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -7,6 +8,7 @@ import com.icegreen.greenmail.util.GreenMail;
 import com.icegreen.greenmail.util.ServerSetup;
 import com.practice.sakthi_via.constants.Constants;
 import com.practice.sakthi_via.model.Employee;
+import com.practice.sakthi_via.model.dto.EmployeeDto;
 import com.practice.sakthi_via.repository.EmployeeRepository;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,20 +51,13 @@ public class EmployeeAPITest {
     @Autowired
     EmployeeRepository employeeRepository;
 
-    public Optional<Employee> createEmployee(String name, String email, String username, Integer age) {
-        Employee employee = new Employee();
-        employee.setName(name);
-        employee.setEmail(email);
-        employee.setUsername(username);
-        employee.setAge(age);
-        employeeRepository.save(employee);
-        return employeeRepository.findById(employee.getId());
-    }
     private static GreenMail greenMail;
+
     private static void setupSMTP() {
         greenMail = new GreenMail(new ServerSetup(2525, "127.0.0.1", "smtp"));
         greenMail.start();
     }
+
     private static void tearDownSMTP() {
         greenMail.stop();
     }
@@ -86,15 +81,9 @@ public class EmployeeAPITest {
         //GIVEN
         setupSMTP();
 
-        Employee employee = new Employee();
-        employee.setName("Employee 2");
-        employee.setEmail("sgsakthi1992@gmail.com");
-        employee.setUsername("employee2");
-        employee.setAge(25);
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
-        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
-        String requestJson = ow.writeValueAsString(employee);
+        EmployeeDto employeeDto = new EmployeeDto("Employee 2",
+                "employee2", "employee2@gmail.com", 22);
+        String requestJson = convertEmployeeDtoToJson(employeeDto);
 
         //WHEN
         ResultActions resultActions = mockMvc.perform(post("/api/v1/employees")
@@ -102,8 +91,8 @@ public class EmployeeAPITest {
                 .content(requestJson));
 
         //THEN
-        validateOkResponse(resultActions).andExpect(jsonPath("name", is(employee.getName())));
-        validateEmailResponse(employee);
+        validateOkResponse(resultActions).andExpect(jsonPath("name", is(employeeDto.getName())));
+        validateEmailResponse(employeeDto);
 
         tearDownSMTP();
     }
@@ -111,17 +100,11 @@ public class EmployeeAPITest {
     @Test
     public void testCreateWithExistingUserName() throws Exception {
         //GIVEN
-        Optional<Employee> employee = createEmployee("Employee3", "employee3@gmail.com",
+        createEmployee("Employee3", "employee3@gmail.com",
                 "employee3", 27);
-        Employee newEmployee = new Employee();
-        newEmployee.setName("Employee 4");
-        newEmployee.setEmail("employee4@gmail.com");
-        newEmployee.setUsername("employee3");
-        newEmployee.setAge(25);
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
-        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
-        String requestJson = ow.writeValueAsString(newEmployee);
+        EmployeeDto employeeDto = new EmployeeDto("Employee 4",
+                "employee3", "employee4@gmail.com", 22);
+        String requestJson = convertEmployeeDtoToJson(employeeDto);
 
         //WHEN
         ResultActions resultActions = mockMvc.perform(post("/api/v1/employees")
@@ -132,6 +115,104 @@ public class EmployeeAPITest {
         validateBadRequestResponse(resultActions);
     }
 
+    @Test
+    public void testCreateWithInvalidEmailId() throws Exception {
+        //GIVEN
+        EmployeeDto employeeDto = new EmployeeDto("Employee 4",
+                "employee4", "employee4", 22);
+        String requestJson = convertEmployeeDtoToJson(employeeDto);
+
+        //WHEN
+        ResultActions resultActions = mockMvc.perform(post("/api/v1/employees")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestJson));
+
+        //THEN
+        validateBadRequestResponse(resultActions);
+    }
+
+    @Test
+    public void testCreateWithInvalidAge() throws Exception {
+        //GIVEN
+        EmployeeDto employeeDto = new EmployeeDto("Employee 4",
+                "employee4", "employee4@gmail.com", 0);
+        String requestJson = convertEmployeeDtoToJson(employeeDto);
+
+        //WHEN
+        ResultActions resultActions = mockMvc.perform(post("/api/v1/employees")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestJson));
+
+        //THEN
+        validateBadRequestResponse(resultActions);
+    }
+
+    @Test
+    public void testCreateWithInvalidUsernameMinSize() throws Exception {
+        //GIVEN
+        EmployeeDto employeeDto = new EmployeeDto("Employee 4",
+                "emp", "employee4@gmail.com", 22);
+        String requestJson = convertEmployeeDtoToJson(employeeDto);
+
+        //WHEN
+        ResultActions resultActions = mockMvc.perform(post("/api/v1/employees")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestJson));
+
+        //THEN
+        validateBadRequestResponse(resultActions);
+    }
+
+    @Test
+    public void testCreateWithInvalidUsernameMaxSize() throws Exception {
+        //GIVEN
+        EmployeeDto employeeDto = new EmployeeDto("Employee 4",
+                "employee4_username", "employee4@gmail.com", 22);
+        String requestJson = convertEmployeeDtoToJson(employeeDto);
+
+        //WHEN
+        ResultActions resultActions = mockMvc.perform(post("/api/v1/employees")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestJson));
+
+        //THEN
+        validateBadRequestResponse(resultActions);
+    }
+
+    @Test
+    public void testCreateWithEmptyName() throws Exception {
+        //GIVEN
+        EmployeeDto employeeDto = new EmployeeDto("",
+                "employee4_username", "employee4@gmail.com", 22);
+        String requestJson = convertEmployeeDtoToJson(employeeDto);
+
+        //WHEN
+        ResultActions resultActions = mockMvc.perform(post("/api/v1/employees")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestJson));
+
+        //THEN
+        validateBadRequestResponse(resultActions);
+    }
+
+    private Optional<Employee> createEmployee(String name, String email, String username, Integer age) {
+        Employee employee = new Employee();
+        employee.setName(name);
+        employee.setEmail(email);
+        employee.setUsername(username);
+        employee.setAge(age);
+        employeeRepository.save(employee);
+        return employeeRepository.findById(employee.getId());
+    }
+
+    private String convertEmployeeDtoToJson(EmployeeDto employeeDto) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
+        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
+        String requestJson = ow.writeValueAsString(employeeDto);
+        return requestJson;
+    }
+
     private ResultActions validateOkResponse(ResultActions resultActions) throws Exception {
         return resultActions.andExpect(status().isOk());
     }
@@ -140,13 +221,13 @@ public class EmployeeAPITest {
         resultActions.andExpect(status().isBadRequest());
     }
 
-    private void validateEmailResponse(Employee employee) throws MessagingException, IOException {
+    private void validateEmailResponse(EmployeeDto employee) throws MessagingException, IOException {
         boolean ok = greenMail.waitForIncomingEmail(1);
-        if(ok) {
+        if (ok) {
             MimeMessage receivedMessage = greenMail.getReceivedMessages()[0];
             assertEquals(employee.getEmail(), receivedMessage.getAllRecipients()[0].toString());
             assertEquals(Constants.EMAIL_SUBJECT, receivedMessage.getSubject());
-        } else{
+        } else {
             fail("Email not sent");
         }
     }

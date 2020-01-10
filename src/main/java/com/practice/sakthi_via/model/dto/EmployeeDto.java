@@ -48,10 +48,10 @@ public class EmployeeDto {
     /**
      * Parameterized constructor.
      *
-     * @param name
-     * @param username
-     * @param email
-     * @param age
+     * @param name Employee Name
+     * @param username Employee Username
+     * @param email Employee email
+     * @param age Employee age
      */
     public EmployeeDto(final String name,
                        final String username, final String email,

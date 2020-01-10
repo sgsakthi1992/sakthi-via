@@ -22,7 +22,7 @@
         </rollingPolicy>
     </appender>
     
-    <springProfile name="dev">
+    <springProfile name="dev, test">
         <logger name="com.practice.sakthi_via" level="DEBUG">
             <appender-ref ref="STDOUT"/>
             <appender-ref ref="FILE"/>
@@ -43,5 +43,4 @@
             <appender-ref ref="STDOUT"/>
         </root>
     </springProfile>
-
 </configuration>

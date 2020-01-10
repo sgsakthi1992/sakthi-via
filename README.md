@@ -19,10 +19,11 @@ This application provides GET, POST, PUT and DELETE Request methods to manipulat
 
 **Spring**
 * Spring Boot 2 with embedded Tomcat
-* Spring configurations through annotations - Controller, Service, Repository
-* Spring Profiles: dev and prod
+* Spring configurations through annotations - Controller, Service, Repository, Component
+* Spring Profiles: dev, test and prod
 * Error handling (@ControllerAdvice, @ExceptionHandler and Custom Exception)
 * Spring Data JPA (JpaRepository + Entity class) - Heroku Postgres to store the data
+* Spring Mail with Thymeleaf
 
 **Additional**
 * Validation with JSR303 - Annotations + Custom Annotation (to check Unique Username)
@@ -40,5 +41,6 @@ This application provides GET, POST, PUT and DELETE Request methods to manipulat
 * Mocking with Mockito
 * Hamcrest for assertions
 * @SpringBootTest and MockMvc in integration tests with in-memory h2 database
+* GreenMail to test Mail integration test
 * JaCoCo for code coverage
-* SonarQube for code quality
+* SonarQube, CheckStyle for code quality
