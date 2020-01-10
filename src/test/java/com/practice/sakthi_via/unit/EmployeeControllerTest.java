@@ -1,5 +1,6 @@
 package com.practice.sakthi_via.unit;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -73,10 +74,7 @@ public class EmployeeControllerTest {
         EmployeeDto employeeDto = new EmployeeDto("Employee 1",
                 "employee1", "emp1@gmail.com", 25);
 
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
-        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
-        String requestJson = ow.writeValueAsString(employeeDto);
+        String requestJson = convertEmployeeDtoToJson(employeeDto);
 
         when(employeeFacade.createEmployee(Mockito.any(EmployeeDto.class))).thenReturn(employee);
         when(employeeFacade.checkUsername(employeeDto.getUsername())).thenReturn(true);
@@ -97,13 +95,7 @@ public class EmployeeControllerTest {
         EmployeeDto employeeDto = new EmployeeDto("Employee 1",
                 "employee1", "emp1", 25);
 
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
-        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
-        String requestJson = ow.writeValueAsString(employeeDto);
-
-        when(employeeFacade.createEmployee(Mockito.any(EmployeeDto.class))).thenReturn(employee);
-        when(employeeFacade.checkUsername(employeeDto.getUsername())).thenReturn(true);
+        String requestJson = convertEmployeeDtoToJson(employeeDto);
 
         //WHEN
         ResultActions resultActions = mockMvc.perform(post("/api/v1/employees")
@@ -121,10 +113,7 @@ public class EmployeeControllerTest {
         EmployeeDto employeeDto = new EmployeeDto("Employee 1",
                 "emp", "emp1", 25);
 
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
-        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
-        String requestJson = ow.writeValueAsString(employeeDto);
+        String requestJson = convertEmployeeDtoToJson(employeeDto);
 
         //WHEN
         ResultActions resultActions = mockMvc.perform(post("/api/v1/employees")
@@ -142,10 +131,7 @@ public class EmployeeControllerTest {
         EmployeeDto employeeDto = new EmployeeDto("Employee 1",
                 "employee1_username", "emp1", 25);
 
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
-        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
-        String requestJson = ow.writeValueAsString(employeeDto);
+        String requestJson = convertEmployeeDtoToJson(employeeDto);
 
         //WHEN
         ResultActions resultActions = mockMvc.perform(post("/api/v1/employees")
@@ -163,10 +149,7 @@ public class EmployeeControllerTest {
         EmployeeDto employeeDto = new EmployeeDto("Employee 1",
                 "employee1", "emp1", 0);
 
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
-        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
-        String requestJson = ow.writeValueAsString(employeeDto);
+        String requestJson = convertEmployeeDtoToJson(employeeDto);
 
         //WHEN
         ResultActions resultActions = mockMvc.perform(post("/api/v1/employees")
@@ -358,4 +341,11 @@ public class EmployeeControllerTest {
                 .andExpect(jsonPath("message", containsStringIgnoringCase(expectedMessage)));
     }
 
+    private String convertEmployeeDtoToJson(EmployeeDto employeeDto) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
+        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
+        String requestJson = ow.writeValueAsString(employeeDto);
+        return requestJson;
+    }
 }
