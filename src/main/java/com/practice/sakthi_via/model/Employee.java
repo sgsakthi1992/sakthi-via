@@ -1,7 +1,6 @@
 package com.practice.sakthi_via.model;
 
 
-import com.practice.sakthi_via.constants.Constants;
 import com.practice.sakthi_via.validator.Username;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -17,20 +16,47 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
-/**
- * Employee Model.
- *
- * @author Sakthi_Subramaniam
- */
 @Entity
 @ApiModel(value = "Employee Model", description = "Details about Employee")
 public class Employee {
+    /**
+     * Message for failed Email validation.
+     */
+    private static final String EMAIL_VALIDATION_MSG
+            = "Not a well-formed email address";
+    /**
+     * Message for Employee Username size.
+     */
+    private static final String EMPLOYEE_USERNAME_SIZE
+            = "Username must have minimum 4 and maximum 10 characters";
+    /**
+     * Message for Employee minimum age.
+     */
+    private static final String EMPLOYEE_MINIMUM_AGE
+            = "Employee must be 20 years old";
+    /**
+     * Employee sequence initial value.
+     */
+    private static final int EMPLOYEE_SEQUENCE_INITIAL = 40000;
+    /**
+     * Employee username min value.
+     */
+    private static final int EMPLOYEE_USERNAME_MIN_VALUE = 4;
+    /**
+     * Employee username max value.
+     */
+    private static final int EMPLOYEE_USERNAME_MAX_VALUE = 10;
+    /**
+     * Employee age minimum value.
+     */
+    private static final int EMPLOYEE_AGE_MIN_VALUE = 20;
+
     /**
      * Employee Id.
      */
     @Id
     @SequenceGenerator(name = "employeeIdSeq",
-            initialValue = Constants.EMPLOYEE_SEQUENCE_INITIAL)
+            initialValue = EMPLOYEE_SEQUENCE_INITIAL)
     @GeneratedValue(strategy = GenerationType.SEQUENCE,
             generator = "employeeIdSeq")
     @Column(nullable = false)
@@ -50,18 +76,18 @@ public class Employee {
      */
     @Username
     @NotEmpty(message = "Username is required")
-    @Size(min = Constants.EMPLOYEE_USERNAME_MIN_VALUE,
-            max = Constants.EMPLOYEE_USERNAME_MAX_VALUE,
-            message = Constants.EMPLOYEE_USERNAME_SIZE)
+    @Size(min = EMPLOYEE_USERNAME_MIN_VALUE,
+            max = EMPLOYEE_USERNAME_MAX_VALUE,
+            message = EMPLOYEE_USERNAME_SIZE)
     @Column(nullable = false, updatable = false)
-    @ApiModelProperty(notes = Constants.EMPLOYEE_USERNAME_SIZE)
+    @ApiModelProperty(notes = EMPLOYEE_USERNAME_SIZE)
     private String username;
 
     /**
      * Employee Email.
      */
     @NotEmpty(message = "Email id is required")
-    @Email(message = Constants.EMAIL_VALIDATION_MSG)
+    @Email(message = EMAIL_VALIDATION_MSG)
     @Column(nullable = false)
     @ApiModelProperty(notes = "Employee email id")
     private String email;
@@ -70,19 +96,19 @@ public class Employee {
      * Employee Age.
      */
     @Column(nullable = false)
-    @Min(value = Constants.EMPLOYEE_AGE_MIN_VALUE,
-            message = Constants.EMPLOYEE_MINIMUM_AGE)
+    @Min(value = EMPLOYEE_AGE_MIN_VALUE,
+            message = EMPLOYEE_MINIMUM_AGE)
     @ApiModelProperty(notes = "Employee age")
     private Integer age;
 
     /**
      * Parameterized constructor.
      *
-     * @param id
-     * @param name
-     * @param username
-     * @param email
-     * @param age
+     * @param id       Employee id
+     * @param name     Employee Name
+     * @param username Employee username
+     * @param email    Employee email
+     * @param age      Employee age
      */
     public Employee(final Long id, final String name,
                     final String username, final String email,
@@ -114,7 +140,7 @@ public class Employee {
     /**
      * Setter for Employee Id.
      *
-     * @param id
+     * @param id Employee Id
      */
     public void setId(final Long id) {
         this.id = id;
@@ -132,7 +158,7 @@ public class Employee {
     /**
      * Setter for Employee Name.
      *
-     * @param name
+     * @param name Employee name
      */
     public void setName(final String name) {
         this.name = name;
@@ -150,7 +176,7 @@ public class Employee {
     /**
      * Setter for Employee Username.
      *
-     * @param username
+     * @param username Employee username
      */
     public void setUsername(final String username) {
         this.username = username;
@@ -168,7 +194,7 @@ public class Employee {
     /**
      * Setter for Employee email.
      *
-     * @param email
+     * @param email Employee email
      */
     public void setEmail(final String email) {
         this.email = email;
@@ -186,7 +212,7 @@ public class Employee {
     /**
      * Setter for Employee age.
      *
-     * @param age
+     * @param age Employee age
      */
     public void setAge(final Integer age) {
         this.age = age;

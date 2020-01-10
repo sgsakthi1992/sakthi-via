@@ -1,7 +1,3 @@
-/*
- * Copyright (c) 2020.
- */
-
 package com.practice.sakthi_via.model;
 
 import java.util.Map;

@@ -1,6 +1,5 @@
 package com.practice.sakthi_via.controller;
 
-import com.practice.sakthi_via.constants.Constants;
 import com.practice.sakthi_via.exception.ResourceNotFoundException;
 import com.practice.sakthi_via.facade.EmployeeFacade;
 import com.practice.sakthi_via.model.Employee;
@@ -35,6 +34,62 @@ import java.util.List;
 public class EmployeeController {
 
     /**
+     * HTTP Status OK value.
+     */
+    private static final int HTTP_STATUS_OK = 200;
+    /**
+     * HTTP Status Bad Request value.
+     */
+    private static final int HTTP_STATUS_BAD_REQUEST = 400;
+    /**
+     * HTTP Status Not Found value.
+     */
+    private static final int HTTP_STATUS_NOT_FOUND = 404;
+    /**
+     * Message for Employee email update success.
+     */
+    private static final String EMPLOYEE_EMAIL_UPDATED_SUCCESS
+            = "Successfully updated employee email";
+    /**
+     * Message for Employee create success.
+     */
+    private static final String EMPLOYEE_CREATE_SUCCESS
+            = "Employee created successfully";
+    /**
+     * Message for Employee retrieve success.
+     */
+    private static final String EMPLOYEE_RETRIEVE_SUCCESS
+            = "Successfully retrieved employee details";
+    /**
+     * Message for Employee delete success.
+     */
+    private static final String EMPLOYEE_DELETE_SUCCESS
+            = "Successfully deleted employee details";
+    /**
+     * Message for invalid values in Employee details.
+     */
+    private static final String INVALID_EMPLOYEE_VALUES
+            = "Employee details has invalid values";
+    /**
+     * Message for Employee Id not found.
+     */
+    private static final String EMPLOYEE_ID_NOT_FOUND = "Employee Id not found";
+    /**
+     * Message for failed Email validation.
+     */
+    private static final String EMAIL_VALIDATION_MSG
+            = "Not a well-formed email address";
+    /**
+     * Message for Employee Email not found.
+     */
+    private static final String EMPLOYEE_EMAIL_NOT_FOUND
+            = "Employee email not found";
+    /**
+     * Message for Employee Username or Email not found.
+     */
+    private static final String EMPLOYEE_USERNAME_OR_EMAIL_NOT_FOUND
+            = "Employee Username or email id not found";
+    /**
      * EmployeeFacade object.
      */
     private EmployeeFacade employeeFacade;
@@ -42,7 +97,7 @@ public class EmployeeController {
     /**
      * Constructor to bind EmployeeFacade object.
      *
-     * @param employeeFacade
+     * @param employeeFacade EmployeeFacade object
      */
     public EmployeeController(final EmployeeFacade employeeFacade) {
         this.employeeFacade = employeeFacade;
@@ -55,8 +110,8 @@ public class EmployeeController {
      */
     @ApiOperation("Retrieve all the employees")
     @ApiResponses({
-            @ApiResponse(code = Constants.HTTP_STATUS_OK,
-                    message = Constants.EMPLOYEE_RETRIEVE_SUCCESS)
+            @ApiResponse(code = HTTP_STATUS_OK,
+                    message = EMPLOYEE_RETRIEVE_SUCCESS)
     })
     @GetMapping("/employees")
     public ResponseEntity<List> getEmployees() {
@@ -73,10 +128,10 @@ public class EmployeeController {
      */
     @ApiOperation("Create Employee")
     @ApiResponses({
-            @ApiResponse(code = Constants.HTTP_STATUS_OK,
-                    message = Constants.EMPLOYEE_CREATE_SUCCESS),
-            @ApiResponse(code = Constants.HTTP_STATUS_BAD_REQUEST,
-                    message = Constants.INVALID_EMPLOYEE_VALUES)
+            @ApiResponse(code = HTTP_STATUS_OK,
+                    message = EMPLOYEE_CREATE_SUCCESS),
+            @ApiResponse(code = HTTP_STATUS_BAD_REQUEST,
+                    message = INVALID_EMPLOYEE_VALUES)
     })
     @PostMapping("/employees")
     public ResponseEntity<Employee> createEmployee(
@@ -96,10 +151,10 @@ public class EmployeeController {
      */
     @ApiOperation("Get Employee details by Id")
     @ApiResponses({
-            @ApiResponse(code = Constants.HTTP_STATUS_OK,
-                    message = Constants.EMPLOYEE_RETRIEVE_SUCCESS),
-            @ApiResponse(code = Constants.HTTP_STATUS_NOT_FOUND,
-                    message = Constants.EMPLOYEE_ID_NOT_FOUND)
+            @ApiResponse(code = HTTP_STATUS_OK,
+                    message = EMPLOYEE_RETRIEVE_SUCCESS),
+            @ApiResponse(code = HTTP_STATUS_NOT_FOUND,
+                    message = EMPLOYEE_ID_NOT_FOUND)
     })
     @GetMapping(value = "/employees/{id}")
     public ResponseEntity<Employee> getEmployeeById(
@@ -120,10 +175,10 @@ public class EmployeeController {
      */
     @ApiOperation("Delete Employee by Id")
     @ApiResponses({
-            @ApiResponse(code = Constants.HTTP_STATUS_OK,
-                    message = Constants.EMPLOYEE_DELETE_SUCCESS),
-            @ApiResponse(code = Constants.HTTP_STATUS_NOT_FOUND,
-                    message = Constants.EMPLOYEE_ID_NOT_FOUND)
+            @ApiResponse(code = HTTP_STATUS_OK,
+                    message = EMPLOYEE_DELETE_SUCCESS),
+            @ApiResponse(code = HTTP_STATUS_NOT_FOUND,
+                    message = EMPLOYEE_ID_NOT_FOUND)
     })
     @DeleteMapping("/employees/{id}")
     public ResponseEntity<String> deleteEmployeeById(
@@ -143,18 +198,18 @@ public class EmployeeController {
      */
     @ApiOperation("Get Employee Details By Email")
     @ApiResponses({
-            @ApiResponse(code = Constants.HTTP_STATUS_OK,
-                    message = Constants.EMPLOYEE_RETRIEVE_SUCCESS),
-            @ApiResponse(code = Constants.HTTP_STATUS_BAD_REQUEST,
-                    message = Constants.EMAIL_VALIDATION_MSG),
-            @ApiResponse(code = Constants.HTTP_STATUS_NOT_FOUND,
-                    message = Constants.EMPLOYEE_EMAIL_NOT_FOUND)
+            @ApiResponse(code = HTTP_STATUS_OK,
+                    message = EMPLOYEE_RETRIEVE_SUCCESS),
+            @ApiResponse(code = HTTP_STATUS_BAD_REQUEST,
+                    message = EMAIL_VALIDATION_MSG),
+            @ApiResponse(code = HTTP_STATUS_NOT_FOUND,
+                    message = EMPLOYEE_EMAIL_NOT_FOUND)
     })
     @GetMapping("/employeesByEmail/{email}")
     public ResponseEntity<List> getEmployeeByEmail(
             @ApiParam(value = "Email to retrieve Employee Details",
                     required = true)
-            @Email(message = Constants.EMAIL_VALIDATION_MSG) @Valid
+            @Email(message = EMAIL_VALIDATION_MSG) @Valid
             @PathVariable(value = "email") final String email)
             throws ResourceNotFoundException {
         List employeeList = employeeFacade.getEmployeeByEmail(email);
@@ -171,12 +226,12 @@ public class EmployeeController {
      */
     @ApiOperation("Get Employee Details either by Email or Username")
     @ApiResponses({
-            @ApiResponse(code = Constants.HTTP_STATUS_OK,
-                    message = Constants.EMPLOYEE_RETRIEVE_SUCCESS),
-            @ApiResponse(code = Constants.HTTP_STATUS_BAD_REQUEST,
-                    message = Constants.EMAIL_VALIDATION_MSG),
-            @ApiResponse(code = Constants.HTTP_STATUS_NOT_FOUND,
-                    message = Constants.EMPLOYEE_USERNAME_OR_EMAIL_NOT_FOUND)
+            @ApiResponse(code = HTTP_STATUS_OK,
+                    message = EMPLOYEE_RETRIEVE_SUCCESS),
+            @ApiResponse(code = HTTP_STATUS_BAD_REQUEST,
+                    message = EMAIL_VALIDATION_MSG),
+            @ApiResponse(code = HTTP_STATUS_NOT_FOUND,
+                    message = EMPLOYEE_USERNAME_OR_EMAIL_NOT_FOUND)
     })
     @GetMapping("/employeesByUsernameOrEmail")
     public ResponseEntity<List> getEmployeeByUsernameOrEmail(
@@ -185,7 +240,7 @@ public class EmployeeController {
             @Valid @RequestParam(required = false) final String username,
             @ApiParam(value = "Username to retrieve Employee Details",
                     required = false)
-            @Email(message = Constants.EMAIL_VALIDATION_MSG) @Valid
+            @Email(message = EMAIL_VALIDATION_MSG) @Valid
             @RequestParam(required = false) final String email)
             throws ResourceNotFoundException {
         List<Employee> employeeList = employeeFacade
@@ -203,12 +258,12 @@ public class EmployeeController {
      */
     @ApiOperation(value = "Update Employee Email")
     @ApiResponses({
-            @ApiResponse(code = Constants.HTTP_STATUS_OK,
-                    message = Constants.EMPLOYEE_EMAIL_UPDATED_SUCCESS),
-            @ApiResponse(code = Constants.HTTP_STATUS_BAD_REQUEST,
-                    message = Constants.EMAIL_VALIDATION_MSG),
-            @ApiResponse(code = Constants.HTTP_STATUS_NOT_FOUND,
-                    message = Constants.EMPLOYEE_ID_NOT_FOUND)
+            @ApiResponse(code = HTTP_STATUS_OK,
+                    message = EMPLOYEE_EMAIL_UPDATED_SUCCESS),
+            @ApiResponse(code = HTTP_STATUS_BAD_REQUEST,
+                    message = EMAIL_VALIDATION_MSG),
+            @ApiResponse(code = HTTP_STATUS_NOT_FOUND,
+                    message = EMPLOYEE_ID_NOT_FOUND)
     })
     @PutMapping("/employees/{id}")
     public ResponseEntity<String> updateEmployeeEmail(
@@ -216,7 +271,7 @@ public class EmployeeController {
                     required = true)
             @Valid @PathVariable(value = "id") final Long id,
             @ApiParam(value = "Email address to update", required = true)
-            @Email(message = Constants.EMAIL_VALIDATION_MSG)
+            @Email(message = EMAIL_VALIDATION_MSG)
             @Valid @RequestParam final String email)
             throws ResourceNotFoundException {
         String message = employeeFacade.updateEmployeeEmail(id, email);

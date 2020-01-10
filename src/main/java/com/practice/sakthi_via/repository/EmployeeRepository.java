@@ -11,11 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Repository interface.
- *
- * @author Sakthi_Subramaniam
- */
 @Repository
 public interface EmployeeRepository extends JpaRepository<Employee, Long> {
     /**

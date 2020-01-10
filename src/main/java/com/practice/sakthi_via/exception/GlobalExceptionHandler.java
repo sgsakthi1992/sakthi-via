@@ -15,11 +15,6 @@ import javax.validation.ConstraintViolationException;
 import java.util.Date;
 import java.util.List;
 
-/**
- * Class to handle the exceptions.
- *
- * @author Sakthi_Subramaniam
- */
 @ControllerAdvice
 public class GlobalExceptionHandler {
     /**

@@ -1,6 +1,5 @@
 package com.practice.sakthi_via.facade;
 
-import com.practice.sakthi_via.constants.Constants;
 import com.practice.sakthi_via.exception.ResourceNotFoundException;
 import com.practice.sakthi_via.mail.EmailService;
 import com.practice.sakthi_via.model.Employee;
@@ -22,14 +21,26 @@ import java.util.Map;
 
 import static org.springframework.data.domain.ExampleMatcher.GenericPropertyMatchers.contains;
 
-/**
- * Employee service class.
- *
- * @author Sakthi_Subramaniam
- */
 @Service
 public class EmployeeFacade {
-
+    /**
+     * Message for Employee Id not found.
+     */
+    private static final String EMPLOYEE_ID_NOT_FOUND = "Employee Id not found";
+    /**
+     * Message for Employee Username or Email not found.
+     */
+    private static final String EMPLOYEE_USERNAME_OR_EMAIL_NOT_FOUND
+            = "Employee Username or email id not found";
+    /**
+     * Message for Employee Email not found.
+     */
+    private static final String EMPLOYEE_EMAIL_NOT_FOUND
+            = "Employee email not found";
+    /**
+     * Email Subject.
+     */
+    private static final String EMAIL_SUBJECT = "Welcome to SAKTHI-VIA!!";
     /**
      * EmployeeRepository object.
      */
@@ -107,14 +118,14 @@ public class EmployeeFacade {
         Employee employee = convertEmployeeDtoToEmployee(employeeDto);
         employeeRepository.save(employee);
         LOGGER.debug("Created Employee: {}", employee);
-        Map content = new HashMap<>();
+        Map<String, Object> content = new HashMap<>();
         content.put("name", employee.getName());
         content.put("username", employee.getUsername());
         content.put("age", employee.getAge());
         content.put("email", employee.getEmail());
 
         Mail mail = new Mail(employee.getEmail(),
-                Constants.EMAIL_SUBJECT, content);
+                EMAIL_SUBJECT, content);
         emailService.sendMail(mail);
         return employee;
     }
@@ -141,9 +152,9 @@ public class EmployeeFacade {
             throws ResourceNotFoundException {
         Employee employee = employeeRepository.findById(id).orElseThrow(
                 () -> {
-                    LOGGER.error(Constants.EMPLOYEE_ID_NOT_FOUND_MSG, id);
+                    LOGGER.error("Employee Id {} not found", id);
                     return new ResourceNotFoundException(
-                            Constants.EMPLOYEE_ID_NOT_FOUND);
+                            EMPLOYEE_ID_NOT_FOUND);
                 });
         LOGGER.debug("Employee details: {}", employee);
         return employee;
@@ -175,9 +186,9 @@ public class EmployeeFacade {
             throws ResourceNotFoundException {
         return employeeRepository.findByEmail(email).orElseThrow(
                 () -> {
-                    LOGGER.error(Constants.EMPLOYEE_EMAIL_NOT_FOUND_MSG, email);
+                    LOGGER.error("Email {} not found", email);
                     return new ResourceNotFoundException(
-                            Constants.EMPLOYEE_EMAIL_NOT_FOUND);
+                            EMPLOYEE_EMAIL_NOT_FOUND);
                 });
     }
 
@@ -194,15 +205,15 @@ public class EmployeeFacade {
             throws ResourceNotFoundException {
         if (username == null && email == null) {
             throw new ResourceNotFoundException(
-                    Constants.EMPLOYEE_USERNAME_OR_EMAIL_NOT_FOUND);
+                    EMPLOYEE_USERNAME_OR_EMAIL_NOT_FOUND);
         }
         final Example<Employee> example = getExample(username, email);
         List<Employee> employeeList = employeeRepository.findAll(example);
         if (employeeList.isEmpty()) {
-            LOGGER.error(Constants.EMPLOYEE_USERNAME_OR_EMAIL_NOT_FOUND_MSG,
+            LOGGER.error("Employee not found with Username: {} or Email: {}",
                     username, email);
             throw new ResourceNotFoundException(
-                    Constants.EMPLOYEE_USERNAME_OR_EMAIL_NOT_FOUND);
+                    EMPLOYEE_USERNAME_OR_EMAIL_NOT_FOUND);
         }
         LOGGER.debug("Employee list: {}", employeeList);
         return employeeList;

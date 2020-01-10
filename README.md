@@ -44,3 +44,4 @@ This application provides GET, POST, PUT and DELETE Request methods to manipulat
 * GreenMail to test Mail integration test
 * JaCoCo for code coverage
 * SonarQube, CheckStyle for code quality
+
