@@ -45,7 +45,7 @@ public class TodoController {
      * @param userId user id
      * @return list of to-do's
      */
-    @GetMapping("/todos/userId")
+    @GetMapping("/todos/{userId}")
     public ResponseEntity getTodosById(@PathVariable final int userId) {
         List<Todo> todos = todoFacade.getTodosById(userId);
         return ResponseEntity.status(HttpStatus.OK).body(todos);

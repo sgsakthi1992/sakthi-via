@@ -31,7 +31,17 @@ public class TodoAPITest {
     public void testGetTodos() throws Exception {
         //GIVEN
         //WHEN
-        ResultActions resultActions = mockMvc.perform(get("/api/v1/todos")).andDo(print());
+        ResultActions resultActions = mockMvc.perform(get("/api/v1/todos"));
+
+        //THEN
+        resultActions.andExpect(status().isOk());
+    }
+
+    @Test
+    public void testGetTodosById() throws Exception {
+        //GIVEN
+        //WHEN
+        ResultActions resultActions = mockMvc.perform(get("/api/v1/todos/1")).andDo(print());
 
         //THEN
         resultActions.andExpect(status().isOk());
