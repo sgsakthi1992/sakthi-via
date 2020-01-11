@@ -6,11 +6,13 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.icegreen.greenmail.util.GreenMail;
 import com.icegreen.greenmail.util.ServerSetup;
-import com.practice.sakthi_via.constants.Constants;
 import com.practice.sakthi_via.model.Employee;
 import com.practice.sakthi_via.model.dto.EmployeeDto;
 import com.practice.sakthi_via.repository.EmployeeRepository;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -226,7 +228,7 @@ public class EmployeeAPITest {
         if (ok) {
             MimeMessage receivedMessage = greenMail.getReceivedMessages()[0];
             assertEquals(employee.getEmail(), receivedMessage.getAllRecipients()[0].toString());
-            assertEquals(Constants.EMAIL_SUBJECT, receivedMessage.getSubject());
+            assertEquals("Welcome to SAKTHI-VIA!!", receivedMessage.getSubject());
         } else {
             fail("Email not sent");
         }

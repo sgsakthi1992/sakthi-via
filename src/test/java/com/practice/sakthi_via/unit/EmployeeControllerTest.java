@@ -28,11 +28,8 @@ import static org.mockito.Mockito.when;
 class EmployeeControllerTest {
 
     private static final String EMPLOYEE_ID_NOT_FOUND = "Employee Id not found";
-    private static final String EMAIL_VALIDATION_MSG = "Not a well-formed email address";
     private static final String EMPLOYEE_EMAIL_NOT_FOUND = "Employee email not found";
     private static final String EMPLOYEE_USERNAME_OR_EMAIL_NOT_FOUND = "Employee Username or email id not found";
-    private static final String EMPLOYEE_USERNAME_SIZE = "Username must have minimum 4 and maximum 10 characters";
-    private static final String EMPLOYEE_MINIMUM_AGE = "Employee must be 20 years old";
 
     @TestConfiguration
     static class EmployeeFacadeTestConfiguraion {

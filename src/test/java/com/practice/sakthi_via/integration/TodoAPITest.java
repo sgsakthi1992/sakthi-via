@@ -4,7 +4,6 @@
 
 package com.practice.sakthi_via.integration;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -14,7 +13,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-@Disabled
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestPropertySource(properties = {
@@ -30,9 +31,9 @@ public class TodoAPITest {
     public void testGetTodos() throws Exception {
         //GIVEN
         //WHEN
-        ResultActions resultActions = mockMvc.perform(get("/api/v1/todos"));
+        ResultActions resultActions = mockMvc.perform(get("/api/v1/todos")).andDo(print());
 
         //THEN
-
+        resultActions.andExpect(status().isOk());
     }
 }

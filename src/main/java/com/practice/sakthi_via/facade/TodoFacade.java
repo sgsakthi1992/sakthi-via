@@ -1,9 +1,14 @@
 package com.practice.sakthi_via.facade;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.practice.sakthi_via.model.Todo;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class TodoFacade {
@@ -11,18 +16,27 @@ public class TodoFacade {
      * RestTemplate object.
      */
     private RestTemplate restTemplate = new RestTemplate();
-    /**
-     * Logger object.
-     */
-    private static final Logger LOGGER = LoggerFactory.
-            getLogger(TodoFacade.class);
 
     /**
      * Get Todos from https://jsonplaceholder.typicode.com.
+     *
+     * @return list of todos from external resource
      */
-    public void getTodos() {
+    public List<Todo> getTodos() {
         String url = "https://jsonplaceholder.typicode.com/todos";
-        String response = restTemplate.getForObject(url, String.class);
-        LOGGER.debug(response);
+        Todo[] response = restTemplate.getForObject(url, Todo[].class);
+        return Optional.ofNullable(response).map(Arrays::asList)
+                .orElse(Collections.emptyList());
+    }
+
+    /**
+     * @param userId User Id
+     * @return Todos fo that user
+     */
+    public List<Todo> getTodosById(final int userId) {
+        List<Todo> todos = getTodos();
+        return todos.stream()
+                .filter(todo -> todo.getUserId() == userId)
+                .collect(Collectors.toList());
     }
 }
