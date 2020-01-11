@@ -40,10 +40,10 @@ public class TodoController {
     }
 
     /**
-     * API to get Todo for particular user.
+     * API to get to-do for particular user.
      *
      * @param userId user id
-     * @return list of todo's
+     * @return list of to-do's
      */
     @GetMapping("/todos/userId")
     public ResponseEntity getTodosById(@PathVariable final int userId) {

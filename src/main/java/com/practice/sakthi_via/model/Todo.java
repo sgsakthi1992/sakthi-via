@@ -6,15 +6,15 @@ public class Todo {
      */
     private int userId;
     /**
-     * Todo id.
+     * to-do id.
      */
     private int id;
     /**
-     * Todo title.
+     * to-do title.
      */
     private String title;
     /**
-     * Todo Status.
+     * to-do Status.
      */
     private String completed;
 
@@ -37,25 +37,25 @@ public class Todo {
     }
 
     /**
-     * Getter for todo id.
+     * Getter for to-do id.
      *
-     * @return todo id
+     * @return to-do id
      */
     public int getId() {
         return id;
     }
 
     /**
-     * Setter for todo id.
+     * Setter for to-do id.
      *
-     * @param id todo id
+     * @param id to-do id
      */
     public void setId(final int id) {
         this.id = id;
     }
 
     /**
-     * Getter for todo title.
+     * Getter for to-do title.
      *
      * @return title
      */
@@ -64,7 +64,7 @@ public class Todo {
     }
 
     /**
-     * Setter for todo title.
+     * Setter for to-do title.
      *
      * @param title title
      */
