@@ -8,15 +8,12 @@ import com.practice.sakthi_via.model.dto.EmployeeDto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Bean;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import javax.validation.ConstraintViolationException;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -31,23 +28,10 @@ class EmployeeControllerTest {
     private static final String EMPLOYEE_EMAIL_NOT_FOUND = "Employee email not found";
     private static final String EMPLOYEE_USERNAME_OR_EMAIL_NOT_FOUND = "Employee Username or email id not found";
 
-    @TestConfiguration
-    static class EmployeeFacadeTestConfiguraion {
-
-        @Autowired
-        EmployeeFacade employeeFacade;
-
-        @Bean
-        public EmployeeController employeeController() {
-            return new EmployeeController(employeeFacade);
-        }
-
-    }
-
-    @Autowired
+    @InjectMocks
     EmployeeController employeeController;
 
-    @MockBean
+    @Mock
     EmployeeFacade employeeFacade;
 
     Employee employee;

@@ -182,7 +182,7 @@ public class EmployeeFacade {
      * @return List of Employees
      * @throws ResourceNotFoundException email not found
      */
-    public List getEmployeeByEmail(final String email)
+    public List<Employee> getEmployeeByEmail(final String email)
             throws ResourceNotFoundException {
         return employeeRepository.findByEmail(email).orElseThrow(
                 () -> {

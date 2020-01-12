@@ -2,13 +2,11 @@ package com.practice.sakthi_via.unit;
 
 import com.practice.sakthi_via.model.Employee;
 import com.practice.sakthi_via.repository.EmployeeRepository;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.event.annotation.AfterTestClass;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.List;
@@ -18,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
 @DataJpaTest
-public class EmployeeRepositoryTest {
+class EmployeeRepositoryTest {
 
     @Autowired
     EmployeeRepository employeeRepository;
@@ -29,7 +27,7 @@ public class EmployeeRepositoryTest {
     private static final Integer AGE = 27;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         Employee employee = new Employee();
         employee.setName(NAME);
         employee.setEmail(EMAIL);
@@ -39,7 +37,7 @@ public class EmployeeRepositoryTest {
     }
 
     @Test
-    public void testFindByUsername() {
+    void testFindByUsername() {
         //GIVEN
         //WHEN
         Employee foundEmployee = employeeRepository.findByUsername(USERNAME);
@@ -48,21 +46,21 @@ public class EmployeeRepositoryTest {
     }
 
     @Test
-    public void testFindByEmail() {
+    void testFindByEmail() {
         //GIVEN
         //WHEN
-        Optional<List> employeeList = employeeRepository.findByEmail(EMAIL);
+        Optional<List<Employee>> employeeList = employeeRepository.findByEmail(EMAIL);
         //THEN
         assertTrue(employeeList.isPresent());
     }
 
     @Test
-    public void testUpdateEmail() {
+    void testUpdateEmail() {
         //GIVEN
         Employee employee = employeeRepository.findByUsername(USERNAME);
         employeeRepository.updateEmployeeEmail(employee.getId(), "newemail@gmail.com");
         //WHEN
-        Optional<List> employeeList = employeeRepository.findByEmail(EMAIL);
+        Optional<List<Employee>> employeeList = employeeRepository.findByEmail(EMAIL);
         //THEN
         assertFalse(employeeList.isPresent());
     }

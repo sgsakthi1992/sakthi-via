@@ -4,15 +4,14 @@ import com.practice.sakthi_via.exception.ResourceNotFoundException;
 import com.practice.sakthi_via.facade.EmployeeFacade;
 import com.practice.sakthi_via.mail.EmailService;
 import com.practice.sakthi_via.model.Employee;
+import com.practice.sakthi_via.model.Mail;
 import com.practice.sakthi_via.model.dto.EmployeeDto;
 import com.practice.sakthi_via.repository.EmployeeRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.Example;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -22,44 +21,38 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
-public class EmployeeFacadeTest {
+class EmployeeFacadeTest {
 
-    @TestConfiguration
-    static class EmployeeFacadeTestConfiguraion {
-        @Bean
-        public EmployeeFacade employeeFacade() {
-            return new EmployeeFacade();
-        }
-
-    }
-
-    @Autowired
+    @InjectMocks
     EmployeeFacade employeeFacade;
 
-    @MockBean
+    @Mock
     EmployeeRepository employeeRepository;
 
-    @MockBean
+    @Mock
     EmailService emailService;
 
     Employee employee;
 
-    public EmployeeFacadeTest() {
+    EmployeeFacadeTest() {
         employee = new Employee((long) 40000, "Employee 1",
                 "employee1", "emp1@gmail.com", 25);
     }
 
     @Test
-    public void testCheckUserName() {
+    void testCheckUserName() {
         //GIVEN
-        Mockito.when(employeeRepository.findByUsername(Mockito.any(String.class))).thenReturn(null);
-        Mockito.when(employeeRepository.findByUsername(employee.getUsername()))
+        when(employeeRepository.findByUsername(anyString())).thenReturn(null);
+        when(employeeRepository.findByUsername(employee.getUsername()))
                 .thenReturn(employee);
         //WHEN
-        Boolean isValidUsername = employeeFacade.checkUsername("validUsername");
-        Boolean isInvalidUsername = employeeFacade.checkUsername(employee.getUsername());
+        boolean isValidUsername = employeeFacade.checkUsername("validUsername");
+        boolean isInvalidUsername = employeeFacade.checkUsername(employee.getUsername());
 
         //THEN
         assertTrue(isValidUsername);
@@ -67,7 +60,7 @@ public class EmployeeFacadeTest {
     }
 
     @Test
-    public void testConvertEmployeeDtoToEmployee() {
+    void testConvertEmployeeDtoToEmployee() {
         //GIVEN
         EmployeeDto employeeDto = new EmployeeDto("Employee 1",
                 "employee1", "emp1@gmail.com", 25);
@@ -82,13 +75,14 @@ public class EmployeeFacadeTest {
     }
 
     @Test
-    public void testCreateEmployee() throws MessagingException {
+    void testCreateEmployee() throws MessagingException {
         //GIVEN
         EmployeeDto employeeDto = new EmployeeDto("Employee 1",
                 "employee1", "emp1@gmail.com", 25);
         EmployeeFacade spyEmployeeFacade = Mockito.spy(employeeFacade);
-        Mockito.when(spyEmployeeFacade.convertEmployeeDtoToEmployee(employeeDto)).thenReturn(employee);
-        Mockito.when(employeeRepository.save(employee)).thenReturn(employee);
+        when(spyEmployeeFacade.convertEmployeeDtoToEmployee(employeeDto)).thenReturn(employee);
+        when(employeeRepository.save(employee)).thenReturn(employee);
+        doNothing().when(emailService).sendMail(any(Mail.class));
         //WHEN
         Employee createdEmployee = spyEmployeeFacade.createEmployee(employeeDto);
         //THEN
@@ -100,9 +94,9 @@ public class EmployeeFacadeTest {
     }
 
     @Test
-    public void testFindAllEmployees() {
+    void testFindAllEmployees() {
         //GIVEN
-        Mockito.when(employeeRepository.findAll()).thenReturn(Stream.of(employee).collect(Collectors.toList()));
+        when(employeeRepository.findAll()).thenReturn(Stream.of(employee).collect(Collectors.toList()));
         //WHEN
         List<Employee> employees = employeeFacade.getEmployees();
         //THEN
@@ -111,10 +105,10 @@ public class EmployeeFacadeTest {
     }
 
     @Test
-    public void testFindEmployeeById() throws ResourceNotFoundException {
+    void testFindEmployeeById() throws ResourceNotFoundException {
         //GIVEN
-        Mockito.when(employeeRepository.findById(Mockito.any(Long.class))).thenReturn(java.util.Optional.empty());
-        Mockito.when(employeeRepository.findById(employee.getId())).thenReturn(java.util.Optional.of(employee));
+        when(employeeRepository.findById(anyLong())).thenReturn(java.util.Optional.empty());
+        when(employeeRepository.findById(employee.getId())).thenReturn(java.util.Optional.of(employee));
         //WHEN
         Employee employeeByValidId = employeeFacade.getEmployeeById(employee.getId());
         //THEN
@@ -123,9 +117,9 @@ public class EmployeeFacadeTest {
     }
 
     @Test
-    public void testDeleteEmployeeById() throws ResourceNotFoundException {
+    void testDeleteEmployeeById() throws ResourceNotFoundException {
         //GIVEN
-        Mockito.when(employeeRepository.findById(employee.getId())).thenReturn(java.util.Optional.of(employee));
+        when(employeeRepository.findById(employee.getId())).thenReturn(java.util.Optional.of(employee));
         Mockito.doNothing().when(employeeRepository).delete(employee);
         //WHEN
         String message = employeeFacade.deleteEmployeeById(employee.getId());
@@ -134,10 +128,10 @@ public class EmployeeFacadeTest {
     }
 
     @Test
-    public void testFindEmployeeByEmail() throws ResourceNotFoundException {
+    void testFindEmployeeByEmail() throws ResourceNotFoundException {
         //GIVEN
-        Mockito.when(employeeRepository.findByEmail(Mockito.any(String.class))).thenReturn(java.util.Optional.empty());
-        Mockito.when(employeeRepository.findByEmail(employee.getEmail()))
+        when(employeeRepository.findByEmail(anyString())).thenReturn(java.util.Optional.empty());
+        when(employeeRepository.findByEmail(employee.getEmail()))
                 .thenReturn(java.util.Optional.of(
                         Stream.of(employee).collect(Collectors.toList())));
         //WHEN
@@ -149,10 +143,10 @@ public class EmployeeFacadeTest {
     }
 
     @Test
-    public void testUpdateEmployeeEmail() throws ResourceNotFoundException {
+    void testUpdateEmployeeEmail() throws ResourceNotFoundException {
         //GIVEN
-        Mockito.when(employeeRepository.findById(employee.getId())).thenReturn(java.util.Optional.of(employee));
-        Mockito.when(employeeRepository.updateEmployeeEmail(employee.getId(), employee.getEmail())).thenReturn(1);
+        when(employeeRepository.findById(employee.getId())).thenReturn(java.util.Optional.of(employee));
+        when(employeeRepository.updateEmployeeEmail(employee.getId(), employee.getEmail())).thenReturn(1);
         //WHEN
         String message = employeeFacade.updateEmployeeEmail(employee.getId(), employee.getEmail());
         //THEN
@@ -160,7 +154,7 @@ public class EmployeeFacadeTest {
     }
 
     @Test
-    public void testGetExample() {
+    void testGetExample() {
         //GIVEN
         //WHEN
         Example<Employee> example = employeeFacade.getExample(employee.getUsername(), employee.getEmail());
@@ -173,14 +167,14 @@ public class EmployeeFacadeTest {
     }
 
     @Test
-    public void testGetEmployeeByUsernameOrEmail() throws ResourceNotFoundException {
+    void testGetEmployeeByUsernameOrEmail() throws ResourceNotFoundException {
         //GIVEN
         Example<Employee> example = employeeFacade.getExample(employee.getUsername(), employee.getEmail());
         EmployeeFacade spyEmployeeFacade = Mockito.spy(employeeFacade);
         Mockito.doReturn(example).when(spyEmployeeFacade).getExample(employee.getUsername(), employee.getEmail());
         Mockito.doReturn(example).when(spyEmployeeFacade).getExample(employee.getUsername(), null);
         Mockito.doReturn(example).when(spyEmployeeFacade).getExample(null, employee.getEmail());
-        Mockito.when(employeeRepository.findAll(example))
+        when(employeeRepository.findAll(example))
                 .thenReturn(Stream.of(employee).collect(Collectors.toList()));
         //WHEN
         List<Employee> employeeByUsernameOrEmail = spyEmployeeFacade

@@ -58,11 +58,11 @@ public class EmailServiceImpl implements EmailService {
      * Implementation of Send mail method.
      *
      * @param mail Mail model object
-     * @throws MessagingException
+     * @throws MessagingException exception
      */
     @Override
     public void sendMail(final Mail mail) throws MessagingException {
-        String body = build("mailTemplate", mail.getContent());
+        String body = build(mail.getContent());
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage,
                 MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
@@ -73,10 +73,9 @@ public class EmailServiceImpl implements EmailService {
         javaMailSender.send(mimeMessage);
     }
 
-    private String build(final String template,
-                         final Map content) {
+    private String build(final Map<String, Object> content) {
         Context context = new Context();
         context.setVariables(content);
-        return templateEngine.process(template, context);
+        return templateEngine.process("mailTemplate", context);
     }
 }

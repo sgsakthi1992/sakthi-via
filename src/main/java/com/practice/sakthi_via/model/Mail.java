@@ -14,7 +14,7 @@ public final class Mail {
     /**
      * Mail content.
      */
-    private final Map content;
+    private final Map<String, Object> content;
 
     /**
      * Mail parameterized constructor.
@@ -23,7 +23,8 @@ public final class Mail {
      * @param subject mail subject
      * @param content mail content
      */
-    public Mail(final String to, final String subject, final Map content) {
+    public Mail(final String to, final String subject,
+                final Map<String, Object> content) {
         this.to = to;
         this.subject = subject;
         this.content = content;
@@ -52,7 +53,7 @@ public final class Mail {
      *
      * @return mail content
      */
-    public Map getContent() {
+    public Map<String, Object> getContent() {
         return content;
     }
 }
