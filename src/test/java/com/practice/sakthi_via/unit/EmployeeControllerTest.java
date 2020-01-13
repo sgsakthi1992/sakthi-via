@@ -34,9 +34,9 @@ class EmployeeControllerTest {
     @Mock
     EmployeeFacade employeeFacade;
 
-    Employee employee;
+    private Employee employee;
 
-    public EmployeeControllerTest() {
+    EmployeeControllerTest() {
         employee = new Employee();
         employee.setId((long) 40000);
         employee.setName("Sakthi");

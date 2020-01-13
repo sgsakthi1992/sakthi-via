@@ -6,11 +6,9 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.icegreen.greenmail.util.GreenMail;
 import com.icegreen.greenmail.util.ServerSetup;
-import com.practice.sakthi_via.model.Employee;
 import com.practice.sakthi_via.model.dto.EmployeeDto;
 import com.practice.sakthi_via.repository.EmployeeRepository;
 import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,13 +17,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
-import java.io.IOException;
-import java.util.Optional;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -45,15 +42,23 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 })
 @ActiveProfiles("test")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class EmployeeAPITest {
+class EmployeeAPITest {
 
-    @Autowired
-    MockMvc mockMvc;
+    private MockMvc mockMvc;
 
-    @Autowired
-    EmployeeRepository employeeRepository;
+    private EmployeeRepository employeeRepository;
 
     private static GreenMail greenMail;
+
+    @Autowired
+    public void setMockMvc(final MockMvc mockMvc) {
+        this.mockMvc = mockMvc;
+    }
+
+    @Autowired
+    public void setEmployeeRepository(final EmployeeRepository employeeRepository) {
+        this.employeeRepository = employeeRepository;
+    }
 
     private static void setupSMTP() {
         greenMail = new GreenMail(new ServerSetup(2525, "127.0.0.1", "smtp"));
@@ -64,22 +69,18 @@ public class EmployeeAPITest {
         greenMail.stop();
     }
 
+    @Sql({"classpath:testDbQuery.sql"})
     @Test
-    @Order(1)
-    public void testGetEmployees() throws Exception {
-        //GIVEN
-        Optional<Employee> employee = createEmployee
-                ("Employee1", "employee1@gmail.com", "employee1", 27);
+    void testGetEmployees() throws Exception {
         //WHEN
         ResultActions resultActions = mockMvc.perform(get("/api/v1/employees"));
         //THEN
         validateOkResponse(resultActions)
-                .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[0].name", is(employee.get().getName())));
+                .andExpect(jsonPath("$", hasSize(2)));
     }
 
     @Test
-    public void testPostEmployee() throws Exception {
+    void testPostEmployee() throws Exception {
         //GIVEN
         setupSMTP();
 
@@ -99,13 +100,12 @@ public class EmployeeAPITest {
         tearDownSMTP();
     }
 
+    @Sql({"classpath:testDBQuery.sql"})
     @Test
-    public void testCreateWithExistingUserName() throws Exception {
+    void testCreateWithExistingUserName() throws Exception {
         //GIVEN
-        createEmployee("Employee3", "employee3@gmail.com",
-                "employee3", 27);
         EmployeeDto employeeDto = new EmployeeDto("Employee 4",
-                "employee3", "employee4@gmail.com", 22);
+                "employee", "employee4@gmail.com", 22);
         String requestJson = convertEmployeeDtoToJson(employeeDto);
 
         //WHEN
@@ -118,7 +118,7 @@ public class EmployeeAPITest {
     }
 
     @Test
-    public void testCreateWithInvalidEmailId() throws Exception {
+    void testCreateWithInvalidEmailId() throws Exception {
         //GIVEN
         EmployeeDto employeeDto = new EmployeeDto("Employee 4",
                 "employee4", "employee4", 22);
@@ -134,7 +134,7 @@ public class EmployeeAPITest {
     }
 
     @Test
-    public void testCreateWithInvalidAge() throws Exception {
+    void testCreateWithInvalidAge() throws Exception {
         //GIVEN
         EmployeeDto employeeDto = new EmployeeDto("Employee 4",
                 "employee4", "employee4@gmail.com", 0);
@@ -150,7 +150,7 @@ public class EmployeeAPITest {
     }
 
     @Test
-    public void testCreateWithInvalidUsernameMinSize() throws Exception {
+    void testCreateWithInvalidUsernameMinSize() throws Exception {
         //GIVEN
         EmployeeDto employeeDto = new EmployeeDto("Employee 4",
                 "emp", "employee4@gmail.com", 22);
@@ -166,7 +166,7 @@ public class EmployeeAPITest {
     }
 
     @Test
-    public void testCreateWithInvalidUsernameMaxSize() throws Exception {
+    void testCreateWithInvalidUsernameMaxSize() throws Exception {
         //GIVEN
         EmployeeDto employeeDto = new EmployeeDto("Employee 4",
                 "employee4_username", "employee4@gmail.com", 22);
@@ -182,7 +182,7 @@ public class EmployeeAPITest {
     }
 
     @Test
-    public void testCreateWithEmptyName() throws Exception {
+    void testCreateWithEmptyName() throws Exception {
         //GIVEN
         EmployeeDto employeeDto = new EmployeeDto("",
                 "employee4_username", "employee4@gmail.com", 22);
@@ -197,22 +197,11 @@ public class EmployeeAPITest {
         validateBadRequestResponse(resultActions);
     }
 
-    private Optional<Employee> createEmployee(String name, String email, String username, Integer age) {
-        Employee employee = new Employee();
-        employee.setName(name);
-        employee.setEmail(email);
-        employee.setUsername(username);
-        employee.setAge(age);
-        employeeRepository.save(employee);
-        return employeeRepository.findById(employee.getId());
-    }
-
     private String convertEmployeeDtoToJson(EmployeeDto employeeDto) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
         ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
-        String requestJson = ow.writeValueAsString(employeeDto);
-        return requestJson;
+        return ow.writeValueAsString(employeeDto);
     }
 
     private ResultActions validateOkResponse(ResultActions resultActions) throws Exception {
@@ -223,7 +212,7 @@ public class EmployeeAPITest {
         resultActions.andExpect(status().isBadRequest());
     }
 
-    private void validateEmailResponse(EmployeeDto employee) throws MessagingException, IOException {
+    private void validateEmailResponse(EmployeeDto employee) throws MessagingException {
         boolean ok = greenMail.waitForIncomingEmail(1);
         if (ok) {
             MimeMessage receivedMessage = greenMail.getReceivedMessages()[0];
