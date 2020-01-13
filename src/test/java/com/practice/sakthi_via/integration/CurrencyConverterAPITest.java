@@ -23,25 +23,45 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "spring.jpa.properties.hibernate.dialect = org.hibernate.dialect.H2Dialect",
         "spring.datasource.driverClassName = org.h2.Driver"
 })
-public class TodoAPITest {
+class CurrencyConverterAPITest {
     @Autowired
-    MockMvc mockMvc;
+    private MockMvc mockMvc;
 
     @Test
-    public void testGetTodos() throws Exception {
+    void testGetCountriesAndCurrencies() throws Exception {
         //GIVEN
         //WHEN
-        ResultActions resultActions = mockMvc.perform(get("/api/v1/todos"));
+        ResultActions resultActions = mockMvc.perform(get("/api/v1/countries")).andDo(print());
 
         //THEN
         resultActions.andExpect(status().isOk());
     }
 
     @Test
-    public void testGetTodosById() throws Exception {
+    void testGetCountryForCurrencyCode() throws Exception {
         //GIVEN
         //WHEN
-        ResultActions resultActions = mockMvc.perform(get("/api/v1/todos/1")).andDo(print());
+        ResultActions resultActions = mockMvc.perform(get("/api/v1/country/HUF")).andDo(print());
+
+        //THEN
+        resultActions.andExpect(status().isOk());
+    }
+
+    @Test
+    void testGetCurrencyRate() throws Exception {
+        //GIVEN
+        //WHEN
+        ResultActions resultActions = mockMvc.perform(get("/api/v1/rates?base=HUF")).andDo(print());
+
+        //THEN
+        resultActions.andExpect(status().isOk());
+    }
+
+    @Test
+    void getHighestAndLowestCurrencyRates() throws Exception {
+        //GIVEN
+        //WHEN
+        ResultActions resultActions = mockMvc.perform(get("/api/v1/highestCurrencyRate?base=HUF")).andDo(print());
 
         //THEN
         resultActions.andExpect(status().isOk());
