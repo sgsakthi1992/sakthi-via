@@ -37,7 +37,7 @@ public class CurrencyConverterFacade {
      */
     public CurrencyConverter getCurrencyRate(final String base) {
         String url = String.format(
-                "https://api.exchangeratesapi.io/latest?base={}", base);
+                "https://api.exchangeratesapi.io/latest?base=%s", base);
         CurrencyConverter response = restTemplate
                 .getForObject(url, CurrencyConverter.class);
         return response;
