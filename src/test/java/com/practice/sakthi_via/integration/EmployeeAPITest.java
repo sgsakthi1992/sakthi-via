@@ -100,7 +100,7 @@ class EmployeeAPITest {
         tearDownSMTP();
     }
 
-    @Sql({"classpath:testDBQuery.sql"})
+    @Sql({"classpath:testDbQuery.sql"})
     @Test
     void testCreateWithExistingUserName() throws Exception {
         //GIVEN
