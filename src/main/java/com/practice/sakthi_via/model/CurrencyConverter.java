@@ -1,13 +1,14 @@
 package com.practice.sakthi_via.model;
 
-import java.util.HashMap;
+import java.time.LocalDate;
+import java.util.Map;
 
 public class CurrencyConverter {
 
     /**
      * to-do id.
      */
-    private HashMap<String, Double> rates;
+    private Map<String, Double> rates;
     /**
      * to-do title.
      */
@@ -15,14 +16,14 @@ public class CurrencyConverter {
     /**
      * to-do Status.
      */
-    private String date;
+    private LocalDate date;
 
     /**
      * Getter for rates.
      *
      * @return rates
      */
-    public HashMap<String, Double> getRates() {
+    public Map<String, Double> getRates() {
         return rates;
     }
 
@@ -31,7 +32,7 @@ public class CurrencyConverter {
      *
      * @param rates rates
      */
-    public void setRates(final HashMap<String, Double> rates) {
+    public void setRates(final Map<String, Double> rates) {
         this.rates = rates;
     }
 
@@ -58,7 +59,7 @@ public class CurrencyConverter {
      *
      * @return date
      */
-    public String getDate() {
+    public LocalDate getDate() {
         return date;
     }
 
@@ -67,7 +68,7 @@ public class CurrencyConverter {
      *
      * @param date date
      */
-    public void setDate(final String date) {
+    public void setDate(final LocalDate date) {
         this.date = date;
     }
 

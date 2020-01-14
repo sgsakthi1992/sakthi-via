@@ -24,6 +24,11 @@ import static org.springframework.data.domain.ExampleMatcher.GenericPropertyMatc
 @Service
 public class EmployeeFacade {
     /**
+     * Logger Object to log the details.
+     */
+    private static final Logger LOGGER = LoggerFactory.
+            getLogger(EmployeeFacade.class);
+    /**
      * Message for Employee Id not found.
      */
     private static final String EMPLOYEE_ID_NOT_FOUND = "Employee Id not found";
@@ -70,12 +75,6 @@ public class EmployeeFacade {
     public void setEmailService(final EmailService emailService) {
         this.emailService = emailService;
     }
-
-    /**
-     * Logger Object to log the details.
-     */
-    private static final Logger LOGGER = LoggerFactory.
-            getLogger(EmployeeFacade.class);
 
     /**
      * Method to check username already exists.

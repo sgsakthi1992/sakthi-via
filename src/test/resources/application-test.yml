@@ -2,3 +2,10 @@ spring:
   mail:
     host: 127.0.0.1
     port: 2525
+via:
+  countries:
+    api:
+      url: "http://localhost:8080/api/currencies.json"
+  currencyrate:
+    api:
+      url: "http://localhost:8080/latest?base=%s"

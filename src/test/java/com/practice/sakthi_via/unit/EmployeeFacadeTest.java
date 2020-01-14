@@ -38,7 +38,7 @@ class EmployeeFacadeTest {
     @InjectMocks
     EmployeeFacade spyEmployeeFacade;
 
-    Employee employee;
+    private Employee employee;
 
     EmployeeFacadeTest() {
         employee = new Employee((long) 40000, "Employee 1",

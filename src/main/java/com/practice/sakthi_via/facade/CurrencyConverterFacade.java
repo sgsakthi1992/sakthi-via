@@ -1,22 +1,47 @@
 package com.practice.sakthi_via.facade;
 
 import com.practice.sakthi_via.model.CurrencyConverter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 @Service
 public class CurrencyConverterFacade {
     /**
+     * Logger Object to log the details.
+     */
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(CurrencyConverterFacade.class);
+    /**
+     * URL to fetch the countries and their currencies.
+     */
+    @Value("${via.countries.api.url}")
+    private String countriesAndCurrenciesUrl;
+    /**
+     * URL to fetch the currency rate.
+     */
+    @Value("${via.currencyrate.api.url}")
+    private String currencyRateUrl;
+    /**
      * RestTemplate object.
      */
-    private RestTemplate restTemplate = new RestTemplate();
+    private RestTemplate restTemplate;
+
+    /**
+     * Parameterized constructor to bind rest template object.
+     *
+     * @param restTemplate rest template object
+     */
+    public CurrencyConverterFacade(final RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+    }
 
     /**
      * Get Countries and their currencies from
@@ -24,9 +49,13 @@ public class CurrencyConverterFacade {
      *
      * @return Countries and their currencies
      */
-    public HashMap<String, String> getCountriesAndCurrencies() {
-        String url = "https://openexchangerates.org/api/currencies.json";
-        return restTemplate.getForObject(url, HashMap.class);
+    public Map getCountriesAndCurrencies() {
+        LOGGER.debug("countriesAndCurrenciesUrl: {}",
+                countriesAndCurrenciesUrl);
+        HashMap countries = restTemplate
+                .getForObject(countriesAndCurrenciesUrl, HashMap.class);
+        LOGGER.debug("Countries List: {}", countries);
+        return countries;
     }
 
     /**
@@ -37,31 +66,40 @@ public class CurrencyConverterFacade {
      */
     public CurrencyConverter getCurrencyRate(final String base) {
         String url = String.format(
-                "https://api.exchangeratesapi.io/latest?base=%s", base);
-        CurrencyConverter response = restTemplate
+                currencyRateUrl, base);
+        LOGGER.debug("Currency Converter API URL: {}", url);
+        CurrencyConverter currencyRate = restTemplate
                 .getForObject(url, CurrencyConverter.class);
-        return response;
+        if (currencyRate != null) {
+            currencyRate.getRates().remove(base);
+        }
+        LOGGER.debug("Currency Rate: {}", currencyRate);
+        return currencyRate;
     }
 
     /**
-     * Get Highest currency rate country for the base currency.
+     * Get Highest and Lowest currency rate countries for the base currency.
      *
      * @param base base currency
-     * @return highest currency rate country
+     * @return highest and lowest currency rate countries
      */
-    public Set<Map.Entry> getHighestAndLowestCurrencyRate(
+    public Map<String, Double> getHighestAndLowestCurrencyRate(
             final String base) {
         CurrencyConverter currencyRate = getCurrencyRate(base);
-        HashMap<String, Double> rates = currencyRate.getRates();
+        Map<String, Double> rates = currencyRate.getRates();
 
         Optional<Map.Entry<String, Double>> max = rates.entrySet().stream()
                 .max(Comparator.comparing(Map.Entry::getValue));
 
         Optional<Map.Entry<String, Double>> min = rates.entrySet().stream()
                 .min(Comparator.comparing(Map.Entry::getValue));
-        Set<Map.Entry> highAndLowRates = new HashSet<>();
-        max.ifPresent(highAndLowRates::add);
-        min.ifPresent(highAndLowRates::add);
+
+        Map<String, Double> highAndLowRates = new HashMap<>();
+        max.ifPresent(entry -> highAndLowRates
+                .put(entry.getKey(), entry.getValue()));
+        min.ifPresent(entry -> highAndLowRates
+                .put(entry.getKey(), entry.getValue()));
+
         return highAndLowRates;
     }
 
@@ -72,7 +110,7 @@ public class CurrencyConverterFacade {
      * @return country
      */
     public String getCountryForCurrencyCode(final String code) {
-        HashMap<String, String> countries = getCountriesAndCurrencies();
-        return countries.get(code);
+        Map countries = getCountriesAndCurrencies();
+        return countries.get(code).toString();
     }
 }

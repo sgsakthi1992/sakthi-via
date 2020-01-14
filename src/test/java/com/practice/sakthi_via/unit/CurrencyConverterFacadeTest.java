@@ -1,49 +1,123 @@
-/*
- * Copyright (c) 2020.
- */
-
 package com.practice.sakthi_via.unit;
 
 import com.practice.sakthi_via.facade.CurrencyConverterFacade;
+import com.practice.sakthi_via.model.CurrencyConverter;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Spy;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.client.RestTemplate;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.spy;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(SpringExtension.class)
 class CurrencyConverterFacadeTest {
 
-    CurrencyConverterFacade currencyConverterFacade = new CurrencyConverterFacade();
+    @Mock
+    RestTemplate restTemplate;
 
-    CurrencyConverterFacade spyCurrencyConverterFacade = spy(currencyConverterFacade);
+    @InjectMocks
+    CurrencyConverterFacade currencyConverterFacade;
+
+    @Spy
+    @InjectMocks
+    CurrencyConverterFacade spyCurrencyConverterFacade;
+
+    private static final String COUNTRIES_AND_CURRENCIES_URL =
+            "https://openexchangerates.org/api/currencies.json";
+    private static final String CURRENCY_RATE_URL =
+            "https://api.exchangeratesapi.io/latest?base=";
+
+    private String base = "HUF";
+    private CurrencyConverter converter;
+    private HashMap<String, String> countries;
+
+    CurrencyConverterFacadeTest() {
+        countries = new HashMap<>();
+        countries.put("HUF", "Hungarian Forint");
+        countries.put("INR", "Indian Rupee");
+        countries.put("USD", "US Dollar");
+
+        Map<String, Double> rates = new HashMap<>();
+        rates.put("GBP", 0.0025654372);
+        rates.put("IDR", 45.60031709);
+        rates.put("INR", 0.2357907805);
+        rates.put("HUF", 1.0);
+
+        converter = new CurrencyConverter();
+        converter.setBase(base);
+        converter.setDate(LocalDate.now());
+        converter.setRates(rates);
+    }
 
     @Test
     void getCountriesAndCurrencies() {
+        //GIVEN
+        when(restTemplate.getForObject(COUNTRIES_AND_CURRENCIES_URL, HashMap.class)).thenReturn(countries);
+        ReflectionTestUtils.setField(currencyConverterFacade, "countriesAndCurrenciesUrl",
+                "https://openexchangerates.org/api/currencies.json");
+        //WHEN
+        Map countriesAndCurrencies = currencyConverterFacade.getCountriesAndCurrencies();
+
+        //THEN
+        assertEquals(countries.size(), countriesAndCurrencies.size());
+        assertEquals(countries.get("HUF"), countriesAndCurrencies.get("HUF"));
     }
 
     @Test
     void getCurrencyRate() {
+        //GIVEN
+        String base = "HUF";
+        ArgumentCaptor captor = ArgumentCaptor.forClass(String.class);
+        when(restTemplate.getForObject(CURRENCY_RATE_URL + base, CurrencyConverter.class))
+                .thenReturn(converter);
+        ReflectionTestUtils.setField(currencyConverterFacade, "currencyRateUrl",
+                "https://api.exchangeratesapi.io/latest?base=%s");
+        //WHEN
+        CurrencyConverter currencyRate = currencyConverterFacade.getCurrencyRate(base);
+
+        //THEN
+        verify(restTemplate).getForObject((String) captor.capture(), eq(CurrencyConverter.class));
+        assertEquals(CURRENCY_RATE_URL + base, captor.getValue());
+        assertNotNull(currencyRate.getRates());
+        assertNull(currencyRate.getRates().get("HUF"));
     }
 
     @Test
     void getHighestAndLowestCurrencyRate() {
+        //GIVEN
+        when(restTemplate.getForObject(CURRENCY_RATE_URL + base, CurrencyConverter.class))
+                .thenReturn(converter);
+        ReflectionTestUtils.setField(currencyConverterFacade, "currencyRateUrl",
+                "https://api.exchangeratesapi.io/latest?base=%s");
+        //WHEN
+        Map<String, Double> highestAndLowestCurrencyRate = currencyConverterFacade
+                .getHighestAndLowestCurrencyRate(base);
+        //THEN
+        assertNotNull(highestAndLowestCurrencyRate.get("GBP"));
+        assertNotNull(highestAndLowestCurrencyRate.get("IDR"));
+        assertNull(highestAndLowestCurrencyRate.get("HUF"));
     }
 
     @Test
     void getCountryForCurrencyCode() {
         //GIVEN
-        HashMap<String, String> countries = new HashMap<>();
-        countries.put("HUF", "Hungarian Forint");
-        countries.put("INR", "Indian Rupee");
-        countries.put("USD", "US Dollar");
         when(spyCurrencyConverterFacade.getCountriesAndCurrencies()).thenReturn(countries);
+
         //WHEN
         String country = spyCurrencyConverterFacade.getCountryForCurrencyCode("HUF");
+
         //THEN
         assertEquals("Hungarian Forint", country);
     }

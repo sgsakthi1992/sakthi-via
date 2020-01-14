@@ -12,9 +12,7 @@ import com.icegreen.greenmail.util.GreenMail;
 import com.icegreen.greenmail.util.ServerSetup;
 import com.practice.sakthi_via.model.dto.EmployeeDto;
 import com.practice.sakthi_via.repository.EmployeeRepository;
-import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -32,8 +30,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -44,8 +41,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "spring.jpa.properties.hibernate.dialect = org.hibernate.dialect.H2Dialect",
         "spring.datasource.driverClassName = org.h2.Driver"
 })
+@Sql({"classpath:testDbQuery.sql"})
 @ActiveProfiles("test")
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class EmployeeAPITest {
 
     private MockMvc mockMvc;
@@ -73,7 +70,6 @@ class EmployeeAPITest {
         greenMail.stop();
     }
 
-    @Sql({"classpath:testDbQuery.sql"})
     @Test
     void testGetEmployees() throws Exception {
         //WHEN
@@ -104,7 +100,6 @@ class EmployeeAPITest {
         tearDownSMTP();
     }
 
-    @Sql({"classpath:testDbQuery.sql"})
     @Test
     void testCreateWithExistingUserName() throws Exception {
         //GIVEN
@@ -201,6 +196,166 @@ class EmployeeAPITest {
         validateBadRequestResponse(resultActions);
     }
 
+    @Test
+    void testGetEmployeeById() throws Exception {
+        //GIVEN
+        //WHEN
+        ResultActions resultActions = mockMvc.perform(get("/api/v1/employees/1"));
+
+        //THEN
+        validateOkResponse(resultActions);
+    }
+
+    @Test
+    void testGetEmployeeByIdWithNewId() throws Exception {
+        //GIVEN
+        //WHEN
+        ResultActions resultActions = mockMvc.perform(get("/api/v1/employees/3"));
+
+        //THEN
+        validateNotFoundResponse(resultActions);
+    }
+
+    @Test
+    void testDeleteEmployeeById() throws Exception {
+        //GIVEN
+        //WHEN
+        ResultActions resultActions = mockMvc.perform(delete("/api/v1/employees/1"));
+
+        //THEN
+        validateOkResponse(resultActions);
+    }
+
+    @Test
+    void testDeleteEmployeeByIdWithNewId() throws Exception {
+        //GIVEN
+        //WHEN
+        ResultActions resultActions = mockMvc.perform(delete("/api/v1/employees/3"));
+
+        //THEN
+        validateNotFoundResponse(resultActions);
+    }
+
+    @Test
+    void testGetEmployeeByEmail() throws Exception {
+        //GIVEN
+        //WHEN
+        ResultActions resultActions = mockMvc.perform(get("/api/v1/employeesByEmail/employee@gmail.com"));
+
+        //THEN
+        validateOkResponse(resultActions);
+    }
+
+    @Test
+    void testGetEmployeeByEmailWithNewEmail() throws Exception {
+        //GIVEN
+        //WHEN
+        ResultActions resultActions = mockMvc.perform(get("/api/v1/employeesByEmail/newemail@gmail.com"));
+
+        //THEN
+        validateNotFoundResponse(resultActions);
+    }
+
+    @Test
+    void testGetEmployeeByEmailWithInvalidEmail() throws Exception {
+        //GIVEN
+        //WHEN
+        ResultActions resultActions = mockMvc.perform(get("/api/v1/employeesByEmail/newemail"));
+
+        //THEN
+        validateBadRequestResponse(resultActions);
+    }
+
+    @Test
+    void testGetEmployeeByUsernameOrEmail() throws Exception {
+        //GIVEN
+        //WHEN
+        ResultActions resultActions = mockMvc.perform(
+                get("/api/v1/employeesByUsernameOrEmail?email=employee@gmail.com&username=employee1"));
+        //THEN
+        validateOkResponse(resultActions);
+    }
+
+    @Test
+    void testGetEmployeeByUsernameOrEmailWithOnlyEmail() throws Exception {
+        //GIVEN
+        //WHEN
+        ResultActions resultActions = mockMvc.perform(
+                get("/api/v1/employeesByUsernameOrEmail?email=employee@gmail.com"));
+        //THEN
+        validateOkResponse(resultActions);
+    }
+
+    @Test
+    void testGetEmployeeByUsernameOrEmailWithOnlyUsername() throws Exception {
+        //GIVEN
+        //WHEN
+        ResultActions resultActions = mockMvc.perform(
+                get("/api/v1/employeesByUsernameOrEmail?username=employee1"));
+        //THEN
+        validateOkResponse(resultActions);
+    }
+
+    @Test
+    void testGetEmployeeByUsernameOrEmailWithoutUsernameAndEmail() throws Exception {
+        //GIVEN
+        //WHEN
+        ResultActions resultActions = mockMvc.perform(
+                get("/api/v1/employeesByUsernameOrEmail"));
+        //THEN
+        validateNotFoundResponse(resultActions);
+    }
+
+    @Test
+    void testGetEmployeeByUsernameOrEmailWithNewUsernameAndEmail() throws Exception {
+        //GIVEN
+        //WHEN
+        ResultActions resultActions = mockMvc.perform(
+                get("/api/v1/employeesByUsernameOrEmail?email=newmail@gmail.com&username=newuser"));
+        //THEN
+        validateNotFoundResponse(resultActions);
+    }
+
+    @Test
+    void testGetEmployeeByUsernameOrEmailWithInvalidEmail() throws Exception {
+        //GIVEN
+        //WHEN
+        ResultActions resultActions = mockMvc.perform(
+                get("/api/v1/employeesByUsernameOrEmail?email=newmail"));
+        //THEN
+        validateBadRequestResponse(resultActions);
+    }
+
+    @Test
+    void testUpdateEmployeeEmail() throws Exception {
+        //GIVEN
+        //WHEN
+        ResultActions resultActions = mockMvc.perform(
+                put("/api/v1/employees/2?email=employee1@yahoo.com"));
+        //THEN
+        validateOkResponse(resultActions);
+    }
+
+    @Test
+    void testUpdateEmployeeEmailWithNewId() throws Exception {
+        //GIVEN
+        //WHEN
+        ResultActions resultActions = mockMvc.perform(
+                put("/api/v1/employees/4?email=employee1@yahoo.com"));
+        //THEN
+        validateNotFoundResponse(resultActions);
+    }
+
+    @Test
+    void testUpdateEmployeeEmailWithInvalidEmail() throws Exception {
+        //GIVEN
+        //WHEN
+        ResultActions resultActions = mockMvc.perform(
+                put("/api/v1/employees/2?email=employee1"));
+        //THEN
+        validateBadRequestResponse(resultActions);
+    }
+
     private String convertEmployeeDtoToJson(EmployeeDto employeeDto) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
@@ -214,6 +369,10 @@ class EmployeeAPITest {
 
     private void validateBadRequestResponse(ResultActions resultActions) throws Exception {
         resultActions.andExpect(status().isBadRequest());
+    }
+
+    private void validateNotFoundResponse(ResultActions resultActions) throws Exception {
+        resultActions.andExpect(status().isNotFound());
     }
 
     private void validateEmailResponse(EmployeeDto employee) throws MessagingException {

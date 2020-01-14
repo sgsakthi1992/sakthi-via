@@ -10,9 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -38,8 +36,8 @@ public class CurrencyConverterController {
      * @return ResponseEntity with Country list
      */
     @GetMapping("/countries")
-    public ResponseEntity<HashMap> getCountriesAndCurrencies() {
-        HashMap countryList = currencyConverterFacade
+    public ResponseEntity<Map> getCountriesAndCurrencies() {
+        Map countryList = currencyConverterFacade
                 .getCountriesAndCurrencies();
         return ResponseEntity.status(HttpStatus.OK).body(countryList);
     }
@@ -79,9 +77,9 @@ public class CurrencyConverterController {
      * @return highest currency rate country
      */
     @GetMapping("/highestCurrencyRate")
-    public ResponseEntity<Set<Map.Entry>> getHighestCurrencyRate(
+    public ResponseEntity<Map<String, Double>> getHighestCurrencyRate(
             @RequestParam(value = "base") final String base) {
-        Set<Map.Entry> currencyRate = currencyConverterFacade
+        Map<String, Double> currencyRate = currencyConverterFacade
                 .getHighestAndLowestCurrencyRate(base);
         return ResponseEntity.status(HttpStatus.OK).body(currencyRate);
     }
