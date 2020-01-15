@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
@@ -34,14 +35,14 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
+@AutoConfigureWireMock(port = 0, stubs = "classpath:/stubs/")
 @TestPropertySource(properties = {
         "spring.datasource.url = jdbc:h2:mem:test",
         "spring.jpa.properties.hibernate.dialect = org.hibernate.dialect.H2Dialect",
         "spring.datasource.driverClassName = org.h2.Driver"
 })
-@Sql({"classpath:testDbQuery.sql"})
 @ActiveProfiles("test")
 class EmployeeAPITest {
 
@@ -76,7 +77,7 @@ class EmployeeAPITest {
         ResultActions resultActions = mockMvc.perform(get("/api/v1/employees"));
         //THEN
         validateOkResponse(resultActions)
-                .andExpect(jsonPath("$", hasSize(2)));
+                .andExpect(jsonPath("$", hasSize(3)));
     }
 
     @Test
@@ -84,8 +85,8 @@ class EmployeeAPITest {
         //GIVEN
         setupSMTP();
 
-        EmployeeDto employeeDto = new EmployeeDto("Employee 2",
-                "employee2", "employee2@gmail.com", 22);
+        EmployeeDto employeeDto = new EmployeeDto("Employee 4",
+                "employee4", "employee4@gmail.com", 22);
         String requestJson = convertEmployeeDtoToJson(employeeDto);
 
         //WHEN
@@ -210,7 +211,7 @@ class EmployeeAPITest {
     void testGetEmployeeByIdWithNewId() throws Exception {
         //GIVEN
         //WHEN
-        ResultActions resultActions = mockMvc.perform(get("/api/v1/employees/3"));
+        ResultActions resultActions = mockMvc.perform(get("/api/v1/employees/4"));
 
         //THEN
         validateNotFoundResponse(resultActions);
@@ -220,7 +221,7 @@ class EmployeeAPITest {
     void testDeleteEmployeeById() throws Exception {
         //GIVEN
         //WHEN
-        ResultActions resultActions = mockMvc.perform(delete("/api/v1/employees/1"));
+        ResultActions resultActions = mockMvc.perform(delete("/api/v1/employees/3"));
 
         //THEN
         validateOkResponse(resultActions);
@@ -230,7 +231,7 @@ class EmployeeAPITest {
     void testDeleteEmployeeByIdWithNewId() throws Exception {
         //GIVEN
         //WHEN
-        ResultActions resultActions = mockMvc.perform(delete("/api/v1/employees/3"));
+        ResultActions resultActions = mockMvc.perform(delete("/api/v1/employees/4"));
 
         //THEN
         validateNotFoundResponse(resultActions);

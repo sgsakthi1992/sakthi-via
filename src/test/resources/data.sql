@@ -9,3 +9,4 @@ CREATE TABLE EMPLOYEE (
 );
 insert into EMPLOYEE(NAME, EMAIL, USERNAME, AGE) values('Employee', 'employee@gmail.com', 'employee', 25);
 insert into EMPLOYEE(NAME, EMAIL, USERNAME, AGE) values('Employee1', 'employee1@gmail.com', 'employee1', 27);
+insert into EMPLOYEE(NAME, EMAIL, USERNAME, AGE) values('Employee2', 'employee2@gmail.com', 'employee2', 23);

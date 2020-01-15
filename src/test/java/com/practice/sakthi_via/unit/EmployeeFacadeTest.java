@@ -18,9 +18,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 class EmployeeFacadeTest {
@@ -84,7 +88,6 @@ class EmployeeFacadeTest {
 
         when(spyEmployeeFacade.convertEmployeeDtoToEmployee(employeeDto)).thenReturn(employee);
         when(employeeRepository.save(employee)).thenReturn(employee);
-        doNothing().when(emailService).sendMail(any(Mail.class));
 
         //WHEN
         Employee createdEmployee = spyEmployeeFacade.createEmployee(employeeDto);
@@ -106,7 +109,7 @@ class EmployeeFacadeTest {
         //WHEN
         List<Employee> employees = employeeFacade.getEmployees();
         //THEN
-        assertEquals(1, employees.size());
+        assertThat(employees, hasSize(1));
         assertEquals(employee.getName(), employees.get(0).getName());
     }
 
@@ -143,7 +146,7 @@ class EmployeeFacadeTest {
         //WHEN
         List<Employee> employeesByValidEmail = employeeFacade.getEmployeeByEmail(employee.getEmail());
         //THEN
-        assertEquals(1, employeesByValidEmail.size());
+        assertThat(employeesByValidEmail, hasSize(1));
         assertEquals(employee.getName(), employeesByValidEmail.get(0).getName());
         assertThrows(ResourceNotFoundException.class, () -> employeeFacade.getEmployeeByEmail("newemail@gmail.com"));
     }
@@ -187,7 +190,8 @@ class EmployeeFacadeTest {
                 .getEmployeeByUsernameOrEmail(employee.getUsername(), employee.getEmail());
         
         //THEN
-        assertEquals(1, employeeByUsernameOrEmail.size());
+        assertThat(employeeByUsernameOrEmail, hasSize(1));
+
         assertThrows(ResourceNotFoundException.class, ()
                 -> spyEmployeeFacade.getEmployeeByUsernameOrEmail("new", "new")).printStackTrace();
         assertThrows(ResourceNotFoundException.class, ()

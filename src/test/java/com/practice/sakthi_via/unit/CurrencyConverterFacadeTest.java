@@ -2,6 +2,7 @@ package com.practice.sakthi_via.unit;
 
 import com.practice.sakthi_via.facade.CurrencyConverterFacade;
 import com.practice.sakthi_via.model.CurrencyConverter;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -59,14 +60,16 @@ class CurrencyConverterFacadeTest {
         converter.setBase(base);
         converter.setDate(LocalDate.now());
         converter.setRates(rates);
+
     }
 
     @Test
     void getCountriesAndCurrencies() {
         //GIVEN
-        when(restTemplate.getForObject(COUNTRIES_AND_CURRENCIES_URL, HashMap.class)).thenReturn(countries);
         ReflectionTestUtils.setField(currencyConverterFacade, "countriesAndCurrenciesUrl",
                 "https://openexchangerates.org/api/currencies.json");
+        when(restTemplate.getForObject(COUNTRIES_AND_CURRENCIES_URL, HashMap.class)).thenReturn(countries);
+
         //WHEN
         Map countriesAndCurrencies = currencyConverterFacade.getCountriesAndCurrencies();
 
@@ -80,10 +83,12 @@ class CurrencyConverterFacadeTest {
         //GIVEN
         String base = "HUF";
         ArgumentCaptor captor = ArgumentCaptor.forClass(String.class);
-        when(restTemplate.getForObject(CURRENCY_RATE_URL + base, CurrencyConverter.class))
-                .thenReturn(converter);
+
         ReflectionTestUtils.setField(currencyConverterFacade, "currencyRateUrl",
                 "https://api.exchangeratesapi.io/latest?base=%s");
+        when(restTemplate.getForObject(CURRENCY_RATE_URL + base, CurrencyConverter.class))
+                .thenReturn(converter);
+
         //WHEN
         CurrencyConverter currencyRate = currencyConverterFacade.getCurrencyRate(base);
 
@@ -97,10 +102,11 @@ class CurrencyConverterFacadeTest {
     @Test
     void getHighestAndLowestCurrencyRate() {
         //GIVEN
-        when(restTemplate.getForObject(CURRENCY_RATE_URL + base, CurrencyConverter.class))
-                .thenReturn(converter);
         ReflectionTestUtils.setField(currencyConverterFacade, "currencyRateUrl",
                 "https://api.exchangeratesapi.io/latest?base=%s");
+        when(restTemplate.getForObject(CURRENCY_RATE_URL + base, CurrencyConverter.class))
+                .thenReturn(converter);
+
         //WHEN
         Map<String, Double> highestAndLowestCurrencyRate = currencyConverterFacade
                 .getHighestAndLowestCurrencyRate(base);

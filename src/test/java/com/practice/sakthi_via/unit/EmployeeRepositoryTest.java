@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.List;
@@ -21,20 +22,8 @@ class EmployeeRepositoryTest {
     @Autowired
     EmployeeRepository employeeRepository;
 
-    private static final String NAME = "Employee 4";
-    private static final String EMAIL = "employee4@gmail.com";
-    private static final String USERNAME = "employee4";
-    private static final Integer AGE = 27;
-
-    @BeforeEach
-    void setup() {
-        Employee employee = new Employee();
-        employee.setName(NAME);
-        employee.setEmail(EMAIL);
-        employee.setUsername(USERNAME);
-        employee.setAge(AGE);
-        employeeRepository.save(employee);
-    }
+    private static final String EMAIL = "employee@gmail.com";
+    private static final String USERNAME = "employee";
 
     @Test
     void testFindByUsername() {
