@@ -5,7 +5,7 @@ spring:
 via:
   countries:
     api:
-      url: "http://localhost:${wiremock.server.port}/api/currencies.json"
+      url: http://localhost:${wiremock.server.port}/api/currencies.json
   currencyrate:
     api:
-      url: "http://localhost:${wiremock.server.port}/latest?base=%s"
+      url: http://localhost:${wiremock.server.port}/latest?base=%s

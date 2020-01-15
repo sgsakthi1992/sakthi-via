@@ -1,5 +1,6 @@
 package com.practice.sakthi_via.facade;
 
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.practice.sakthi_via.model.CurrencyConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -7,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
@@ -49,6 +51,7 @@ public class CurrencyConverterFacade {
      *
      * @return Countries and their currencies
      */
+    @HystrixCommand(fallbackMethod = "getDefaultCountriesAndCurrencies")
     public Map getCountriesAndCurrencies() {
         LOGGER.debug("countriesAndCurrenciesUrl: {}",
                 countriesAndCurrenciesUrl);
@@ -64,6 +67,7 @@ public class CurrencyConverterFacade {
      * @param base base currency
      * @return currency rates for the base currency
      */
+    @HystrixCommand(fallbackMethod = "getDefaultCurrencyRate")
     public CurrencyConverter getCurrencyRate(final String base) {
         String url = String.format(
                 currencyRateUrl, base);
@@ -113,4 +117,43 @@ public class CurrencyConverterFacade {
         Map countries = getCountriesAndCurrencies();
         return countries.get(code).toString();
     }
+
+    /**
+     * Hystrix fallback method to getCountriesAndCurrencies.
+     *
+     * @return default values of countries and currencies
+     */
+    private Map getDefaultCountriesAndCurrencies() {
+        Map<String, String> defaultValues = new HashMap<>();
+        defaultValues.put("INR", "Indian Rupee");
+        defaultValues.put("HUF", "Hungarian Forint");
+        return defaultValues;
+    }
+
+    /**
+     * Hystrix fallback method to getCurrencyRate.
+     *
+     * @param base Base country
+     * @return default values of countries and currencies
+     */
+    private CurrencyConverter getDefaultCurrencyRate(final String base) {
+        final Double inr = 0.2357907805;
+        final Double idr = 45.60031709;
+        final Double gbp = 0.0025654372;
+
+        CurrencyConverter converter = new CurrencyConverter();
+        converter.setBase("HUF");
+        converter.setDate(LocalDate.now());
+
+        Map<String, Double> rates = new HashMap<>();
+        rates.put("GBP", gbp);
+        rates.put("IDR", idr);
+        rates.put("INR", inr);
+        rates.put("HUF", 1.0);
+
+        converter.setRates(rates);
+
+        return converter;
+    }
+
 }

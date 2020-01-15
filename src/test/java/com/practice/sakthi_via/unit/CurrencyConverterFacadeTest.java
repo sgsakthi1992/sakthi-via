@@ -2,7 +2,6 @@ package com.practice.sakthi_via.unit;
 
 import com.practice.sakthi_via.facade.CurrencyConverterFacade;
 import com.practice.sakthi_via.model.CurrencyConverter;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
