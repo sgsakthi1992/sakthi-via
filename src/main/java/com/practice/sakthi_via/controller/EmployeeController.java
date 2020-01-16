@@ -235,11 +235,9 @@ public class EmployeeController {
     })
     @GetMapping("/employeesByUsernameOrEmail")
     public ResponseEntity<List> getEmployeeByUsernameOrEmail(
-            @ApiParam(value = "Email to retrieve Employee Details",
-                    required = false)
+            @ApiParam(value = "Email to retrieve Employee Details")
             @Valid @RequestParam(required = false) final String username,
-            @ApiParam(value = "Username to retrieve Employee Details",
-                    required = false)
+            @ApiParam(value = "Username to retrieve Employee Details")
             @Email(message = EMAIL_VALIDATION_MSG) @Valid
             @RequestParam(required = false) final String email)
             throws ResourceNotFoundException {

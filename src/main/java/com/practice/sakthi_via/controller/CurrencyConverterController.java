@@ -3,6 +3,11 @@ package com.practice.sakthi_via.controller;
 import com.practice.sakthi_via.exception.ResourceNotFoundException;
 import com.practice.sakthi_via.facade.CurrencyConverterFacade;
 import com.practice.sakthi_via.model.CurrencyConverter;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -16,13 +21,26 @@ import javax.validation.constraints.Size;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/v1")
 @Validated
+@RequestMapping("/api/v1")
+@Api("Currency Converter System")
 public class CurrencyConverterController {
     /**
      * Currency code length.
      */
     private static final int CURRENCY_CODE_LENGTH = 3;
+    /**
+     * HTTP Status OK value.
+     */
+    private static final int HTTP_STATUS_OK = 200;
+    /**
+     * HTTP Status Bad Request value.
+     */
+    private static final int HTTP_STATUS_BAD_REQUEST = 400;
+    /**
+     * HTTP Status Not Found value.
+     */
+    private static final int HTTP_STATUS_NOT_FOUND = 404;
     /**
      * TodoFacade object.
      */
@@ -43,6 +61,11 @@ public class CurrencyConverterController {
      *
      * @return ResponseEntity with Country list
      */
+    @ApiOperation("Retrieve Countries and their Currencies")
+    @ApiResponses({
+            @ApiResponse(code = HTTP_STATUS_OK,
+                    message = "Retrieved Successfully")
+    })
     @GetMapping("/countries")
     public ResponseEntity<Map> getCountriesAndCurrencies() {
         Map countryList = currencyConverterFacade
@@ -57,8 +80,18 @@ public class CurrencyConverterController {
      * @return ResponseEntity with Users List
      * @throws ResourceNotFoundException currency code not found
      */
+    @ApiOperation("Get Country for currency code")
+    @ApiResponses({
+            @ApiResponse(code = HTTP_STATUS_OK,
+                    message = "Retrieved Successfully"),
+            @ApiResponse(code = HTTP_STATUS_BAD_REQUEST,
+                    message = "Currency code must be of 3 letters"),
+            @ApiResponse(code = HTTP_STATUS_NOT_FOUND,
+                    message = "Not a Valid currency code")
+    })
     @GetMapping("/country/{code}")
     public ResponseEntity<String> getCountryForCurrencyCode(
+            @ApiParam(value = "Currency code", required = true)
             @Size(min = CURRENCY_CODE_LENGTH, max = CURRENCY_CODE_LENGTH,
                     message = "Currency code must be of 3 letters")
             @PathVariable(value = "code") final String code)
@@ -74,8 +107,16 @@ public class CurrencyConverterController {
      * @param base base country
      * @return list of to-do's
      */
+    @ApiOperation("Get Country for currency code")
+    @ApiResponses({
+            @ApiResponse(code = HTTP_STATUS_OK,
+                    message = "Retrieved Successfully"),
+            @ApiResponse(code = HTTP_STATUS_BAD_REQUEST,
+                    message = "Currency code must be of 3 letters")
+    })
     @GetMapping("/rates")
     public ResponseEntity<CurrencyConverter> getCurrencyRate(
+            @ApiParam(value = "Currency code", required = true)
             @Size(min = CURRENCY_CODE_LENGTH, max = CURRENCY_CODE_LENGTH,
                     message = "Currency code must be of 3 letters")
             @RequestParam(value = "base") final String base) {
@@ -90,8 +131,18 @@ public class CurrencyConverterController {
      * @param base base country
      * @return highest currency rate country
      */
+    @ApiOperation("Get Country for currency code")
+    @ApiResponses({
+            @ApiResponse(code = HTTP_STATUS_OK,
+                    message = "Retrieved Successfully"),
+            @ApiResponse(code = HTTP_STATUS_BAD_REQUEST,
+                    message = "Currency code must be of 3 letters")
+    })
     @GetMapping("/highestCurrencyRate")
     public ResponseEntity<Map<String, Double>> getHighestCurrencyRate(
+            @ApiParam(value = "Currency code", required = true)
+            @Size(min = CURRENCY_CODE_LENGTH, max = CURRENCY_CODE_LENGTH,
+                    message = "Currency code must be of 3 letters")
             @RequestParam(value = "base") final String base) {
         Map<String, Double> currencyRate = currencyConverterFacade
                 .getHighestAndLowestCurrencyRate(base);
