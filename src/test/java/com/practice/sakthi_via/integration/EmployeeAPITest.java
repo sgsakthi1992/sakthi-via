@@ -1,7 +1,3 @@
-/*
- * Copyright (c) 2020.
- */
-
 package com.practice.sakthi_via.integration;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -19,7 +15,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -37,11 +32,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @AutoConfigureWireMock(port = 0, stubs = "classpath:/stubs/")
-@TestPropertySource(properties = {
-        "spring.datasource.url = jdbc:h2:mem:test",
-        "spring.jpa.properties.hibernate.dialect = org.hibernate.dialect.H2Dialect",
-        "spring.datasource.driverClassName = org.h2.Driver"
-})
 @ActiveProfiles("test")
 class EmployeeAPITest {
 
