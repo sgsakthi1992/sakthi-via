@@ -1,11 +1,13 @@
 package com.practice.sakthi_via.facade;
 
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+import com.practice.sakthi_via.exception.ResourceNotFoundException;
 import com.practice.sakthi_via.model.CurrencyConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
@@ -52,10 +54,10 @@ public class CurrencyConverterFacade {
      * @return Countries and their currencies
      */
     @HystrixCommand(fallbackMethod = "getDefaultCountriesAndCurrencies")
-    public Map getCountriesAndCurrencies() {
+    public Map<String, String> getCountriesAndCurrencies() {
         LOGGER.debug("countriesAndCurrenciesUrl: {}",
                 countriesAndCurrenciesUrl);
-        HashMap countries = restTemplate
+        HashMap<String, String> countries = restTemplate
                 .getForObject(countriesAndCurrenciesUrl, HashMap.class);
         LOGGER.debug("Countries List: {}", countries);
         return countries;
@@ -67,7 +69,8 @@ public class CurrencyConverterFacade {
      * @param base base currency
      * @return currency rates for the base currency
      */
-    @HystrixCommand(fallbackMethod = "getDefaultCurrencyRate")
+    @HystrixCommand(fallbackMethod = "getDefaultCurrencyRate",
+            ignoreExceptions = HttpClientErrorException.BadRequest.class)
     public CurrencyConverter getCurrencyRate(final String base) {
         String url = String.format(
                 currencyRateUrl, base);
@@ -112,10 +115,13 @@ public class CurrencyConverterFacade {
      *
      * @param code currency
      * @return country
+     * @throws ResourceNotFoundException currency code not found
      */
-    public String getCountryForCurrencyCode(final String code) {
-        Map countries = getCountriesAndCurrencies();
-        return countries.get(code).toString();
+    public String getCountryForCurrencyCode(final String code)
+            throws ResourceNotFoundException {
+        Map<String, String> countries = getCountriesAndCurrencies();
+        return Optional.ofNullable(countries.get(code)).orElseThrow(() ->
+                new ResourceNotFoundException("Not a Valid currency code"));
     }
 
     /**
@@ -123,7 +129,8 @@ public class CurrencyConverterFacade {
      *
      * @return default values of countries and currencies
      */
-    private Map getDefaultCountriesAndCurrencies() {
+    @SuppressWarnings("unused")
+    private Map<String, String> getDefaultCountriesAndCurrencies() {
         Map<String, String> defaultValues = new HashMap<>();
         defaultValues.put("INR", "Indian Rupee");
         defaultValues.put("HUF", "Hungarian Forint");
@@ -136,6 +143,7 @@ public class CurrencyConverterFacade {
      * @param base Base country
      * @return default values of countries and currencies
      */
+    @SuppressWarnings("unused")
     private CurrencyConverter getDefaultCurrencyRate(final String base) {
         final Double inr = 0.2357907805;
         final Double idr = 45.60031709;

@@ -1,0 +1,15 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "/latest?base=HHH"
+  },
+  "response": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json;charset=UTF-8"
+    },
+    "jsonBody": {
+      "error": "Base 'HHH' is not supported."
+    }
+  }
+}

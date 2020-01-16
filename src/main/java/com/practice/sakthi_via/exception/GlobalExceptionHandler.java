@@ -9,6 +9,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.client.HttpClientErrorException.BadRequest;
 import org.springframework.web.context.request.WebRequest;
 
 import javax.validation.ConstraintViolationException;
@@ -72,6 +73,22 @@ public class GlobalExceptionHandler {
         ErrorDetails errorDetails = new ErrorDetails(
                 new Date(), fieldErrors.toString(),
                 webRequest.getDescription(false));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDetails);
+    }
+
+    /**
+     * To handle HttpClientErrorException.
+     *
+     * @param e          Exception
+     * @param webRequest WebRequest
+     * @return ResponseEntity with error details in body
+     */
+    @ExceptionHandler(BadRequest.class)
+    public final ResponseEntity<ErrorDetails> httpClientErrorException(
+            final BadRequest e, final WebRequest webRequest) {
+        LOGGER.error("HttpClientErrorException-BadRequest: ", e);
+        ErrorDetails errorDetails = new ErrorDetails(
+                new Date(), e.getMessage(), webRequest.getDescription(false));
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDetails);
     }
 

@@ -13,6 +13,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.validation.annotation.Validated;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -46,10 +47,41 @@ class CurrencyConverterAPITest {
     void testGetCountryForCurrencyCode() throws Exception {
         //GIVEN
         //WHEN
-        ResultActions resultActions = mockMvc.perform(get("/api/v1/country/HUF")).andDo(print());
+        ResultActions resultActions = mockMvc.perform(get("/api/v1/country/HUF"));
 
         //THEN
-        resultActions.andExpect(status().isOk());
+        resultActions.andExpect(status().isOk())
+                .andExpect(content().string("Hungarian Forint"));
+    }
+
+    @Test
+    void testGetCountryForCurrencyCodeWithInvalidCode() throws Exception {
+        //GIVEN
+        //WHEN
+        ResultActions resultActions = mockMvc.perform(get("/api/v1/country/HHH"));
+
+        //THEN
+        resultActions.andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testGetCountryForCurrencyCodeWithMaxLengthCode() throws Exception {
+        //GIVEN
+        //WHEN
+        ResultActions resultActions = mockMvc.perform(get("/api/v1/country/InvalidCode"));
+
+        //THEN
+        resultActions.andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testGetCountryForCurrencyCodeWithMinLengthCode() throws Exception {
+        //GIVEN
+        //WHEN
+        ResultActions resultActions = mockMvc.perform(get("/api/v1/country/a"));
+
+        //THEN
+        resultActions.andExpect(status().isBadRequest());
     }
 
     @Test
@@ -62,7 +94,39 @@ class CurrencyConverterAPITest {
         resultActions
                 .andExpect(status().isOk())
                 .andExpect(content().json("{base:HUF}"));
+    }
 
+    @Test
+    void testGetCurrencyRateWithInvalidCode() throws Exception {
+        //GIVEN
+        //WHEN
+        ResultActions resultActions = mockMvc.perform(get("/api/v1/rates?base=HHH"));
+
+        //THEN
+        resultActions
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testGetCurrencyRateWithMaxCodeLength() throws Exception {
+        //GIVEN
+        //WHEN
+        ResultActions resultActions = mockMvc.perform(get("/api/v1/rates?base=InvalidCodeLength"));
+
+        //THEN
+        resultActions
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testGetCurrencyRateWithMinCodeLength() throws Exception {
+        //GIVEN
+        //WHEN
+        ResultActions resultActions = mockMvc.perform(get("/api/v1/rates?base=H"));
+
+        //THEN
+        resultActions
+                .andExpect(status().isBadRequest());
     }
 
     @Test

@@ -1,5 +1,6 @@
 package com.practice.sakthi_via.unit;
 
+import com.practice.sakthi_via.exception.ResourceNotFoundException;
 import com.practice.sakthi_via.facade.CurrencyConverterFacade;
 import com.practice.sakthi_via.model.CurrencyConverter;
 import org.junit.jupiter.api.Test;
@@ -116,7 +117,7 @@ class CurrencyConverterFacadeTest {
     }
 
     @Test
-    void getCountryForCurrencyCode() {
+    void getCountryForCurrencyCode() throws ResourceNotFoundException {
         //GIVEN
         when(spyCurrencyConverterFacade.getCountriesAndCurrencies()).thenReturn(countries);
 

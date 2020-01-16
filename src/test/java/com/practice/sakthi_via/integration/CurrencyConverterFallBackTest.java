@@ -8,15 +8,15 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+import java.time.LocalDate;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -40,10 +40,11 @@ class CurrencyConverterFallBackTest {
     void testFallBackDefaultCountryAndCurrency() throws Exception {
         //GIVEN
         //WHEN
-        ResultActions resultActions = mockMvc.perform(get("/api/v1/countries")).andDo(print());
+        ResultActions resultActions = mockMvc.perform(get("/api/v1/countries"));
 
         //THEN
-        resultActions.andExpect(status().isOk());
+        resultActions.andExpect(status().isOk())
+        .andExpect(content().json("{\"HUF\":\"Hungarian Forint\"}"));
     }
 
     @Test
@@ -55,7 +56,6 @@ class CurrencyConverterFallBackTest {
         //THEN
         resultActions
                 .andExpect(status().isOk())
-                .andExpect(content().json("{base:HUF}"));
-
+                .andExpect(content().json("{base:HUF,date:"+ LocalDate.now() +"}"));
     }
 }
