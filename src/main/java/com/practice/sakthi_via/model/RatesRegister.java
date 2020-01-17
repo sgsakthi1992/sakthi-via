@@ -1,21 +1,32 @@
 package com.practice.sakthi_via.model;
 
-import javax.persistence.*;
-import java.util.List;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
+import java.util.Set;
 
 @Entity
+@Table(uniqueConstraints = { @UniqueConstraint(columnNames =
+                { "employee_id", "base" }) })
 public class RatesRegister {
     /**
      * Registration id.
      */
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer registrationId;
     /**
      * Employee id.
      */
-    @Column
-    private Long id;
+    @OneToOne(cascade = CascadeType.ALL)
+    private Employee employee;
     /**
      * Base currency code.
      */
@@ -24,26 +35,27 @@ public class RatesRegister {
     /**
      * Target currency codes.
      */
-    @Column
+
     @ElementCollection
-    private List<String> target;
+    @Column
+    private Set<String> target;
 
     /**
      * Getter for employee id.
      *
      * @return employee id
      */
-    public Long getId() {
-        return id;
+    public Employee getEmployee() {
+        return employee;
     }
 
     /**
      * Setter for employee id.
      *
-     * @param id employee id
+     * @param employee employee id
      */
-    public void setId(final Long id) {
-        this.id = id;
+    public void setEmployee(final Employee employee) {
+        this.employee = employee;
     }
 
     /**
@@ -69,7 +81,7 @@ public class RatesRegister {
      *
      * @return target currency codes
      */
-    public List<String> getTarget() {
+    public Set<String> getTarget() {
         return target;
     }
 
@@ -78,7 +90,7 @@ public class RatesRegister {
      *
      * @param target target currency codes
      */
-    public void setTarget(final List<String> target) {
+    public void setTarget(final Set<String> target) {
         this.target = target;
     }
 
@@ -90,7 +102,8 @@ public class RatesRegister {
     @Override
     public String toString() {
         return "RatesRegister{"
-                + "id=" + id
+                + "registrationId=" + registrationId
+                + ", id=" + employee
                 + ", base='" + base + '\''
                 + ", target=" + target
                 + '}';

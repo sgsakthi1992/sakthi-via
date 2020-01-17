@@ -1,8 +1,15 @@
 package com.practice.sakthi_via.model.dto;
 
-import java.util.List;
+import com.practice.sakthi_via.validator.TargetCode;
+
+import javax.validation.constraints.Size;
+import java.util.Set;
 
 public class RatesRegisterDto {
+    /**
+     * Currency code length.
+     */
+    private static final int CURRENCY_CODE_LENGTH = 3;
     /**
      * Employee id.
      */
@@ -10,11 +17,15 @@ public class RatesRegisterDto {
     /**
      * Base currency code.
      */
+    @Size(min = CURRENCY_CODE_LENGTH,
+            max = CURRENCY_CODE_LENGTH,
+            message = "Currency code must be of 3 letters")
     private String base;
     /**
      * Target currency codes.
      */
-    private List<String> target;
+    @TargetCode
+    private Set<String> target;
 
     /**
      * Getter for employee id.
@@ -57,7 +68,7 @@ public class RatesRegisterDto {
      *
      * @return target currency codes
      */
-    public List<String> getTarget() {
+    public Set<String> getTarget() {
         return target;
     }
 
@@ -66,7 +77,7 @@ public class RatesRegisterDto {
      *
      * @param target target currency codes
      */
-    public void setTarget(final List<String> target) {
+    public void setTarget(final Set<String> target) {
         this.target = target;
     }
 

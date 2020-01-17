@@ -282,10 +282,12 @@ public class EmployeeController {
      *
      * @param ratesRegisterDto rates register details
      * @return Response entity with Success message
+     * @throws ResourceNotFoundException exception
      */
     @PostMapping("/registerForRates")
     public ResponseEntity<String> registerForRates(
-            @RequestBody final RatesRegisterDto ratesRegisterDto) {
+            @Valid @RequestBody final RatesRegisterDto ratesRegisterDto)
+            throws ResourceNotFoundException {
         String message = employeeFacade.registerForRates(ratesRegisterDto);
         return ResponseEntity.status(HttpStatus.OK).body(message);
     }

@@ -13,6 +13,7 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ import javax.mail.MessagingException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.springframework.data.domain.ExampleMatcher.GenericPropertyMatchers.contains;
 
@@ -128,12 +130,19 @@ public class EmployeeFacade {
      *
      * @param ratesRegisterDto RatesRegister details
      * @return RatesRegisterDto
+     * @throws ResourceNotFoundException exception
      */
     public RatesRegister convertRatesRegisterDtoToRatesRegister(
-            final RatesRegisterDto ratesRegisterDto) {
+            final RatesRegisterDto ratesRegisterDto)
+            throws ResourceNotFoundException {
         ModelMapper modelMapper = new ModelMapper();
         RatesRegister ratesRegister = modelMapper.map(ratesRegisterDto,
                 RatesRegister.class);
+        Optional<Employee> employee = employeeRepository
+                .findById(ratesRegisterDto.getId());
+        employee.ifPresent(ratesRegister::setEmployee);
+        employee.orElseThrow(() ->
+                new ResourceNotFoundException("Not a valid Employee ID"));
         LOGGER.debug("Mapped details: {}", ratesRegister);
         return ratesRegister;
     }
@@ -157,7 +166,7 @@ public class EmployeeFacade {
         content.put("email", employee.getEmail());
 
         Mail mail = new Mail(employee.getEmail(),
-                EMAIL_SUBJECT, content);
+                EMAIL_SUBJECT, content, "welcomeMailTemplate");
         emailService.sendMail(mail);
         return employee;
     }
@@ -291,12 +300,28 @@ public class EmployeeFacade {
      *
      * @param ratesRegisterDto rated register details
      * @return registration success message
+     * @throws ResourceNotFoundException exception
      */
-    public String registerForRates(final RatesRegisterDto ratesRegisterDto) {
+    public String registerForRates(final RatesRegisterDto ratesRegisterDto)
+            throws ResourceNotFoundException {
         RatesRegister ratesRegister = convertRatesRegisterDtoToRatesRegister(
                 ratesRegisterDto);
-        registerRepository.save(ratesRegister);
-        LOGGER.debug("Rates registered: {}", ratesRegister);
+        try {
+            registerRepository.save(ratesRegister);
+            LOGGER.debug("Rates registered: {}", ratesRegister);
+        } catch (DataIntegrityViolationException e) {
+            LOGGER.debug("Rates register: {}", ratesRegister);
+            ExampleMatcher exampleMatcher = ExampleMatcher.matchingAny()
+                    .withMatcher("employee_id", contains().ignoreCase())
+                    .withMatcher("base", contains().ignoreCase());
+            Example<RatesRegister> example = Example
+                    .of(ratesRegister, exampleMatcher);
+            List<RatesRegister> register = registerRepository.findAll(example);
+            LOGGER.debug("Registers Example {}:", register);
+            ratesRegister.getTarget().forEach(
+                    register.get(0).getTarget()::add);
+            registerRepository.save(register.get(0));
+        }
         return "Success";
     }
 

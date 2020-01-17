@@ -1,11 +1,3 @@
-/*
- * Copyright (c) 2020.
- */
-/**
- * Email Service Implementation.
- *
- * @author Sakthi_Subramaniam
- */
 package com.practice.sakthi_via.mail.impl;
 
 import com.practice.sakthi_via.mail.EmailService;
@@ -62,7 +54,7 @@ public class EmailServiceImpl implements EmailService {
      */
     @Override
     public void sendMail(final Mail mail) throws MessagingException {
-        String body = build(mail.getContent());
+        String body = build(mail.getContent(), mail.getTemplate());
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage,
                 MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
@@ -73,9 +65,10 @@ public class EmailServiceImpl implements EmailService {
         javaMailSender.send(mimeMessage);
     }
 
-    private String build(final Map<String, Object> content) {
+    private String build(final Map<String, Object> content,
+                         final String template) {
         Context context = new Context();
         context.setVariables(content);
-        return templateEngine.process("mailTemplate", context);
+        return templateEngine.process(template, context);
     }
 }

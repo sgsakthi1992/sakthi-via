@@ -14,7 +14,10 @@ import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class CurrencyConverterFacade {
@@ -33,6 +36,11 @@ public class CurrencyConverterFacade {
      */
     @Value("${via.currencyrate.api.url}")
     private String currencyRateUrl;
+    /**
+     * URL to fetch the currency rate with targets.
+     */
+    @Value("${via.rateswithtargets.api.url}")
+    private String currencyRateWithTargetsUrl;
     /**
      * RestTemplate object.
      */
@@ -81,6 +89,29 @@ public class CurrencyConverterFacade {
             currencyRate.getRates().remove(base);
         }
         LOGGER.debug("Currency Rate: {}", currencyRate);
+        return currencyRate;
+    }
+
+    /**
+     * Get Currency conversion rate from https://api.exchangeratesapi.io/latest
+     * for specific targets.
+     *
+     * @param base    base currency code
+     * @param targets set of targets
+     * @return currency rates for the base currency
+     */
+    public CurrencyConverter getCurrencyRateWithTarget(
+            final String base, final Set<String> targets) {
+        String target = targets.stream().map(Objects::toString)
+                .collect(Collectors.joining(","));
+        String url = String.format(currencyRateWithTargetsUrl, target, base);
+        LOGGER.debug("Currency Converter With Targets API URL: {}", url);
+        CurrencyConverter currencyRate = restTemplate
+                .getForObject(url, CurrencyConverter.class);
+        if (currencyRate != null) {
+            currencyRate.getRates().remove(base);
+        }
+        LOGGER.debug("Currency Rate With Targets: {}", currencyRate);
         return currencyRate;
     }
 
