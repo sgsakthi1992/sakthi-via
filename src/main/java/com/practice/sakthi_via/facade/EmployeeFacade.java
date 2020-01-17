@@ -4,8 +4,11 @@ import com.practice.sakthi_via.exception.ResourceNotFoundException;
 import com.practice.sakthi_via.mail.EmailService;
 import com.practice.sakthi_via.model.Employee;
 import com.practice.sakthi_via.model.Mail;
+import com.practice.sakthi_via.model.RatesRegister;
 import com.practice.sakthi_via.model.dto.EmployeeDto;
+import com.practice.sakthi_via.model.dto.RatesRegisterDto;
 import com.practice.sakthi_via.repository.EmployeeRepository;
+import com.practice.sakthi_via.repository.RatesRegisterRepository;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,6 +57,10 @@ public class EmployeeFacade {
      * EmailService object.
      */
     private EmailService emailService;
+    /**
+     * RatesRegisterRepository object.
+     */
+    private RatesRegisterRepository registerRepository;
 
     /**
      * Setter for EmployeeRepository object.
@@ -64,6 +71,17 @@ public class EmployeeFacade {
     public void setEmployeeRepository(
             final EmployeeRepository employeeRepository) {
         this.employeeRepository = employeeRepository;
+    }
+
+    /**
+     * Setter for RatesRegisterRepository object.
+     *
+     * @param registerRepository RatesRegisterRepository object
+     */
+    @Autowired
+    public void setRegisterRepository(
+            final RatesRegisterRepository registerRepository) {
+        this.registerRepository = registerRepository;
     }
 
     /**
@@ -103,6 +121,21 @@ public class EmployeeFacade {
         Employee employee = modelMapper.map(employeeDto, Employee.class);
         LOGGER.debug("Mapped details: {}", employee);
         return employee;
+    }
+
+    /**
+     * To convert RatesRegisterDto to RatesRegister.
+     *
+     * @param ratesRegisterDto RatesRegister details
+     * @return RatesRegisterDto
+     */
+    public RatesRegister convertRatesRegisterDtoToRatesRegister(
+            final RatesRegisterDto ratesRegisterDto) {
+        ModelMapper modelMapper = new ModelMapper();
+        RatesRegister ratesRegister = modelMapper.map(ratesRegisterDto,
+                RatesRegister.class);
+        LOGGER.debug("Mapped details: {}", ratesRegister);
+        return ratesRegister;
     }
 
     /**
@@ -250,6 +283,20 @@ public class EmployeeFacade {
             throws ResourceNotFoundException {
         Employee employee = getEmployeeById(id);
         employeeRepository.updateEmployeeEmail(employee.getId(), email);
+        return "Success";
+    }
+
+    /**
+     * To register for rated feed mail.
+     *
+     * @param ratesRegisterDto rated register details
+     * @return registration success message
+     */
+    public String registerForRates(final RatesRegisterDto ratesRegisterDto) {
+        RatesRegister ratesRegister = convertRatesRegisterDtoToRatesRegister(
+                ratesRegisterDto);
+        registerRepository.save(ratesRegister);
+        LOGGER.debug("Rates registered: {}", ratesRegister);
         return "Success";
     }
 

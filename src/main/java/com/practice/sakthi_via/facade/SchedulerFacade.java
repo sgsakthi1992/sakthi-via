@@ -59,7 +59,7 @@ public class SchedulerFacade {
     /**
      * Method to schedule the currency rate.
      */
-   // @Scheduled(fixedRate = FIXED_RATE)
+    @Scheduled(fixedRate = FIXED_RATE)
     public void getScheduledCurrencyRate() {
         List<Employee> employees = employeeRepository.findAll();
         employees.forEach(

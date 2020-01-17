@@ -4,6 +4,7 @@ import com.practice.sakthi_via.exception.ResourceNotFoundException;
 import com.practice.sakthi_via.facade.EmployeeFacade;
 import com.practice.sakthi_via.model.Employee;
 import com.practice.sakthi_via.model.dto.EmployeeDto;
+import com.practice.sakthi_via.model.dto.RatesRegisterDto;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -273,6 +274,19 @@ public class EmployeeController {
             @Valid @RequestParam final String email)
             throws ResourceNotFoundException {
         String message = employeeFacade.updateEmployeeEmail(id, email);
+        return ResponseEntity.status(HttpStatus.OK).body(message);
+    }
+
+    /**
+     * API to register for currency rates feed mail.
+     *
+     * @param ratesRegisterDto rates register details
+     * @return Response entity with Success message
+     */
+    @PostMapping("/registerForRates")
+    public ResponseEntity<String> registerForRates(
+            @RequestBody final RatesRegisterDto ratesRegisterDto) {
+        String message = employeeFacade.registerForRates(ratesRegisterDto);
         return ResponseEntity.status(HttpStatus.OK).body(message);
     }
 
