@@ -5,7 +5,6 @@ import com.practice.sakthi_via.model.CurrencyConverter;
 import com.practice.sakthi_via.model.Employee;
 import com.practice.sakthi_via.model.Mail;
 import com.practice.sakthi_via.model.RatesRegister;
-import com.practice.sakthi_via.repository.EmployeeRepository;
 import com.practice.sakthi_via.repository.RatesRegisterRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,10 +26,6 @@ public class SchedulerFacade {
     private static final Logger LOGGER = LoggerFactory
             .getLogger(SchedulerFacade.class);
     /**
-     * Fixed rate for scheduler.
-     */
-    private static final long FIXED_RATE = 60000;
-    /**
      * Scheduler mail subject.
      */
     private static final String MAIL_SUBJECT = "<SAKTHI-VIA> Currency Rate "
@@ -39,10 +34,6 @@ public class SchedulerFacade {
      * Scheduler mail template.
      */
     private static final String MAIL_TEMPLATE = "schedulerMailTemplate";
-    /**
-     * EmployeeRepository object.
-     */
-    private EmployeeRepository employeeRepository;
     /**
      * EmailService object.
      */
@@ -55,17 +46,6 @@ public class SchedulerFacade {
      * CurrencyConverterFacade object.
      */
     private CurrencyConverterFacade currencyConverterFacade;
-
-    /**
-     * Setter for EmployeeRepository object.
-     *
-     * @param employeeRepository EmployeeRepository object
-     */
-    @Autowired
-    public void setEmployeeRepository(
-            final EmployeeRepository employeeRepository) {
-        this.employeeRepository = employeeRepository;
-    }
 
     /**
      * Setter for RatesRegisterRepository object.
@@ -102,28 +82,28 @@ public class SchedulerFacade {
     /**
      * Method to schedule the currency rate.
      */
-    @Scheduled(fixedRate = FIXED_RATE)
+    @Scheduled(cron = "${via.scheduler.cron.value}")
     //@Scheduled(cron = "0 30 17 ? * MON-FRI")
     public void getScheduledCurrencyRate() {
         List<RatesRegister> ratesRegisters = registerRepository.findAll();
         LOGGER.debug("Rates registers: {}", ratesRegisters);
         ratesRegisters.forEach(ratesRegister -> {
-                Employee employee = ratesRegister.getEmployee();
-                LOGGER.debug("Employee: {}", employee);
-                CurrencyConverter currencyRate = currencyConverterFacade
-                        .getCurrencyRateWithTarget(ratesRegister.getBase(),
-                                ratesRegister.getTarget());
-                try {
-                    Map<String, Object> content = new HashMap<>();
-                    content.put("name", employee.getName());
-                    content.put("base", ratesRegister.getBase());
-                    content.put("targets", currencyRate.getRates());
-                    Mail mail = new Mail(employee.getEmail(),
-                            MAIL_SUBJECT, content, MAIL_TEMPLATE);
-                    emailService.sendMail(mail);
-                } catch (MessagingException e) {
-                    LOGGER.error("Exception in Schedule Mail", e);
-                }
+            Employee employee = ratesRegister.getEmployee();
+            LOGGER.debug("Employee: {}", employee);
+            CurrencyConverter currencyRate = currencyConverterFacade
+                    .getCurrencyRateWithTarget(ratesRegister.getBase(),
+                            ratesRegister.getTarget());
+            try {
+                Map<String, Object> content = new HashMap<>();
+                content.put("name", employee.getName());
+                content.put("base", ratesRegister.getBase());
+                content.put("targets", currencyRate.getRates());
+                Mail mail = new Mail(employee.getEmail(),
+                        MAIL_SUBJECT, content, MAIL_TEMPLATE);
+                emailService.sendMail(mail);
+            } catch (MessagingException e) {
+                LOGGER.error("Exception in Schedule Mail", e);
+            }
         });
     }
 }

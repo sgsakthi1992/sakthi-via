@@ -9,3 +9,9 @@ via:
   currencyrate:
     api:
       url: http://localhost:${wiremock.server.port}/latest?base=%s
+  rateswithtargets:
+    api:
+      url: http://localhost:${wiremock.server.port}/latest?symbols=%s&base=%s
+  scheduler:
+    cron:
+      value: 0/20 * * * * ?

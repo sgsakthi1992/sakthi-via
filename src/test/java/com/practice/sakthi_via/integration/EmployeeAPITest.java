@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.icegreen.greenmail.util.GreenMail;
 import com.icegreen.greenmail.util.ServerSetup;
 import com.practice.sakthi_via.model.dto.EmployeeDto;
+import com.practice.sakthi_via.model.dto.RatesRegisterDto;
 import com.practice.sakthi_via.repository.EmployeeRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,10 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -82,7 +87,7 @@ class EmployeeAPITest {
 
         EmployeeDto employeeDto = new EmployeeDto("Employee 4",
                 "employee4", "employee4@gmail.com", 22);
-        String requestJson = convertEmployeeDtoToJson(employeeDto);
+        String requestJson = convertDtoToJson(employeeDto);
 
         //WHEN
         ResultActions resultActions = mockMvc.perform(post("/api/v1/employees")
@@ -101,7 +106,7 @@ class EmployeeAPITest {
         //GIVEN
         EmployeeDto employeeDto = new EmployeeDto("Employee 4",
                 "employee", "employee4@gmail.com", 22);
-        String requestJson = convertEmployeeDtoToJson(employeeDto);
+        String requestJson = convertDtoToJson(employeeDto);
 
         //WHEN
         ResultActions resultActions = mockMvc.perform(post("/api/v1/employees")
@@ -117,7 +122,7 @@ class EmployeeAPITest {
         //GIVEN
         EmployeeDto employeeDto = new EmployeeDto("Employee 4",
                 "employee4", "employee4", 22);
-        String requestJson = convertEmployeeDtoToJson(employeeDto);
+        String requestJson = convertDtoToJson(employeeDto);
 
         //WHEN
         ResultActions resultActions = mockMvc.perform(post("/api/v1/employees")
@@ -133,7 +138,7 @@ class EmployeeAPITest {
         //GIVEN
         EmployeeDto employeeDto = new EmployeeDto("Employee 4",
                 "employee4", "employee4@gmail.com", 0);
-        String requestJson = convertEmployeeDtoToJson(employeeDto);
+        String requestJson = convertDtoToJson(employeeDto);
 
         //WHEN
         ResultActions resultActions = mockMvc.perform(post("/api/v1/employees")
@@ -149,7 +154,7 @@ class EmployeeAPITest {
         //GIVEN
         EmployeeDto employeeDto = new EmployeeDto("Employee 4",
                 "emp", "employee4@gmail.com", 22);
-        String requestJson = convertEmployeeDtoToJson(employeeDto);
+        String requestJson = convertDtoToJson(employeeDto);
 
         //WHEN
         ResultActions resultActions = mockMvc.perform(post("/api/v1/employees")
@@ -165,7 +170,7 @@ class EmployeeAPITest {
         //GIVEN
         EmployeeDto employeeDto = new EmployeeDto("Employee 4",
                 "employee4_username", "employee4@gmail.com", 22);
-        String requestJson = convertEmployeeDtoToJson(employeeDto);
+        String requestJson = convertDtoToJson(employeeDto);
 
         //WHEN
         ResultActions resultActions = mockMvc.perform(post("/api/v1/employees")
@@ -181,7 +186,7 @@ class EmployeeAPITest {
         //GIVEN
         EmployeeDto employeeDto = new EmployeeDto("",
                 "employee4_username", "employee4@gmail.com", 22);
-        String requestJson = convertEmployeeDtoToJson(employeeDto);
+        String requestJson = convertDtoToJson(employeeDto);
 
         //WHEN
         ResultActions resultActions = mockMvc.perform(post("/api/v1/employees")
@@ -352,11 +357,71 @@ class EmployeeAPITest {
         validateBadRequestResponse(resultActions);
     }
 
-    private String convertEmployeeDtoToJson(EmployeeDto employeeDto) throws JsonProcessingException {
+    @Test
+    void testRegisterForRates() throws Exception {
+        //GIVEN
+        RatesRegisterDto ratesRegisterDto = new RatesRegisterDto(1L, "HUF",
+                new HashSet<>(Arrays.asList("INR", "USD")));
+        String requestJson = convertDtoToJson(ratesRegisterDto);
+        //WHEN
+        ResultActions resultActions = mockMvc.perform(
+                post("/api/v1/registerForRates")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson));
+        //THEN
+        validateOkResponse(resultActions);
+    }
+
+    @Test
+    void testRegisterForRatesWithInvalidEmployeeId() throws Exception {
+        //GIVEN
+        RatesRegisterDto ratesRegisterDto = new RatesRegisterDto(10L, "HUF",
+                new HashSet<>(Arrays.asList("INR", "USD")));
+        String requestJson = convertDtoToJson(ratesRegisterDto);
+        //WHEN
+        ResultActions resultActions = mockMvc.perform(
+                post("/api/v1/registerForRates")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson));
+        //THEN
+        validateNotFoundResponse(resultActions);
+    }
+
+    @Test
+    void testRegisterForRatesWithInvalidTargetCode() throws Exception {
+        //GIVEN
+        RatesRegisterDto ratesRegisterDto = new RatesRegisterDto(1L, "HUF",
+                new HashSet<>(Arrays.asList("III", "USD")));
+        String requestJson = convertDtoToJson(ratesRegisterDto);
+        //WHEN
+        ResultActions resultActions = mockMvc.perform(
+                post("/api/v1/registerForRates")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson));
+        //THEN
+        validateBadRequestResponse(resultActions);
+    }
+
+    @Test
+    void testRegisterForRatesWithInvalidBaseCodeSize() throws Exception {
+        //GIVEN
+        RatesRegisterDto ratesRegisterDto = new RatesRegisterDto(1L, "H",
+                Set.of("INR", "USD"));
+        String requestJson = convertDtoToJson(ratesRegisterDto);
+        //WHEN
+        ResultActions resultActions = mockMvc.perform(
+                post("/api/v1/registerForRates")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson));
+        //THEN
+        validateBadRequestResponse(resultActions);
+    }
+
+    private String convertDtoToJson(Object dto) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
         ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
-        return ow.writeValueAsString(employeeDto);
+        return ow.writeValueAsString(dto);
     }
 
     private ResultActions validateOkResponse(ResultActions resultActions) throws Exception {

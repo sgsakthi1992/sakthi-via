@@ -82,6 +82,20 @@ public class RatesRegisterDto {
     }
 
     /**
+     * Parameterized constructor.
+     *
+     * @param id     employee id
+     * @param base   currency code
+     * @param target currency codes
+     */
+    public RatesRegisterDto(final Long id, final String base,
+                            final Set<String> target) {
+        this.id = id;
+        this.base = base;
+        this.target = target;
+    }
+
+    /**
      * Overridden toString method.
      *
      * @return String

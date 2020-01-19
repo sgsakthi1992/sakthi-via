@@ -13,7 +13,6 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
@@ -63,6 +62,17 @@ public class EmployeeFacade {
      * RatesRegisterRepository object.
      */
     private RatesRegisterRepository registerRepository;
+    /**
+     * Model mapper.
+     */
+    private ModelMapper modelMapper;
+
+    /**
+     * Default constructor.
+     */
+    public EmployeeFacade() {
+        modelMapper = new ModelMapper();
+    }
 
     /**
      * Setter for EmployeeRepository object.
@@ -119,7 +129,6 @@ public class EmployeeFacade {
      */
     public Employee convertEmployeeDtoToEmployee(
             final EmployeeDto employeeDto) {
-        ModelMapper modelMapper = new ModelMapper();
         Employee employee = modelMapper.map(employeeDto, Employee.class);
         LOGGER.debug("Mapped details: {}", employee);
         return employee;
@@ -135,7 +144,6 @@ public class EmployeeFacade {
     public RatesRegister convertRatesRegisterDtoToRatesRegister(
             final RatesRegisterDto ratesRegisterDto)
             throws ResourceNotFoundException {
-        ModelMapper modelMapper = new ModelMapper();
         RatesRegister ratesRegister = modelMapper.map(ratesRegisterDto,
                 RatesRegister.class);
         Optional<Employee> employee = employeeRepository
@@ -306,22 +314,23 @@ public class EmployeeFacade {
             throws ResourceNotFoundException {
         RatesRegister ratesRegister = convertRatesRegisterDtoToRatesRegister(
                 ratesRegisterDto);
-        try {
-            registerRepository.save(ratesRegister);
-            LOGGER.debug("Rates registered: {}", ratesRegister);
-        } catch (DataIntegrityViolationException e) {
-            LOGGER.debug("Rates register: {}", ratesRegister);
-            ExampleMatcher exampleMatcher = ExampleMatcher.matchingAny()
-                    .withMatcher("employee_id", contains().ignoreCase())
-                    .withMatcher("base", contains().ignoreCase());
-            Example<RatesRegister> example = Example
-                    .of(ratesRegister, exampleMatcher);
-            List<RatesRegister> register = registerRepository.findAll(example);
-            LOGGER.debug("Registers Example {}:", register);
+
+        ExampleMatcher exampleMatcher = ExampleMatcher.matchingAny()
+                .withMatcher("employee_id", contains().ignoreCase())
+                .withMatcher("base", contains().ignoreCase());
+        Example<RatesRegister> example = Example
+                .of(ratesRegister, exampleMatcher);
+        Optional<RatesRegister> register = registerRepository.findOne(example);
+
+        register.ifPresentOrElse(record -> {
+            LOGGER.debug("Combination available, updating");
             ratesRegister.getTarget().forEach(
-                    register.get(0).getTarget()::add);
-            registerRepository.save(register.get(0));
-        }
+                    record.getTarget()::add);
+            registerRepository.save(record);
+        }, () -> {
+            LOGGER.debug("New record");
+            registerRepository.save(ratesRegister);
+        });
         return "Success";
     }
 

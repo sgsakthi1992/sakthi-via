@@ -5,8 +5,11 @@ import com.practice.sakthi_via.facade.EmployeeFacade;
 import com.practice.sakthi_via.mail.EmailService;
 import com.practice.sakthi_via.model.Employee;
 import com.practice.sakthi_via.model.Mail;
+import com.practice.sakthi_via.model.RatesRegister;
 import com.practice.sakthi_via.model.dto.EmployeeDto;
+import com.practice.sakthi_via.model.dto.RatesRegisterDto;
 import com.practice.sakthi_via.repository.EmployeeRepository;
+import com.practice.sakthi_via.repository.RatesRegisterRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
@@ -14,15 +17,17 @@ import org.springframework.data.domain.Example;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import javax.mail.MessagingException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -34,6 +39,9 @@ class EmployeeFacadeTest {
 
     @Mock
     EmployeeRepository employeeRepository;
+
+    @Mock
+    RatesRegisterRepository ratesRegisterRepository;
 
     @Mock
     EmailService emailService;
@@ -77,6 +85,33 @@ class EmployeeFacadeTest {
         assertEquals(employeeDto.getUsername(), convertedEmployee.getUsername());
         assertEquals(employeeDto.getEmail(), convertedEmployee.getEmail());
         assertEquals(employeeDto.getAge(), convertedEmployee.getAge());
+    }
+
+    @Test
+    void testConvertRatesRegisterDtoToRatesRegister() throws ResourceNotFoundException {
+        //GIVEN
+        RatesRegisterDto ratesRegisterDto = new RatesRegisterDto(40000L,
+                "HUF", Set.of("INR", "EUR"));
+        when(employeeRepository.findById(ratesRegisterDto.getId()))
+                .thenReturn(java.util.Optional.ofNullable(employee));
+        //WHEN
+        RatesRegister ratesRegister = employeeFacade.convertRatesRegisterDtoToRatesRegister(ratesRegisterDto);
+
+        //THEN
+        assertEquals("HUF", ratesRegister.getBase());
+        assertEquals(Set.of("INR", "EUR"), ratesRegister.getTarget());
+        assertEquals(employee.getId(), ratesRegister.getEmployee().getId());
+    }
+
+    @Test
+    void testConvertRatesRegisterDtoToRatesRegisterWithNewId() {
+        //GIVEN
+        RatesRegisterDto ratesRegisterDto = new RatesRegisterDto(40000L,
+                "HUF", Set.of("INR", "EUR"));
+        //WHEN
+        //THEN
+        assertThrows(ResourceNotFoundException.class,
+                () -> employeeFacade.convertRatesRegisterDtoToRatesRegister(ratesRegisterDto));
     }
 
     @Test
@@ -188,7 +223,7 @@ class EmployeeFacadeTest {
         //WHEN
         List<Employee> employeeByUsernameOrEmail = spyEmployeeFacade
                 .getEmployeeByUsernameOrEmail(employee.getUsername(), employee.getEmail());
-        
+
         //THEN
         assertThat(employeeByUsernameOrEmail, hasSize(1));
 
@@ -198,5 +233,45 @@ class EmployeeFacadeTest {
                 -> spyEmployeeFacade.getEmployeeByUsernameOrEmail(null, null));
         assertDoesNotThrow(() -> spyEmployeeFacade.getEmployeeByUsernameOrEmail(employee.getUsername(), null));
         assertDoesNotThrow(() -> spyEmployeeFacade.getEmployeeByUsernameOrEmail(null, employee.getEmail()));
+    }
+
+    @Test
+    void registerForRates() throws ResourceNotFoundException {
+        //GIVEN
+        RatesRegisterDto ratesRegisterDto = new RatesRegisterDto(40000L,
+                "HUF", Set.of("INR", "EUR"));
+        when(employeeRepository.findById(ratesRegisterDto.getId()))
+                .thenReturn(Optional.ofNullable(employee));
+        when(ratesRegisterRepository.findOne(any(Example.class))).thenReturn(Optional.empty());
+        //WHEN
+        String message = employeeFacade.registerForRates(ratesRegisterDto);
+        //THEN
+        assertEquals("Success", message);
+    }
+
+    @Test
+    void registerForRatesWithExistingBase() throws ResourceNotFoundException {
+        //GIVEN
+        RatesRegisterDto ratesRegisterDto = new RatesRegisterDto(40000L,
+                "HUF", Set.of("INR", "EUR"));
+
+        Set<String> target = new HashSet<>();
+        target.add("USD");
+
+        RatesRegister register = new RatesRegister();
+        register.setEmployee(employee);
+        register.setBase("HUF");
+        register.setTarget(target);
+
+        when(employeeRepository.findById(ratesRegisterDto.getId()))
+                .thenReturn(Optional.ofNullable(employee));
+        when(ratesRegisterRepository.findOne(any(Example.class)))
+                .thenReturn(Optional.of(register));
+        //WHEN
+        String message = employeeFacade.registerForRates(ratesRegisterDto);
+        //THEN
+        assertEquals("Success", message);
+        assertTrue(register.getTarget().contains("INR"));
+        assertTrue(register.getTarget().contains("EUR"));
     }
 }
