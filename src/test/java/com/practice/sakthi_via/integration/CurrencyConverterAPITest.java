@@ -133,7 +133,7 @@ class CurrencyConverterAPITest {
     void getHighestAndLowestCurrencyRates() throws Exception {
         //GIVEN
         //WHEN
-        ResultActions resultActions = mockMvc.perform(get("/api/v1/highestCurrencyRate?base=HUF")).andDo(print());
+        ResultActions resultActions = mockMvc.perform(get("/api/v1/highestAndLowestCurrencyRates?base=HUF")).andDo(print());
 
         //THEN
         resultActions.andExpect(status().isOk());

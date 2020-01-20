@@ -23,8 +23,7 @@ import org.springframework.test.context.jdbc.Sql;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 @SpringBootTest
@@ -65,8 +64,10 @@ public class SchedulerEmailTest {
         //WHEN
         schedulerFacade.getScheduledCurrencyRate();
         //THEN
-        greenMail.waitForIncomingEmail(0);
-
+        boolean ok = greenMail.waitForIncomingEmail(0);
+        if(ok) {
+            assertEquals(0, greenMail.getReceivedMessages().length);
+        }
         tearDownSMTP();
     }
 
@@ -80,9 +81,10 @@ public class SchedulerEmailTest {
         //THEN
         boolean ok = greenMail.waitForIncomingEmail(2);
         if (ok) {
-            System.out.println(greenMail.getReceivedMessages().length);
-            assertEquals("employee@gmail.com", greenMail.getReceivedMessages()[0].getAllRecipients()[0].toString());
-            assertEquals("employee1@gmail.com", greenMail.getReceivedMessages()[1].getAllRecipients()[0].toString());
+            assertEquals("employee@gmail.com",
+                    greenMail.getReceivedMessages()[0].getAllRecipients()[0].toString());
+            assertEquals("employee1@gmail.com",
+                    greenMail.getReceivedMessages()[1].getAllRecipients()[0].toString());
         } else {
             fail("Email not sent");
         }

@@ -47,6 +47,10 @@ public class EmployeeFacade {
     private static final String EMPLOYEE_EMAIL_NOT_FOUND
             = "Employee email not found";
     /**
+     * Success message.
+     */
+    private static final String SUCCESS_MESSAGE = "Success";
+    /**
      * Email Subject.
      */
     private static final String EMAIL_SUBJECT = "Welcome to SAKTHI-VIA!!";
@@ -146,11 +150,10 @@ public class EmployeeFacade {
             throws ResourceNotFoundException {
         RatesRegister ratesRegister = modelMapper.map(ratesRegisterDto,
                 RatesRegister.class);
-        Optional<Employee> employee = employeeRepository
-                .findById(ratesRegisterDto.getId());
-        employee.ifPresent(ratesRegister::setEmployee);
-        employee.orElseThrow(() ->
-                new ResourceNotFoundException("Not a valid Employee ID"));
+        Employee employee = employeeRepository
+                .findById(ratesRegisterDto.getId()).orElseThrow(() -> new
+                        ResourceNotFoundException("Not a valid Employee ID"));
+        ratesRegister.setEmployee(employee);
         LOGGER.debug("Mapped details: {}", ratesRegister);
         return ratesRegister;
     }
@@ -221,7 +224,7 @@ public class EmployeeFacade {
         Employee employee = getEmployeeById(id);
         employeeRepository.delete(employee);
         LOGGER.debug("Delete success");
-        return "Success";
+        return SUCCESS_MESSAGE;
     }
 
     /**
@@ -300,7 +303,7 @@ public class EmployeeFacade {
             throws ResourceNotFoundException {
         Employee employee = getEmployeeById(id);
         employeeRepository.updateEmployeeEmail(employee.getId(), email);
-        return "Success";
+        return SUCCESS_MESSAGE;
     }
 
     /**
@@ -331,7 +334,7 @@ public class EmployeeFacade {
             LOGGER.debug("New record");
             registerRepository.save(ratesRegister);
         });
-        return "Success";
+        return SUCCESS_MESSAGE;
     }
 
 }

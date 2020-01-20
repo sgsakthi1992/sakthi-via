@@ -138,8 +138,8 @@ public class CurrencyConverterController {
             @ApiResponse(code = HTTP_STATUS_BAD_REQUEST,
                     message = "Currency code must be of 3 letters")
     })
-    @GetMapping("/highestCurrencyRate")
-    public ResponseEntity<Map<String, Double>> getHighestCurrencyRate(
+    @GetMapping("/highestAndLowestCurrencyRates")
+    public ResponseEntity<Map<String, Double>> getHighestAndLowestCurrencyRates(
             @ApiParam(value = "Currency code", required = true)
             @Size(min = CURRENCY_CODE_LENGTH, max = CURRENCY_CODE_LENGTH,
                     message = "Currency code must be of 3 letters")
