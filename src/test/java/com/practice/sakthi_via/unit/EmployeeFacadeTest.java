@@ -258,10 +258,7 @@ class EmployeeFacadeTest {
         Set<String> target = new HashSet<>();
         target.add("USD");
 
-        RatesRegister register = new RatesRegister();
-        register.setEmployee(employee);
-        register.setBase("HUF");
-        register.setTarget(target);
+        RatesRegister register = new RatesRegister(1, employee, "HUF", target);
 
         when(employeeRepository.findById(ratesRegisterDto.getId()))
                 .thenReturn(Optional.ofNullable(employee));

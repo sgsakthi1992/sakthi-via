@@ -18,7 +18,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <java.version>1.8</java.version>
+        <java.version>1.9</java.version>
     </properties>
 
     <dependencies>
@@ -89,7 +89,7 @@
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
-            <!--<scope>test</scope>-->
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.icegreen</groupId>
@@ -201,8 +201,10 @@
                                         <exclude>com.practice.sakthi_via.SpringbootApplication</exclude>
                                         <exclude>com.practice.sakthi_via.constants.Constants</exclude>
                                         <exclude>com.practice.sakthi_via.model.Employee</exclude>
+                                        <exclude>com.practice.sakthi_via.model.RatesRegister</exclude>
                                         <exclude>com.practice.sakthi_via.model.Mail</exclude>
                                         <exclude>com.practice.sakthi_via.model.dto.EmployeeDto</exclude>
+                                        <exclude>com.practice.sakthi_via.model.dto.RatesRegisterDto</exclude>
                                         <exclude>com.practice.sakthi_via.config.SwaggerConfig</exclude>
                                     </excludes>
                                     <limits>

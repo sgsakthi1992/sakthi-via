@@ -13,8 +13,8 @@ import javax.persistence.UniqueConstraint;
 import java.util.Set;
 
 @Entity
-@Table(uniqueConstraints = { @UniqueConstraint(columnNames =
-                { "employee_id", "base" }) })
+@Table(uniqueConstraints = {@UniqueConstraint(columnNames =
+        {"employee_id", "base"})})
 public class RatesRegister {
     /**
      * Registration id.
@@ -91,6 +91,28 @@ public class RatesRegister {
      * @param target target currency codes
      */
     public void setTarget(final Set<String> target) {
+        this.target = target;
+    }
+
+    /**
+     * Default constructor.
+     */
+    public RatesRegister() {
+    }
+
+    /**
+     * Parameterized constructor.
+     *
+     * @param registrationId registration id
+     * @param employee       Employee details
+     * @param base           currency code
+     * @param target         currency codes
+     */
+    public RatesRegister(final Integer registrationId, final Employee employee,
+                         final String base, final Set<String> target) {
+        this.registrationId = registrationId;
+        this.employee = employee;
+        this.base = base;
         this.target = target;
     }
 

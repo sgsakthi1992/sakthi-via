@@ -1,11 +1,9 @@
 spring:
   datasource:
-    url: jdbc:h2:mem:test
-    driverClassName: org.h2.Driver
+    url: jdbc:postgres://qaznpaayhzjydd:1a67e2ab4270a4c2a832af0afeeec59f5bc56276d2872dbd40d1ad0094bab824@ec2-54-247-82-14.eu-west-1.compute.amazonaws.com:5432/d5j0ek3vphrub8
+    driverClassName: org.postgresql.Driver
   jpa:
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.H2Dialect
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: update
   mail:
@@ -34,4 +32,4 @@ via:
       url: https://api.exchangeratesapi.io/latest?symbols=%s&base=%s
   scheduler:
     cron:
-      value: 0 0/1 * * * ?
+      value: 0 30 17 ? * MON-FRI

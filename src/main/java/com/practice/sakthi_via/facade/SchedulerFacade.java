@@ -83,7 +83,6 @@ public class SchedulerFacade {
      * Method to schedule the currency rate.
      */
     @Scheduled(cron = "${via.scheduler.cron.value}")
-    //@Scheduled(cron = "0 30 17 ? * MON-FRI")
     public void getScheduledCurrencyRate() {
         List<RatesRegister> ratesRegisters = registerRepository.findAll();
         LOGGER.debug("Rates registers: {}", ratesRegisters);
