@@ -21,7 +21,6 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 
 import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -32,7 +31,8 @@ import static org.junit.jupiter.api.Assertions.*;
 @TestPropertySource(properties = {
         "spring.datasource.url = jdbc:h2:mem:test",
         "spring.jpa.properties.hibernate.dialect = org.hibernate.dialect.H2Dialect",
-        "spring.datasource.driverClassName = org.h2.Driver"
+        "spring.datasource.driverClassName = org.h2.Driver",
+        "via.scheduler.cron.value = 0/60 * * * * ?"
 })
 @ActiveProfiles("test")
 public class SchedulerEmailTest {
