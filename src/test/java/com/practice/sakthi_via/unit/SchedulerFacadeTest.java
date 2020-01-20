@@ -95,13 +95,11 @@ class SchedulerFacadeTest {
         Assertions.assertThat(captor.getAllValues().get(0))
                 .matches(mail -> mail.getTo().contentEquals(ratesRegisters.get(0).getEmployee().getEmail()))
                 .matches(mail -> mail.getContent().get("base").toString().contentEquals(ratesRegisters.get(0).getBase()))
-                .matches(mail -> mail.getContent().get("name").toString().contentEquals(ratesRegisters.get(0).getEmployee().getName()))
                 .matches(mail -> mail.getContent().get("targets").toString().contentEquals(converterHuf.getRates().toString()));
 
         Assertions.assertThat(captor.getAllValues().get(1))
                 .matches(mail -> mail.getTo().contentEquals(ratesRegisters.get(1).getEmployee().getEmail()))
                 .matches(mail -> mail.getContent().get("base").toString().contentEquals(ratesRegisters.get(1).getBase()))
-                .matches(mail -> mail.getContent().get("name").toString().contentEquals(ratesRegisters.get(1).getEmployee().getName()))
                 .matches(mail -> mail.getContent().get("targets").toString().contentEquals(converterInr.getRates().toString()));
     }
 }

@@ -1,0 +1,20 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "/latest?symbols=EUR,HUF&base=INR"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json;charset=UTF-8"
+    },
+    "jsonBody": {
+      "rates": {
+        "HUF": 4.2503042807,
+        "EUR": 0.0126651696
+      },
+      "base": "INR",
+      "date": "2020-01-13"
+    }
+  }
+}

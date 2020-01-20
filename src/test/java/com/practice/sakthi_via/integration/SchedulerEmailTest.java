@@ -71,9 +71,9 @@ public class SchedulerEmailTest {
         tearDownSMTP();
     }
 
-    @Sql("classpath:register.sql")
+    @Sql("classpath:registerSameBaseAndTarget.sql")
     @Test
-    void testGetScheduledCurrencyRateWithTwoRegistration() throws MessagingException {
+    void testGetScheduledCurrencyRateWithSameBaseAndTarget() throws MessagingException {
         //GIVEN
         setupSMTP();
         //WHEN
@@ -81,6 +81,29 @@ public class SchedulerEmailTest {
         //THEN
         boolean ok = greenMail.waitForIncomingEmail(2);
         if (ok) {
+            assertEquals(2, greenMail.getReceivedMessages()[0].getAllRecipients().length);
+            assertEquals("employee@gmail.com",
+                    greenMail.getReceivedMessages()[0].getAllRecipients()[0].toString());
+            assertEquals("employee1@gmail.com",
+                    greenMail.getReceivedMessages()[0].getAllRecipients()[1].toString());
+        } else {
+            fail("Email not sent");
+        }
+
+        tearDownSMTP();
+    }
+
+    @Sql("classpath:registerDifferentBaseAndTarget.sql")
+    @Test
+    void testGetScheduledCurrencyRateWithDifferentBaseAndTarget() throws MessagingException {
+        //GIVEN
+        setupSMTP();
+        //WHEN
+        schedulerFacade.getScheduledCurrencyRate();
+        //THEN
+        boolean ok = greenMail.waitForIncomingEmail(2);
+        if (ok) {
+            assertEquals(2, greenMail.getReceivedMessages().length);
             assertEquals("employee@gmail.com",
                     greenMail.getReceivedMessages()[0].getAllRecipients()[0].toString());
             assertEquals("employee1@gmail.com",
