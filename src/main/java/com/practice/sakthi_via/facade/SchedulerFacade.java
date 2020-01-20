@@ -17,6 +17,9 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.StringJoiner;
+import java.util.stream.Collectors;
 
 @Service
 public class SchedulerFacade {
@@ -86,23 +89,35 @@ public class SchedulerFacade {
     public void getScheduledCurrencyRate() {
         List<RatesRegister> ratesRegisters = registerRepository.findAll();
         LOGGER.debug("Rates registers: {}", ratesRegisters);
-        ratesRegisters.forEach(ratesRegister -> {
-            Employee employee = ratesRegister.getEmployee();
-            LOGGER.debug("Employee: {}", employee);
-            CurrencyConverter currencyRate = currencyConverterFacade
-                    .getCurrencyRateWithTarget(ratesRegister.getBase(),
-                            ratesRegister.getTarget());
-            try {
-                Map<String, Object> content = new HashMap<>();
-                content.put("name", employee.getName());
-                content.put("base", ratesRegister.getBase());
-                content.put("targets", currencyRate.getRates());
-                Mail mail = new Mail(employee.getEmail(),
-                        MAIL_SUBJECT, content, MAIL_TEMPLATE);
-                emailService.sendMail(mail);
-            } catch (MessagingException e) {
-                LOGGER.error("Exception in Schedule Mail", e);
-            }
+        Map<String, Map<Set<String>, List<RatesRegister>>> registersGroupBy =
+                ratesRegisters.stream().collect(
+                        Collectors.groupingBy(RatesRegister::getBase,
+                                Collectors.groupingBy(RatesRegister::getTarget)
+                        ));
+        LOGGER.debug("Rates registers Group by: {}", registersGroupBy);
+        registersGroupBy.forEach((key, value) -> {
+            value.forEach((detailsKey, detailsValue) -> {
+                StringJoiner toAddress = new StringJoiner(",");
+                detailsValue.forEach(ratesRegister -> {
+                    Employee employee = ratesRegister.getEmployee();
+                    LOGGER.debug("Employee: {}", employee);
+                    toAddress.add(employee.getEmail());
+                });
+                CurrencyConverter currencyRate = currencyConverterFacade
+                        .getCurrencyRateWithTarget(key,
+                                detailsKey);
+                try {
+                    Map<String, Object> content = new HashMap<>();
+                    content.put("base", key);
+                    content.put("targets", currencyRate.getRates());
+                    LOGGER.debug("To Addresses: {}", toAddress.toString());
+                    Mail mail = new Mail(toAddress.toString(),
+                            MAIL_SUBJECT, content, MAIL_TEMPLATE);
+                    emailService.sendMail(mail);
+                } catch (MessagingException e) {
+                    LOGGER.error("Exception in Schedule Mail", e);
+                }
+            });
         });
     }
 }

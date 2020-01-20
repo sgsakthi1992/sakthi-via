@@ -318,7 +318,7 @@ public class EmployeeFacade {
         RatesRegister ratesRegister = convertRatesRegisterDtoToRatesRegister(
                 ratesRegisterDto);
 
-        ExampleMatcher exampleMatcher = ExampleMatcher.matchingAny()
+        ExampleMatcher exampleMatcher = ExampleMatcher.matchingAll()
                 .withMatcher("employee_id", contains().ignoreCase())
                 .withMatcher("base", contains().ignoreCase());
         Example<RatesRegister> example = Example

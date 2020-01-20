@@ -10,6 +10,7 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import javax.mail.MessagingException;
+import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
@@ -59,7 +60,7 @@ public class EmailServiceImpl implements EmailService {
         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage,
                 MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
                 StandardCharsets.UTF_8.name());
-        mimeMessageHelper.setTo(mail.getTo());
+        mimeMessageHelper.setTo(InternetAddress.parse(mail.getTo()));
         mimeMessageHelper.setSubject(mail.getSubject());
         mimeMessageHelper.setText(body, true);
         javaMailSender.send(mimeMessage);
