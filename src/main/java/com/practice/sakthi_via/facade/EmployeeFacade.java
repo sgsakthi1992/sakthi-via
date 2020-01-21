@@ -13,6 +13,10 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
@@ -26,6 +30,7 @@ import java.util.Optional;
 import static org.springframework.data.domain.ExampleMatcher.GenericPropertyMatchers.contains;
 
 @Service
+@CacheConfig(cacheNames = "employeeCache")
 public class EmployeeFacade {
     /**
      * Logger Object to log the details.
@@ -200,6 +205,7 @@ public class EmployeeFacade {
      * @return Employee
      * @throws ResourceNotFoundException id not found
      */
+    @Cacheable(cacheNames = "employeeCache")
     public Employee getEmployeeById(final Long id)
             throws ResourceNotFoundException {
         Employee employee = employeeRepository.findById(id).orElseThrow(
@@ -219,6 +225,7 @@ public class EmployeeFacade {
      * @return String
      * @throws ResourceNotFoundException id not found
      */
+    @CacheEvict(cacheNames = "employeeCache", key = "#id")
     public String deleteEmployeeById(final Long id)
             throws ResourceNotFoundException {
         Employee employee = getEmployeeById(id);
@@ -234,6 +241,7 @@ public class EmployeeFacade {
      * @return List of Employees
      * @throws ResourceNotFoundException email not found
      */
+    @Cacheable(cacheNames = "employeeCache", key = "#email")
     public List<Employee> getEmployeeByEmail(final String email)
             throws ResourceNotFoundException {
         return employeeRepository.findByEmail(email).orElseThrow(
@@ -299,6 +307,10 @@ public class EmployeeFacade {
      * @return String
      * @throws ResourceNotFoundException id not found
      */
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "employeeCache", key = "#id"),
+            @CacheEvict(cacheNames = "employeeCache", key = "#email")
+    })
     public String updateEmployeeEmail(final Long id, final String email)
             throws ResourceNotFoundException {
         Employee employee = getEmployeeById(id);

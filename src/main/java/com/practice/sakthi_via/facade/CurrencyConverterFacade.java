@@ -6,6 +6,8 @@ import com.practice.sakthi_via.model.CurrencyConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
@@ -20,6 +22,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
+@CacheConfig(cacheNames = "CurrencyConverterCache")
 public class CurrencyConverterFacade {
     /**
      * Logger Object to log the details.
@@ -41,6 +44,7 @@ public class CurrencyConverterFacade {
      */
     @Value("${via.rateswithtargets.api.url}")
     private String currencyRateWithTargetsUrl;
+
     /**
      * RestTemplate object.
      */
@@ -62,6 +66,7 @@ public class CurrencyConverterFacade {
      * @return Countries and their currencies
      */
     @HystrixCommand(fallbackMethod = "getDefaultCountriesAndCurrencies")
+    @Cacheable(keyGenerator = "customKeyGenerator")
     public Map<String, String> getCountriesAndCurrencies() {
         LOGGER.debug("countriesAndCurrenciesUrl: {}",
                 countriesAndCurrenciesUrl);
@@ -79,6 +84,7 @@ public class CurrencyConverterFacade {
      */
     @HystrixCommand(fallbackMethod = "getDefaultCurrencyRate",
             ignoreExceptions = HttpClientErrorException.BadRequest.class)
+    @Cacheable(key = "#base")
     public CurrencyConverter getCurrencyRate(final String base) {
         String url = String.format(
                 currencyRateUrl, base);
@@ -100,6 +106,7 @@ public class CurrencyConverterFacade {
      * @param targets set of targets
      * @return currency rates for the base currency
      */
+    @Cacheable(keyGenerator = "customKeyGenerator")
     public CurrencyConverter getCurrencyRateWithTarget(
             final String base, final Set<String> targets) {
         String target = targets.stream().map(Objects::toString)

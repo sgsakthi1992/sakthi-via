@@ -15,3 +15,6 @@ via:
   scheduler:
     cron:
       value: 0/2 * * * * ?
+    cache:
+      evict:
+        value: 600000

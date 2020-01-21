@@ -33,3 +33,11 @@ via:
   scheduler:
     cron:
       value: 0 30 17 ? * MON-FRI
+    cache:
+      evict:
+        value: 600000
+logging:
+  level:
+    org:
+      springframework:
+        cache: TRACE

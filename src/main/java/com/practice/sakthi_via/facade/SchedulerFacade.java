@@ -9,6 +9,7 @@ import com.practice.sakthi_via.repository.RatesRegisterRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +18,7 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
@@ -49,6 +51,10 @@ public class SchedulerFacade {
      * CurrencyConverterFacade object.
      */
     private CurrencyConverterFacade currencyConverterFacade;
+    /**
+     * CacheManager object.
+     */
+    private CacheManager cacheManager;
 
     /**
      * Setter for RatesRegisterRepository object.
@@ -83,6 +89,16 @@ public class SchedulerFacade {
     }
 
     /**
+     * Setter for CacheManager object.
+     *
+     * @param cacheManager CacheManager object.
+     */
+    @Autowired
+    public void setCacheManager(final CacheManager cacheManager) {
+        this.cacheManager = cacheManager;
+    }
+
+    /**
      * Method to schedule the currency rate.
      */
     @Scheduled(cron = "${via.scheduler.cron.value}")
@@ -95,29 +111,40 @@ public class SchedulerFacade {
                                 Collectors.groupingBy(RatesRegister::getTarget)
                         ));
         LOGGER.debug("Rates registers Group by: {}", registersGroupBy);
-        registersGroupBy.forEach((key, value) -> {
-            value.forEach((detailsKey, detailsValue) -> {
-                StringJoiner toAddress = new StringJoiner(",");
-                detailsValue.forEach(ratesRegister -> {
-                    Employee employee = ratesRegister.getEmployee();
-                    LOGGER.debug("Employee: {}", employee);
-                    toAddress.add(employee.getEmail());
-                });
-                CurrencyConverter currencyRate = currencyConverterFacade
-                        .getCurrencyRateWithTarget(key,
-                                detailsKey);
-                try {
-                    Map<String, Object> content = new HashMap<>();
-                    content.put("base", key);
-                    content.put("targets", currencyRate.getRates());
-                    LOGGER.debug("To Addresses: {}", toAddress.toString());
-                    Mail mail = new Mail(toAddress.toString(),
-                            MAIL_SUBJECT, content, MAIL_TEMPLATE);
-                    emailService.sendMail(mail);
-                } catch (MessagingException e) {
-                    LOGGER.error("Exception in Schedule Mail", e);
-                }
+        registersGroupBy.forEach((key, value) ->
+                value.forEach((detailsKey, detailsValue) -> {
+            StringJoiner toAddress = new StringJoiner(",");
+            detailsValue.forEach(ratesRegister -> {
+                Employee employee = ratesRegister.getEmployee();
+                LOGGER.debug("Employee: {}", employee);
+                toAddress.add(employee.getEmail());
             });
-        });
+            CurrencyConverter currencyRate = currencyConverterFacade
+                    .getCurrencyRateWithTarget(key,
+                            detailsKey);
+            try {
+                Map<String, Object> content = new HashMap<>();
+                content.put("base", key);
+                content.put("targets", currencyRate.getRates());
+                LOGGER.debug("To Addresses: {}", toAddress.toString());
+                Mail mail = new Mail(toAddress.toString(),
+                        MAIL_SUBJECT, content, MAIL_TEMPLATE);
+                emailService.sendMail(mail);
+            } catch (MessagingException e) {
+                LOGGER.error("Exception in Schedule Mail", e);
+            }
+        }));
+    }
+
+    /**
+     * To clear all the caches at regular intervals.
+     */
+    @Scheduled(fixedRateString = "${via.scheduler.cache.evict.value}")
+    public void evictAllCachesAtIntervals() {
+        LOGGER.debug("Caches are: {}", cacheManager.getCacheNames());
+        cacheManager.getCacheNames()
+                .forEach(cacheName -> Objects.requireNonNull(
+                        cacheManager.getCache(cacheName)).clear());
+        LOGGER.debug("Caches cleared!");
     }
 }
