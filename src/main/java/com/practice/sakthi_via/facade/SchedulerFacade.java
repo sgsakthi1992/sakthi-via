@@ -126,7 +126,7 @@ public class SchedulerFacade {
                 Map<String, Object> content = new HashMap<>();
                 content.put("base", key);
                 content.put("targets", currencyRate.getRates());
-                LOGGER.debug("To Addresses: {}", toAddress.toString());
+                LOGGER.debug("To Addresses: {}", toAddress);
                 Mail mail = new Mail(toAddress.toString(),
                         MAIL_SUBJECT, content, MAIL_TEMPLATE);
                 emailService.sendMail(mail);
