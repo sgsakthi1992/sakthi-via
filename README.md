@@ -26,7 +26,7 @@ CurrencyConverter:
 * GET: /api/v1/highestAndLowestCurrencyRates?base={code} - To get the highest and lowest currencies for the base currency
 
 **Java Version**
-* Java 10
+* Java 11
 * Java 8 streams, lambdas/method references, optionals are used where possible
 
 **Spring**
@@ -37,6 +37,7 @@ CurrencyConverter:
 * Spring Data JPA (JpaRepository + Entity class) - Heroku Postgres to store the data
 * Spring Mail with Thymeleaf
 * Spring Scheduler
+* Spring Cache - Simple cache
 
 **Additional**
 * Validation with JSR303 - Annotations + Custom Annotation (to check Unique Username)
@@ -60,3 +61,6 @@ CurrencyConverter:
 * JaCoCo for code coverage, configured in maven plugin
 * SonarQube(SonarCloud.io), CheckStyle(configured in maven plugin) for code quality
 
+**System Architecture**
+
+![alt text](https://raw.githubusercontent.com/sgsakthi1992/sakthi-via/master/plantUml/system_diagram.png)
