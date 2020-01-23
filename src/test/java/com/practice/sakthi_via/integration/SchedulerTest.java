@@ -34,6 +34,6 @@ class SchedulerTest {
     void testScheduler() {
         Awaitility.await().atMost(Duration.ofSeconds(10))
                 .untilAsserted(() -> Mockito.verify(schedulerFacade,
-                        Mockito.atMost(5)).getScheduledCurrencyRate());
+                        Mockito.atMost(5)).dailyEmailAlertScheduler());
     }
 }

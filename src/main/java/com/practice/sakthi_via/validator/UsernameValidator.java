@@ -1,7 +1,6 @@
 package com.practice.sakthi_via.validator;
 
 import com.practice.sakthi_via.facade.EmployeeFacade;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
@@ -11,21 +10,22 @@ public class UsernameValidator
     /**
      * EmployeeService object.
      */
-    private EmployeeFacade employeeFacade;
+    private final EmployeeFacade employeeFacade;
 
     /**
-     * Setter for Employee service object.
-     * @param employeeFacade
+     * Parameterized constructor to bind EmployeeFacade object.
+     *
+     * @param employeeFacade EmployeeFacade object
      */
-    @Autowired
-    public void setEmployeeFacade(final EmployeeFacade employeeFacade) {
+    public UsernameValidator(final EmployeeFacade employeeFacade) {
         this.employeeFacade = employeeFacade;
     }
 
     /**
      * Overridden isValid method.
-     * @param userName
-     * @param context
+     *
+     * @param userName Employee username
+     * @param context  ConstraintValidatorContext
      * @return true or false
      */
     @Override

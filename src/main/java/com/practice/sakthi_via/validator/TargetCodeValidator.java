@@ -5,7 +5,6 @@
 package com.practice.sakthi_via.validator;
 
 import com.practice.sakthi_via.facade.CurrencyConverterFacade;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
@@ -17,16 +16,14 @@ public class TargetCodeValidator
     /**
      * EmployeeService object.
      */
-    private CurrencyConverterFacade currencyConverterFacade;
-
+    private final CurrencyConverterFacade currencyConverterFacade;
 
     /**
-     * Setter for CurrencyConverterFacade object.
+     * Parameterized constructor.
      *
-     * @param currencyConverterFacade CurrencyConverterFacade object.
+     * @param currencyConverterFacade CurrencyConverterFacade object
      */
-    @Autowired
-    public void setCurrencyConverterFacade(
+    public TargetCodeValidator(
             final CurrencyConverterFacade currencyConverterFacade) {
         this.currencyConverterFacade = currencyConverterFacade;
     }

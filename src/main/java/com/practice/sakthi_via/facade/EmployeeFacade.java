@@ -12,7 +12,6 @@ import com.practice.sakthi_via.repository.RatesRegisterRepository;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -60,6 +59,10 @@ public class EmployeeFacade {
      */
     private static final String EMAIL_SUBJECT = "Welcome to SAKTHI-VIA!!";
     /**
+     * Scheduler mail template.
+     */
+    private static final String MAIL_TEMPLATE = "welcomeMailTemplate";
+    /**
      * EmployeeRepository object.
      */
     private EmployeeRepository employeeRepository;
@@ -77,42 +80,21 @@ public class EmployeeFacade {
     private ModelMapper modelMapper;
 
     /**
-     * Default constructor.
-     */
-    public EmployeeFacade() {
-        modelMapper = new ModelMapper();
-    }
-
-    /**
-     * Setter for EmployeeRepository object.
+     * Parameterized Constructor.
      *
      * @param employeeRepository EmployeeRepository object
-     */
-    @Autowired
-    public void setEmployeeRepository(
-            final EmployeeRepository employeeRepository) {
-        this.employeeRepository = employeeRepository;
-    }
-
-    /**
-     * Setter for RatesRegisterRepository object.
-     *
+     * @param emailService       EmailService object
      * @param registerRepository RatesRegisterRepository object
+     * @param modelMapper        ModelMapper object
      */
-    @Autowired
-    public void setRegisterRepository(
-            final RatesRegisterRepository registerRepository) {
-        this.registerRepository = registerRepository;
-    }
-
-    /**
-     * Setter for EmailService object.
-     *
-     * @param emailService EmailService object
-     */
-    @Autowired
-    public void setEmailService(final EmailService emailService) {
+    public EmployeeFacade(final EmployeeRepository employeeRepository,
+                          final EmailService emailService,
+                          final RatesRegisterRepository registerRepository,
+                          final ModelMapper modelMapper) {
+        this.employeeRepository = employeeRepository;
         this.emailService = emailService;
+        this.registerRepository = registerRepository;
+        this.modelMapper = modelMapper;
     }
 
     /**
@@ -181,8 +163,13 @@ public class EmployeeFacade {
         content.put("age", employee.getAge());
         content.put("email", employee.getEmail());
 
-        Mail mail = new Mail(employee.getEmail(),
-                EMAIL_SUBJECT, content, "welcomeMailTemplate");
+        Mail.MailBuilder builder = Mail.builder();
+        builder.setTo(employee.getEmail());
+        builder.setSubject(EMAIL_SUBJECT);
+        builder.setContent(content);
+        builder.setTemplate(MAIL_TEMPLATE);
+
+        Mail mail = builder.createMail();
         emailService.sendMail(mail);
         return employee;
     }

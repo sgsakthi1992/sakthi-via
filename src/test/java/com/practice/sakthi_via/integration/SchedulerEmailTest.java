@@ -7,9 +7,7 @@ package com.practice.sakthi_via.integration;
 import com.icegreen.greenmail.util.GreenMail;
 import com.icegreen.greenmail.util.ServerSetup;
 import com.practice.sakthi_via.facade.SchedulerFacade;
-import com.practice.sakthi_via.validator.TargetCode;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -62,7 +60,7 @@ public class SchedulerEmailTest {
         //GIVEN
         setupSMTP();
         //WHEN
-        schedulerFacade.getScheduledCurrencyRate();
+        schedulerFacade.dailyEmailAlertScheduler();
         //THEN
         boolean ok = greenMail.waitForIncomingEmail(0);
         if(ok) {
@@ -77,7 +75,7 @@ public class SchedulerEmailTest {
         //GIVEN
         setupSMTP();
         //WHEN
-        schedulerFacade.getScheduledCurrencyRate();
+        schedulerFacade.dailyEmailAlertScheduler();
         //THEN
         boolean ok = greenMail.waitForIncomingEmail(2);
         if (ok) {
@@ -99,7 +97,7 @@ public class SchedulerEmailTest {
         //GIVEN
         setupSMTP();
         //WHEN
-        schedulerFacade.getScheduledCurrencyRate();
+        schedulerFacade.dailyEmailAlertScheduler();
         //THEN
         boolean ok = greenMail.waitForIncomingEmail(2);
         if (ok) {

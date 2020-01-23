@@ -46,21 +46,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 class EmployeeAPITest {
 
+    @Autowired
     private MockMvc mockMvc;
 
+    @Autowired
     private EmployeeRepository employeeRepository;
 
     private static GreenMail greenMail;
-
-    @Autowired
-    public void setMockMvc(final MockMvc mockMvc) {
-        this.mockMvc = mockMvc;
-    }
-
-    @Autowired
-    public void setEmployeeRepository(final EmployeeRepository employeeRepository) {
-        this.employeeRepository = employeeRepository;
-    }
 
     private static void setupSMTP() {
         greenMail = new GreenMail(new ServerSetup(2525, "127.0.0.1", "smtp"));

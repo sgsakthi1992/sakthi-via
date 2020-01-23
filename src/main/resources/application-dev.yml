@@ -1,9 +1,11 @@
 spring:
   datasource:
-    url: jdbc:postgres://qaznpaayhzjydd:1a67e2ab4270a4c2a832af0afeeec59f5bc56276d2872dbd40d1ad0094bab824@ec2-54-247-82-14.eu-west-1.compute.amazonaws.com:5432/d5j0ek3vphrub8
-    driverClassName: org.postgresql.Driver
+    url: jdbc:h2:mem:test
+    driverClassName: org.h2.Driver
   jpa:
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
     hibernate:
       ddl-auto: update
   mail:

@@ -44,7 +44,7 @@ public class CurrencyConverterController {
     /**
      * TodoFacade object.
      */
-    private CurrencyConverterFacade currencyConverterFacade;
+    private final CurrencyConverterFacade currencyConverterFacade;
 
     /**
      * Parameterized constructor to bind TodoFacade object.
@@ -68,9 +68,8 @@ public class CurrencyConverterController {
     })
     @GetMapping("/countries")
     public ResponseEntity<Map> getCountriesAndCurrencies() {
-        Map countryList = currencyConverterFacade
-                .getCountriesAndCurrencies();
-        return ResponseEntity.status(HttpStatus.OK).body(countryList);
+        return ResponseEntity.status(HttpStatus.OK).body(currencyConverterFacade
+                .getCountriesAndCurrencies());
     }
 
     /**
@@ -96,9 +95,8 @@ public class CurrencyConverterController {
                     message = "Currency code must be of 3 letters")
             @PathVariable(value = "code") final String code)
             throws ResourceNotFoundException {
-        String country = currencyConverterFacade
-                .getCountryForCurrencyCode(code);
-        return ResponseEntity.status(HttpStatus.OK).body(country);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(currencyConverterFacade.getCountryForCurrencyCode(code));
     }
 
     /**
@@ -120,9 +118,8 @@ public class CurrencyConverterController {
             @Size(min = CURRENCY_CODE_LENGTH, max = CURRENCY_CODE_LENGTH,
                     message = "Currency code must be of 3 letters")
             @RequestParam(value = "base") final String base) {
-        CurrencyConverter currencyRate = currencyConverterFacade
-                .getCurrencyRate(base);
-        return ResponseEntity.status(HttpStatus.OK).body(currencyRate);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(currencyConverterFacade.getCurrencyRate(base));
     }
 
     /**
@@ -144,8 +141,8 @@ public class CurrencyConverterController {
             @Size(min = CURRENCY_CODE_LENGTH, max = CURRENCY_CODE_LENGTH,
                     message = "Currency code must be of 3 letters")
             @RequestParam(value = "base") final String base) {
-        Map<String, Double> currencyRate = currencyConverterFacade
-                .getHighestAndLowestCurrencyRate(base);
-        return ResponseEntity.status(HttpStatus.OK).body(currencyRate);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(currencyConverterFacade
+                        .getHighestAndLowestCurrencyRate(base));
     }
 }

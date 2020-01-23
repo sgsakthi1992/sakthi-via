@@ -9,7 +9,6 @@ import com.practice.sakthi_via.model.Mail;
 import com.practice.sakthi_via.model.RatesRegister;
 import com.practice.sakthi_via.repository.RatesRegisterRepository;
 import org.assertj.core.api.Assertions;
-import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -87,7 +86,7 @@ class SchedulerFacadeTest {
                 .thenReturn(converterInr);
 
         //WHEN
-        schedulerFacade.getScheduledCurrencyRate();
+        schedulerFacade.dailyEmailAlertScheduler();
 
         //THEN
         verify(emailService, times(ratesRegisters.size())).sendMail(captor.capture());

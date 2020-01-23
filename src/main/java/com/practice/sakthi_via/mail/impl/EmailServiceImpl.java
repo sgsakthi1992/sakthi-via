@@ -2,10 +2,9 @@ package com.practice.sakthi_via.mail.impl;
 
 import com.practice.sakthi_via.mail.EmailService;
 import com.practice.sakthi_via.model.Mail;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
@@ -15,35 +14,26 @@ import javax.mail.internet.MimeMessage;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
-@Component
+@Service
 public class EmailServiceImpl implements EmailService {
     /**
      * JavaMailSender object.
      */
-    private JavaMailSender javaMailSender;
+    private final JavaMailSender javaMailSender;
     /**
      * Thymeleaf TemplateEngine Object.
      */
-    private TemplateEngine templateEngine;
+    private final TemplateEngine templateEngine;
 
     /**
-     * Setter for JavaMailSender object.
+     * Parameterized constructor.
      *
      * @param javaMailSender JavaMailSender object
-     */
-    @Autowired
-    public void setJavaMailSender(
-            final JavaMailSender javaMailSender) {
-        this.javaMailSender = javaMailSender;
-    }
-
-    /**
-     * Setter for TemplateEngine object.
-     *
      * @param templateEngine TemplateEngine object
      */
-    @Autowired
-    public void setTemplateEngine(final TemplateEngine templateEngine) {
+    public EmailServiceImpl(final JavaMailSender javaMailSender,
+                            final TemplateEngine templateEngine) {
+        this.javaMailSender = javaMailSender;
         this.templateEngine = templateEngine;
     }
 

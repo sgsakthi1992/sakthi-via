@@ -8,7 +8,6 @@ import com.practice.sakthi_via.model.RatesRegister;
 import com.practice.sakthi_via.repository.RatesRegisterRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -33,7 +32,7 @@ public class SchedulerFacade {
     /**
      * Scheduler mail subject.
      */
-    private static final String MAIL_SUBJECT = "<SAKTHI-VIA> Currency Rate "
+    private static final String EMAIL_SUBJECT = "<SAKTHI-VIA> Currency Rate "
             + "as of " + LocalDate.now();
     /**
      * Scheduler mail template.
@@ -42,59 +41,36 @@ public class SchedulerFacade {
     /**
      * EmailService object.
      */
-    private EmailService emailService;
+    private final EmailService emailService;
     /**
      * RatesRegisterRepository object.
      */
-    private RatesRegisterRepository registerRepository;
+    private final RatesRegisterRepository registerRepository;
     /**
      * CurrencyConverterFacade object.
      */
-    private CurrencyConverterFacade currencyConverterFacade;
+    private final CurrencyConverterFacade currencyConverterFacade;
     /**
      * CacheManager object.
      */
-    private CacheManager cacheManager;
+    private final CacheManager cacheManager;
 
     /**
-     * Setter for RatesRegisterRepository object.
+     * Parameterized constructor to bind the objects.
      *
-     * @param registerRepository RatesRegisterRepository object
-     */
-    @Autowired
-    public void setRegisterRepository(
-            final RatesRegisterRepository registerRepository) {
-        this.registerRepository = registerRepository;
-    }
-
-    /**
-     * Setter for CurrencyConverterFacade object.
-     *
+     * @param emailService            EmailService object
+     * @param registerRepository      RatesRegisterRepository object
      * @param currencyConverterFacade CurrencyConverterFacade object
+     * @param cacheManager            CacheManager object
      */
-    @Autowired
-    public void setCurrencyConverterFacade(
-            final CurrencyConverterFacade currencyConverterFacade) {
-        this.currencyConverterFacade = currencyConverterFacade;
-    }
-
-    /**
-     * Setter for EmailService object.
-     *
-     * @param emailService EmailService object
-     */
-    @Autowired
-    public void setEmailService(final EmailService emailService) {
+    public SchedulerFacade(final EmailService emailService,
+                           final RatesRegisterRepository registerRepository,
+                           final CurrencyConverterFacade
+                                   currencyConverterFacade,
+                           final CacheManager cacheManager) {
         this.emailService = emailService;
-    }
-
-    /**
-     * Setter for CacheManager object.
-     *
-     * @param cacheManager CacheManager object.
-     */
-    @Autowired
-    public void setCacheManager(final CacheManager cacheManager) {
+        this.registerRepository = registerRepository;
+        this.currencyConverterFacade = currencyConverterFacade;
         this.cacheManager = cacheManager;
     }
 
@@ -102,38 +78,72 @@ public class SchedulerFacade {
      * Method to schedule the currency rate.
      */
     @Scheduled(cron = "${via.scheduler.cron.value}")
-    public void getScheduledCurrencyRate() {
+    public void dailyEmailAlertScheduler() {
+
+        Map<String, Map<Set<String>, List<RatesRegister>>>
+                registeredForAlerts = getAlertRegistrationDetails();
+
+        registeredForAlerts.forEach((baseCode, targetDetailsMap) ->
+                targetDetailsMap.forEach((targetsSet, ratesRegistersList) -> {
+                    sendMail(baseCode, getLatestRates(baseCode, targetsSet),
+                            getToAddresses(ratesRegistersList));
+                }));
+    }
+
+    private Map<String, Map<Set<String>,
+            List<RatesRegister>>> getAlertRegistrationDetails() {
         List<RatesRegister> ratesRegisters = registerRepository.findAll();
         LOGGER.debug("Rates registers: {}", ratesRegisters);
-        Map<String, Map<Set<String>, List<RatesRegister>>> registersGroupBy =
-                ratesRegisters.stream().collect(
-                        Collectors.groupingBy(RatesRegister::getBase,
-                                Collectors.groupingBy(RatesRegister::getTarget)
-                        ));
-        LOGGER.debug("Rates registers Group by: {}", registersGroupBy);
-        registersGroupBy.forEach((key, value) ->
-                value.forEach((detailsKey, detailsValue) -> {
-            StringJoiner toAddress = new StringJoiner(",");
-            detailsValue.forEach(ratesRegister -> {
-                Employee employee = ratesRegister.getEmployee();
-                LOGGER.debug("Employee: {}", employee);
-                toAddress.add(employee.getEmail());
-            });
-            CurrencyConverter currencyRate = currencyConverterFacade
-                    .getCurrencyRateWithTarget(key,
-                            detailsKey);
-            try {
-                Map<String, Object> content = new HashMap<>();
-                content.put("base", key);
-                content.put("targets", currencyRate.getRates());
-                LOGGER.debug("To Addresses: {}", toAddress);
-                Mail mail = new Mail(toAddress.toString(),
-                        MAIL_SUBJECT, content, MAIL_TEMPLATE);
-                emailService.sendMail(mail);
-            } catch (MessagingException e) {
-                LOGGER.error("Exception in Schedule Mail", e);
-            }
-        }));
+
+        Map<String, Map<Set<String>, List<RatesRegister>>>
+                groupByBaseTargets = ratesRegisters.stream().collect(
+                Collectors.groupingBy(RatesRegister::getBase,
+                        Collectors.groupingBy(RatesRegister::getTarget)
+                ));
+        LOGGER.debug("Rates registers Group by: {}", groupByBaseTargets);
+
+        return groupByBaseTargets;
+    }
+
+    private Map<String, Double> getLatestRates(
+            final String baseCode,
+            final Set<String> targetsSet) {
+        CurrencyConverter currencyRate = currencyConverterFacade
+                .getCurrencyRateWithTarget(baseCode,
+                        targetsSet);
+        return currencyRate.getRates();
+    }
+
+    private StringJoiner getToAddresses(
+            final List<RatesRegister> ratesRegistersList) {
+        StringJoiner toAddress = new StringJoiner(",");
+        ratesRegistersList.forEach(ratesRegister -> {
+            Employee employee = ratesRegister.getEmployee();
+            LOGGER.debug("Employee: {}", employee);
+            toAddress.add(employee.getEmail());
+        });
+        return toAddress;
+    }
+
+    private void sendMail(final String key,
+                          final Map<String, Double> targets,
+                          final StringJoiner toAddress) {
+        try {
+            Map<String, Object> content = new HashMap<>();
+            content.put("base", key);
+            content.put("targets", targets);
+
+            Mail.MailBuilder builder = Mail.builder();
+            builder.setTo(toAddress.toString());
+            builder.setSubject(EMAIL_SUBJECT);
+            builder.setContent(content);
+            builder.setTemplate(MAIL_TEMPLATE);
+
+            Mail mail = builder.createMail();
+            emailService.sendMail(mail);
+        } catch (MessagingException e) {
+            LOGGER.error("Exception in Schedule Mail", e);
+        }
     }
 
     /**

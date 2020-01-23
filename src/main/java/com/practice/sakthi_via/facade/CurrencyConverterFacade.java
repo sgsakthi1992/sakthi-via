@@ -70,7 +70,7 @@ public class CurrencyConverterFacade {
     public Map<String, String> getCountriesAndCurrencies() {
         LOGGER.debug("countriesAndCurrenciesUrl: {}",
                 countriesAndCurrenciesUrl);
-        HashMap<String, String> countries = restTemplate
+        Map<String, String> countries = restTemplate
                 .getForObject(countriesAndCurrenciesUrl, HashMap.class);
         LOGGER.debug("Countries List: {}", countries);
         return countries;

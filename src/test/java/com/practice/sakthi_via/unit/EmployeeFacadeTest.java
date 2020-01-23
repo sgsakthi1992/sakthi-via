@@ -13,6 +13,7 @@ import com.practice.sakthi_via.repository.RatesRegisterRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
+import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Example;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -46,6 +47,9 @@ class EmployeeFacadeTest {
     @Mock
     EmailService emailService;
 
+    @Mock
+    ModelMapper modelMapper;
+
     @Spy
     @InjectMocks
     EmployeeFacade spyEmployeeFacade;
@@ -77,6 +81,7 @@ class EmployeeFacadeTest {
         //GIVEN
         EmployeeDto employeeDto = new EmployeeDto("Employee 1",
                 "employee1", "emp1@gmail.com", 25);
+        when(modelMapper.map(employeeDto, Employee.class)).thenReturn(employee);
         //WHEN
         Employee convertedEmployee = employeeFacade.convertEmployeeDtoToEmployee(employeeDto);
 
@@ -92,10 +97,13 @@ class EmployeeFacadeTest {
         //GIVEN
         RatesRegisterDto ratesRegisterDto = new RatesRegisterDto(40000L,
                 "HUF", Set.of("INR", "EUR"));
+        when(modelMapper.map(ratesRegisterDto, RatesRegister.class)).thenReturn(
+                new RatesRegister(1, employee, "HUF", Set.of("INR", "EUR")));
         when(employeeRepository.findById(ratesRegisterDto.getId()))
                 .thenReturn(java.util.Optional.ofNullable(employee));
         //WHEN
-        RatesRegister ratesRegister = employeeFacade.convertRatesRegisterDtoToRatesRegister(ratesRegisterDto);
+        RatesRegister ratesRegister = employeeFacade
+                .convertRatesRegisterDtoToRatesRegister(ratesRegisterDto);
 
         //THEN
         assertEquals("HUF", ratesRegister.getBase());
@@ -240,6 +248,8 @@ class EmployeeFacadeTest {
         //GIVEN
         RatesRegisterDto ratesRegisterDto = new RatesRegisterDto(40000L,
                 "HUF", Set.of("INR", "EUR"));
+        when(modelMapper.map(ratesRegisterDto, RatesRegister.class)).thenReturn(
+                new RatesRegister(1, employee, "HUF", Set.of("INR", "EUR")));
         when(employeeRepository.findById(ratesRegisterDto.getId()))
                 .thenReturn(Optional.ofNullable(employee));
         when(ratesRegisterRepository.findOne(any(Example.class))).thenReturn(Optional.empty());
@@ -259,7 +269,8 @@ class EmployeeFacadeTest {
         target.add("USD");
 
         RatesRegister register = new RatesRegister(1, employee, "HUF", target);
-
+        when(modelMapper.map(ratesRegisterDto, RatesRegister.class)).thenReturn(
+                new RatesRegister(1, employee, "HUF", Set.of("INR", "EUR")));
         when(employeeRepository.findById(ratesRegisterDto.getId()))
                 .thenReturn(Optional.ofNullable(employee));
         when(ratesRegisterRepository.findOne(any(Example.class)))

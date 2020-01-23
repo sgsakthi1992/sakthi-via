@@ -93,7 +93,7 @@ public class EmployeeController {
     /**
      * EmployeeFacade object.
      */
-    private EmployeeFacade employeeFacade;
+    private final EmployeeFacade employeeFacade;
 
     /**
      * Constructor to bind EmployeeFacade object.
@@ -116,8 +116,8 @@ public class EmployeeController {
     })
     @GetMapping("/employees")
     public ResponseEntity<List> getEmployees() {
-        List<Employee> employeeList = employeeFacade.getEmployees();
-        return ResponseEntity.status(HttpStatus.OK).body(employeeList);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(employeeFacade.getEmployees());
     }
 
     /**
@@ -139,8 +139,8 @@ public class EmployeeController {
             @ApiParam(value = "Employee details", required = true)
             @Valid @RequestBody final EmployeeDto employeeDto)
             throws MessagingException {
-        Employee employee = employeeFacade.createEmployee(employeeDto);
-        return ResponseEntity.status(HttpStatus.OK).body(employee);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(employeeFacade.createEmployee(employeeDto));
     }
 
     /**
@@ -163,8 +163,8 @@ public class EmployeeController {
                     required = true)
             @PathVariable(value = "id") final Long id)
             throws ResourceNotFoundException {
-        Employee employee = employeeFacade.getEmployeeById(id);
-        return ResponseEntity.status(HttpStatus.OK).body(employee);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(employeeFacade.getEmployeeById(id));
     }
 
     /**
@@ -186,8 +186,8 @@ public class EmployeeController {
             @ApiParam(value = "Id to delete Employee details", required = true)
             @PathVariable(value = "id") final Long id)
             throws ResourceNotFoundException {
-        String message = employeeFacade.deleteEmployeeById(id);
-        return ResponseEntity.status(HttpStatus.OK).body(message);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(employeeFacade.deleteEmployeeById(id));
     }
 
     /**
@@ -213,8 +213,8 @@ public class EmployeeController {
             @Email(message = EMAIL_VALIDATION_MSG) @Valid
             @PathVariable(value = "email") final String email)
             throws ResourceNotFoundException {
-        List employeeList = employeeFacade.getEmployeeByEmail(email);
-        return ResponseEntity.status(HttpStatus.OK).body(employeeList);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(employeeFacade.getEmployeeByEmail(email));
     }
 
     /**
@@ -242,9 +242,8 @@ public class EmployeeController {
             @Email(message = EMAIL_VALIDATION_MSG) @Valid
             @RequestParam(required = false) final String email)
             throws ResourceNotFoundException {
-        List<Employee> employeeList = employeeFacade
-                .getEmployeeByUsernameOrEmail(username, email);
-        return ResponseEntity.status(HttpStatus.OK).body(employeeList);
+        return ResponseEntity.status(HttpStatus.OK).body(employeeFacade
+                .getEmployeeByUsernameOrEmail(username, email));
     }
 
     /**
@@ -273,8 +272,8 @@ public class EmployeeController {
             @Email(message = EMAIL_VALIDATION_MSG)
             @Valid @RequestParam final String email)
             throws ResourceNotFoundException {
-        String message = employeeFacade.updateEmployeeEmail(id, email);
-        return ResponseEntity.status(HttpStatus.OK).body(message);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(employeeFacade.updateEmployeeEmail(id, email));
     }
 
     /**
@@ -288,8 +287,8 @@ public class EmployeeController {
     public ResponseEntity<String> registerForRates(
             @Valid @RequestBody final RatesRegisterDto ratesRegisterDto)
             throws ResourceNotFoundException {
-        String message = employeeFacade.registerForRates(ratesRegisterDto);
-        return ResponseEntity.status(HttpStatus.OK).body(message);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(employeeFacade.registerForRates(ratesRegisterDto));
     }
 
 }
