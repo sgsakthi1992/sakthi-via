@@ -11,7 +11,7 @@
     <groupId>com.practice</groupId>
     <artifactId>sakthi-via</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <packaging>jar</packaging>
+    <packaging>pom</packaging>
 
     <name>sakthi-via</name>
     <url>http://maven.apache.org</url>
@@ -20,6 +20,16 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>11</java.version>
     </properties>
+
+    <modules>
+        <module>employee</module>
+        <module>mail</module>
+        <module>currencyconverter</module>
+        <module>scheduler</module>
+        <module>web</module>
+        <module>exception</module>
+        <module>integrationtest</module>
+    </modules>
 
     <dependencies>
         <dependency>
@@ -124,10 +134,6 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-            <plugin>
                 <groupId>com.heroku.sdk</groupId>
                 <artifactId>heroku-maven-plugin</artifactId>
                 <version>2.0.13</version>
@@ -202,20 +208,19 @@
                                 <rule>
                                     <element>CLASS</element>
                                     <excludes>
-                                        <exclude>com.practice.sakthi_via.SpringbootApplication</exclude>
-                                        <exclude>com.practice.sakthi_via.constants.Constants</exclude>
-                                        <exclude>com.practice.sakthi_via.model.Employee</exclude>
-                                        <exclude>com.practice.sakthi_via.model.RatesRegister</exclude>
-                                        <exclude>com.practice.sakthi_via.model.Mail</exclude>
-                                        <exclude>com.practice.sakthi_via.model.dto.EmployeeDto</exclude>
-                                        <exclude>com.practice.sakthi_via.model.dto.RatesRegisterDto</exclude>
-                                        <exclude>com.practice.sakthi_via.config.SwaggerConfig</exclude>
+                                        <exclude>com.practice.VIAApplication</exclude>
+                                        <exclude>com.practice.employee.model.Employee</exclude>
+                                        <exclude>com.practice.employee.model.RatesRegister</exclude>
+                                        <exclude>com.practice.mail.model.Mail</exclude>
+                                        <exclude>com.practice.employee.model.dto.EmployeeDto</exclude>
+                                        <exclude>com.practice.employee.model.dto.RatesRegisterDto</exclude>
+                                        <exclude>SwaggerConfig</exclude>
                                     </excludes>
                                     <limits>
                                         <limit>
                                             <counter>LINE</counter>
                                             <value>COVEREDRATIO</value>
-                                            <minimum>75%</minimum>
+                                            <minimum>0%</minimum>
                                         </limit>
                                     </limits>
                                 </rule>

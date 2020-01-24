@@ -63,7 +63,7 @@ CUSTOMIZATION::
     </module>
 
     <module name="SuppressionSingleFilter">
-        <property name="files" value="SpringbootApplication.java"/>
+        <property name="files" value="VIAApplication.java"/>
         <property name="checks" value=".*"/>
     </module>
 
