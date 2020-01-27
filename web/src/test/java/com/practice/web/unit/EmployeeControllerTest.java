@@ -1,5 +1,6 @@
 package com.practice.web.unit;
 
+import com.practice.employee.model.dto.RatesRegisterDto;
 import com.practice.exception.ResourceNotFoundException;
 import com.practice.employee.facade.EmployeeFacade;
 import com.practice.employee.model.Employee;
@@ -15,6 +16,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -57,7 +60,7 @@ class EmployeeControllerTest {
         //THEN
         assertEquals(200, responseEntity.getStatusCodeValue());
         assertTrue(responseEntity.hasBody());
-        assertEquals(employee.toString(), responseEntity.getBody().get(0).toString());
+        assertEquals(employee.toString(), Objects.requireNonNull(responseEntity.getBody()).get(0).toString());
     }
 
     @Test
@@ -76,7 +79,7 @@ class EmployeeControllerTest {
         //THEN
         assertEquals(200, responseEntity.getStatusCodeValue());
         assertTrue(responseEntity.hasBody());
-        assertEquals(employee.toString(), responseEntity.getBody().toString());
+        assertEquals(employee.toString(), Objects.requireNonNull(responseEntity.getBody()).toString());
     }
 
     @Test
@@ -91,7 +94,7 @@ class EmployeeControllerTest {
         //THEN
         assertEquals(200, responseEntity.getStatusCodeValue());
         assertTrue(responseEntity.hasBody());
-        assertEquals(employee.toString(), responseEntity.getBody().toString());
+        assertEquals(employee.toString(), Objects.requireNonNull(responseEntity.getBody()).toString());
     }
 
     @Test
@@ -122,7 +125,7 @@ class EmployeeControllerTest {
         //THEN
         assertEquals(200, responseEntity.getStatusCodeValue());
         assertTrue(responseEntity.hasBody());
-        assertEquals("Success", responseEntity.getBody().toString());
+        assertEquals("Success", responseEntity.getBody());
     }
 
     @Test
@@ -152,7 +155,7 @@ class EmployeeControllerTest {
         //THEN
         assertEquals(200, responseEntity.getStatusCodeValue());
         assertTrue(responseEntity.hasBody());
-        assertEquals("Success", responseEntity.getBody().toString());
+        assertEquals("Success", responseEntity.getBody());
     }
 
     @Test
@@ -183,7 +186,7 @@ class EmployeeControllerTest {
         //THEN
         assertEquals(200, responseEntity.getStatusCodeValue());
         assertTrue(responseEntity.hasBody());
-        assertEquals(employee.toString(), responseEntity.getBody().get(0).toString());
+        assertEquals(employee.toString(), Objects.requireNonNull(responseEntity.getBody()).get(0).toString());
 
     }
 
@@ -216,7 +219,7 @@ class EmployeeControllerTest {
         //THEN
         assertEquals(200, responseEntity.getStatusCodeValue());
         assertTrue(responseEntity.hasBody());
-        assertEquals(employee.toString(), responseEntity.getBody().get(0).toString());
+        assertEquals(employee.toString(), Objects.requireNonNull(responseEntity.getBody()).get(0).toString());
     }
 
     @Test
@@ -232,6 +235,19 @@ class EmployeeControllerTest {
         ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class,
                 () -> employeeController.getEmployeeByUsernameOrEmail(username, email));
         assertTrue(exception.getMessage().contains(EMPLOYEE_USERNAME_OR_EMAIL_NOT_FOUND));
+    }
+
+    @Test
+    void registerForRates() throws ResourceNotFoundException {
+        //GIVEN
+        RatesRegisterDto ratesRegisterDto = new RatesRegisterDto(1L, "HUF", Set.of("INR","USD"));
+        when(employeeFacade.registerForRates(ratesRegisterDto)).thenReturn("Success");
+        //WHEN
+        ResponseEntity<String> responseEntity = employeeController.registerForRates(ratesRegisterDto);
+        //THEN
+        assertEquals(200, responseEntity.getStatusCodeValue());
+        assertTrue(responseEntity.hasBody());
+        assertEquals("Success", responseEntity.getBody());
     }
 
 }

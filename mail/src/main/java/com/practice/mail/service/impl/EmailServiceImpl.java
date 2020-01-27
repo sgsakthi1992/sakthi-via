@@ -5,7 +5,7 @@ import com.practice.mail.service.EmailService;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
-import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.ITemplateEngine;
 import org.thymeleaf.context.Context;
 
 import javax.mail.MessagingException;
@@ -23,7 +23,7 @@ public class EmailServiceImpl implements EmailService {
     /**
      * Thymeleaf TemplateEngine Object.
      */
-    private final TemplateEngine templateEngine;
+    private final ITemplateEngine templateEngine;
 
     /**
      * Parameterized constructor.
@@ -32,7 +32,7 @@ public class EmailServiceImpl implements EmailService {
      * @param templateEngine TemplateEngine object
      */
     public EmailServiceImpl(final JavaMailSender javaMailSender,
-                            final TemplateEngine templateEngine) {
+                            final ITemplateEngine templateEngine) {
         this.javaMailSender = javaMailSender;
         this.templateEngine = templateEngine;
     }
