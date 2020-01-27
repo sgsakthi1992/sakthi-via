@@ -103,7 +103,7 @@
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
-            <!--<scope>test</scope>-->
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.icegreen</groupId>
@@ -140,7 +140,7 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId> <!-- surefire plugin version managed by Spring Boot -->
+                <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <skipTests>true</skipTests>
                 </configuration>
@@ -191,10 +191,10 @@
                         </goals>
                         <configuration>
                             <excludes>
-                                <exclude>com/practice/sakthi_via/SpringbootApplication.class</exclude>
-                                <exclude>com/practice/sakthi_via/constants/Constants.class</exclude>
+                                <exclude>com/practice/VIAApplication</exclude>
                                 <exclude>**/model/**</exclude>
                                 <exclude>**/config/*</exclude>
+                                <exclude>**/exception/*</exclude>
                             </excludes>
                         </configuration>
                     </execution>
@@ -209,18 +209,15 @@
                                     <element>CLASS</element>
                                     <excludes>
                                         <exclude>com.practice.VIAApplication</exclude>
-                                        <exclude>com.practice.employee.model.Employee</exclude>
-                                        <exclude>com.practice.employee.model.RatesRegister</exclude>
-                                        <exclude>com.practice.mail.model.Mail</exclude>
-                                        <exclude>com.practice.employee.model.dto.EmployeeDto</exclude>
-                                        <exclude>com.practice.employee.model.dto.RatesRegisterDto</exclude>
-                                        <exclude>SwaggerConfig</exclude>
+                                        <exclude>*model*</exclude>
+                                        <exclude>*config*</exclude>
+                                        <exclude>*exception*</exclude>
                                     </excludes>
                                     <limits>
                                         <limit>
                                             <counter>LINE</counter>
                                             <value>COVEREDRATIO</value>
-                                            <minimum>0%</minimum>
+                                            <minimum>70%</minimum>
                                         </limit>
                                     </limits>
                                 </rule>

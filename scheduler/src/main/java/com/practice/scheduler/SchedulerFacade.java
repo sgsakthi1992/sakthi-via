@@ -85,10 +85,10 @@ public class SchedulerFacade {
                 registeredForAlerts = getAlertRegistrationDetails();
 
         registeredForAlerts.forEach((baseCode, targetDetailsMap) ->
-                targetDetailsMap.forEach((targetsSet, ratesRegistersList) -> {
-                    sendMail(baseCode, getLatestRates(baseCode, targetsSet),
-                            getToAddresses(ratesRegistersList));
-                }));
+                targetDetailsMap.forEach((targetsSet, ratesRegistersList) ->
+                        sendMail(baseCode, getLatestRates(baseCode, targetsSet),
+                                getToAddresses(ratesRegistersList))
+                ));
     }
 
     private Map<String, Map<Set<String>,
