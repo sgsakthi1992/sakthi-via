@@ -126,7 +126,7 @@ class CurrencyConverterFacadeTest {
     }
 
     @Test
-    void getCountryForCurrencyCodeWithInvalidCode() throws ResourceNotFoundException {
+    void getCountryForCurrencyCodeWithInvalidCode() {
         //GIVEN
         when(spyCurrencyConverterFacade.getCountriesAndCurrencies()).thenReturn(countries);
 
