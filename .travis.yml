@@ -1,6 +1,11 @@
 language: java
+deploy:
+  provider: heroku
+  api_key:
+    secure: 8918e88e-6455-41de-8aca-933a0a8482a8
+  app: sakthi-via
 addons:
   sonarcloud:
     organization: sgsakthi1992
 script:
-  - mvn clean verify sonar:sonar -Dsonar.projectKey=sgsakthi1992
+  - mvn sonar:sonar -Dsonar.projectKey=sgsakthi1992
