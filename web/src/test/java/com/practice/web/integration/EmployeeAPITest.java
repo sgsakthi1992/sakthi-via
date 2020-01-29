@@ -1,4 +1,4 @@
-package com.practice.integration;
+package com.practice.web.integration;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

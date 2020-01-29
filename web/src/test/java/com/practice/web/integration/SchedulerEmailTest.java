@@ -1,9 +1,10 @@
-package com.practice.integration;
+package com.practice.web.integration;
 
 import com.icegreen.greenmail.util.GreenMail;
 import com.icegreen.greenmail.util.ServerSetup;
 import com.practice.VIAApplication;
-import com.practice.scheduler.SchedulerFacade;
+import com.practice.employee.facade.SchedulerFacade;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -62,7 +63,7 @@ public class SchedulerEmailTest {
         //THEN
         boolean ok = greenMail.waitForIncomingEmail(0);
         if(ok) {
-            assertEquals(0, greenMail.getReceivedMessages().length);
+            Assertions.assertEquals(0, greenMail.getReceivedMessages().length);
         }
         tearDownSMTP();
     }
@@ -77,10 +78,10 @@ public class SchedulerEmailTest {
         //THEN
         boolean ok = greenMail.waitForIncomingEmail(2);
         if (ok) {
-            assertEquals(2, greenMail.getReceivedMessages()[0].getAllRecipients().length);
-            assertEquals("employee@gmail.com",
+            Assertions.assertEquals(2, greenMail.getReceivedMessages()[0].getAllRecipients().length);
+            Assertions.assertEquals("employee@gmail.com",
                     greenMail.getReceivedMessages()[0].getAllRecipients()[0].toString());
-            assertEquals("employee1@gmail.com",
+            Assertions.assertEquals("employee1@gmail.com",
                     greenMail.getReceivedMessages()[0].getAllRecipients()[1].toString());
         } else {
             fail("Email not sent");
@@ -99,10 +100,10 @@ public class SchedulerEmailTest {
         //THEN
         boolean ok = greenMail.waitForIncomingEmail(2);
         if (ok) {
-            assertEquals(2, greenMail.getReceivedMessages().length);
-            assertEquals("employee@gmail.com",
+            Assertions.assertEquals(2, greenMail.getReceivedMessages().length);
+            Assertions.assertEquals("employee@gmail.com",
                     greenMail.getReceivedMessages()[0].getAllRecipients()[0].toString());
-            assertEquals("employee1@gmail.com",
+            Assertions.assertEquals("employee1@gmail.com",
                     greenMail.getReceivedMessages()[1].getAllRecipients()[0].toString());
         } else {
             fail("Email not sent");

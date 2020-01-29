@@ -25,10 +25,8 @@
         <module>employee</module>
         <module>mail</module>
         <module>currencyconverter</module>
-        <module>scheduler</module>
-        <module>web</module>
         <module>exception</module>
-        <module>integrationtest</module>
+        <module>web</module>
     </modules>
 
     <dependencies>
@@ -82,11 +80,6 @@
     </dependencies>
     <build>
         <plugins>
-            <plugin>
-                <groupId>com.heroku.sdk</groupId>
-                <artifactId>heroku-maven-plugin</artifactId>
-                <version>2.0.13</version>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>

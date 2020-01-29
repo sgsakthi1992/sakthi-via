@@ -163,14 +163,13 @@ public class EmployeeFacade {
         content.put("age", employee.getAge());
         content.put("email", employee.getEmail());
 
-        Mail.MailBuilder builder = Mail.builder();
-        builder.setTo(employee.getEmail());
-        builder.setSubject(EMAIL_SUBJECT);
-        builder.setContent(content);
-        builder.setTemplate(MAIL_TEMPLATE);
+        emailService.sendMail(Mail.builder()
+                .setTo(employee.getEmail())
+                .setSubject(EMAIL_SUBJECT)
+                .setContent(content)
+                .setTemplate(MAIL_TEMPLATE)
+                .createMail());
 
-        Mail mail = builder.createMail();
-        emailService.sendMail(mail);
         return employee;
     }
 

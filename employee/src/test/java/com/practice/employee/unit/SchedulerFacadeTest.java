@@ -1,13 +1,13 @@
-package com.practice.scheduler.unit;
+package com.practice.employee.unit;
 
 import com.practice.currencyconverter.facade.CurrencyConverterFacade;
 import com.practice.currencyconverter.model.CurrencyConverter;
+import com.practice.employee.facade.SchedulerFacade;
 import com.practice.employee.model.Employee;
 import com.practice.employee.model.RatesRegister;
 import com.practice.employee.repository.RatesRegisterRepository;
 import com.practice.mail.model.Mail;
 import com.practice.mail.service.EmailService;
-import com.practice.scheduler.SchedulerFacade;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

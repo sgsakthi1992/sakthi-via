@@ -1,4 +1,4 @@
-package com.practice.integration;
+package com.practice.web.integration;
 
 import com.practice.VIAApplication;
 import org.junit.jupiter.api.Test;

@@ -25,7 +25,7 @@ public final class Mail {
      *
      * @param builder Builder object
      */
-    public Mail(final MailBuilder builder) {
+    private Mail(final MailBuilder builder) {
         this.to = builder.to;
         this.subject = builder.subject;
         this.content = builder.content;

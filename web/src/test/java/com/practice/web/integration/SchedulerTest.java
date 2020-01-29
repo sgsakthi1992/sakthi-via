@@ -1,10 +1,10 @@
-package com.practice.integration;
+package com.practice.web.integration;
 
 import com.practice.VIAApplication;
 import com.practice.currencyconverter.facade.CurrencyConverterFacade;
 import com.practice.employee.repository.RatesRegisterRepository;
 import com.practice.mail.service.EmailService;
-import com.practice.scheduler.SchedulerFacade;
+import com.practice.employee.facade.SchedulerFacade;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;

@@ -1,4 +1,4 @@
-package com.practice.scheduler;
+package com.practice.employee.facade;
 
 import com.practice.currencyconverter.facade.CurrencyConverterFacade;
 import com.practice.currencyconverter.model.CurrencyConverter;
@@ -9,16 +9,13 @@ import com.practice.mail.model.Mail;
 import com.practice.mail.service.EmailService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cache.CacheManager;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
@@ -51,10 +48,6 @@ public class SchedulerFacade {
      * CurrencyConverterFacade object.
      */
     private final CurrencyConverterFacade currencyConverterFacade;
-    /**
-     * CacheManager object.
-     */
-    private final CacheManager cacheManager;
 
     /**
      * Parameterized constructor to bind the objects.
@@ -62,17 +55,14 @@ public class SchedulerFacade {
      * @param emailService            EmailService object
      * @param registerRepository      RatesRegisterRepository object
      * @param currencyConverterFacade CurrencyConverterFacade object
-     * @param cacheManager            CacheManager object
      */
     public SchedulerFacade(final EmailService emailService,
                            final RatesRegisterRepository registerRepository,
                            final CurrencyConverterFacade
-                                   currencyConverterFacade,
-                           final CacheManager cacheManager) {
+                                   currencyConverterFacade) {
         this.emailService = emailService;
         this.registerRepository = registerRepository;
         this.currencyConverterFacade = currencyConverterFacade;
-        this.cacheManager = cacheManager;
     }
 
     /**
@@ -130,32 +120,15 @@ public class SchedulerFacade {
                           final Map<String, Double> targets,
                           final StringJoiner toAddress) {
         try {
-            Map<String, Object> content = new HashMap<>();
-            content.put("base", key);
-            content.put("targets", targets);
-
-            Mail.MailBuilder builder = Mail.builder();
-            builder.setTo(toAddress.toString());
-            builder.setSubject(EMAIL_SUBJECT);
-            builder.setContent(content);
-            builder.setTemplate(MAIL_TEMPLATE);
-
-            Mail mail = builder.createMail();
-            emailService.sendMail(mail);
+            emailService.sendMail(Mail.builder()
+                    .setTo(toAddress.toString())
+                    .setSubject(EMAIL_SUBJECT)
+                    .setContent(Map.of("base", key, "targets", targets))
+                    .setTemplate(MAIL_TEMPLATE)
+                    .createMail());
         } catch (MessagingException e) {
             LOGGER.error("Exception in Schedule Mail", e);
         }
     }
 
-    /**
-     * To clear all the caches at regular intervals.
-     */
-    @Scheduled(fixedRateString = "${via.scheduler.cache.evict.value}")
-    public void evictAllCachesAtIntervals() {
-        LOGGER.debug("Caches are: {}", cacheManager.getCacheNames());
-        cacheManager.getCacheNames()
-                .forEach(cacheName -> Objects.requireNonNull(
-                        cacheManager.getCache(cacheName)).clear());
-        LOGGER.debug("Caches cleared!");
-    }
 }
