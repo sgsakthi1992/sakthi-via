@@ -81,7 +81,7 @@ class EmployeeAPITest {
         setupSMTP();
 
         EmployeeDto employeeDto = new EmployeeDto("Employee 4",
-                "employee4", "employee4@gmail.com", 22);
+                "employee4", "employee4@gmail.com", "+111111111", 22);
         String requestJson = convertDtoToJson(employeeDto);
 
         //WHEN
@@ -100,7 +100,7 @@ class EmployeeAPITest {
     void testCreateWithExistingUserName() throws Exception {
         //GIVEN
         EmployeeDto employeeDto = new EmployeeDto("Employee 4",
-                "employee", "employee4@gmail.com", 22);
+                "employee", "employee4@gmail.com", "+111111111", 22);
         String requestJson = convertDtoToJson(employeeDto);
 
         //WHEN
@@ -116,7 +116,7 @@ class EmployeeAPITest {
     void testCreateWithInvalidEmailId() throws Exception {
         //GIVEN
         EmployeeDto employeeDto = new EmployeeDto("Employee 4",
-                "employee4", "employee4", 22);
+                "employee4", "employee4", "+111111111", 22);
         String requestJson = convertDtoToJson(employeeDto);
 
         //WHEN
@@ -132,7 +132,7 @@ class EmployeeAPITest {
     void testCreateWithInvalidAge() throws Exception {
         //GIVEN
         EmployeeDto employeeDto = new EmployeeDto("Employee 4",
-                "employee4", "employee4@gmail.com", 0);
+                "employee4", "employee4@gmail.com", "+111111111", 0);
         String requestJson = convertDtoToJson(employeeDto);
 
         //WHEN
@@ -148,7 +148,7 @@ class EmployeeAPITest {
     void testCreateWithInvalidUsernameMinSize() throws Exception {
         //GIVEN
         EmployeeDto employeeDto = new EmployeeDto("Employee 4",
-                "emp", "employee4@gmail.com", 22);
+                "emp", "employee4@gmail.com", "+111111111", 22);
         String requestJson = convertDtoToJson(employeeDto);
 
         //WHEN
@@ -164,7 +164,7 @@ class EmployeeAPITest {
     void testCreateWithInvalidUsernameMaxSize() throws Exception {
         //GIVEN
         EmployeeDto employeeDto = new EmployeeDto("Employee 4",
-                "employee4_username", "employee4@gmail.com", 22);
+                "employee4_username", "employee4@gmail.com", "+111111111", 22);
         String requestJson = convertDtoToJson(employeeDto);
 
         //WHEN
@@ -180,7 +180,7 @@ class EmployeeAPITest {
     void testCreateWithEmptyName() throws Exception {
         //GIVEN
         EmployeeDto employeeDto = new EmployeeDto("",
-                "employee4_username", "employee4@gmail.com", 22);
+                "employee4_username", "employee4@gmail.com", "+111111111", 22);
         String requestJson = convertDtoToJson(employeeDto);
 
         //WHEN

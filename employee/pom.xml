@@ -37,5 +37,11 @@
             <artifactId>modelmapper</artifactId>
             <version>2.3.6</version>
         </dependency>
+        <dependency>
+            <groupId>com.practice</groupId>
+            <artifactId>message</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 </project>

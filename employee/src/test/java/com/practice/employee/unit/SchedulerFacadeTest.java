@@ -45,11 +45,11 @@ class SchedulerFacadeTest {
         ratesRegisters = new ArrayList<>();
         ratesRegisters.add(new RatesRegister(1,
                 new Employee(40000L, "Employee",
-                        "employee", "employee@gmail.com", 25),
+                        "employee", "employee@gmail.com", "+111111111", 25),
                 "HUF", Set.of("INR", "EUR")));
         ratesRegisters.add(new RatesRegister(2,
                 new Employee(40001L, "Employee1",
-                        "employee1", "employee1@gmail.com", 25),
+                        "employee1", "employee1@gmail.com", "+111111111", 25),
                 "INR", Set.of("HUF", "USD")));
 
         Map<String, Double> ratesHuf = new HashMap<>();

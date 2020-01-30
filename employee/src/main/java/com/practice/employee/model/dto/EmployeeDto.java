@@ -64,6 +64,12 @@ public class EmployeeDto {
     private String email;
 
     /**
+     * Employee phone number.
+     */
+    @NotEmpty(message = "Phone Number is required")
+    private String phoneNumber;
+
+    /**
      * Employee Age.
      */
     @Min(value = EMPLOYEE_AGE_MIN_VALUE,
@@ -74,18 +80,20 @@ public class EmployeeDto {
     /**
      * Parameterized constructor.
      *
-     * @param name     Employee Name
-     * @param username Employee Username
-     * @param email    Employee email
-     * @param age      Employee age
+     * @param name        Employee Name
+     * @param username    Employee Username
+     * @param email       Employee email
+     * @param phoneNumber Employee Phone Number
+     * @param age         Employee age
      */
     public EmployeeDto(final String name,
                        final String username, final String email,
-                       final Integer age) {
+                       final String phoneNumber, final Integer age) {
         super();
         this.name = name;
         this.username = username;
         this.email = email;
+        this.phoneNumber = phoneNumber;
         this.age = age;
     }
 
@@ -162,6 +170,24 @@ public class EmployeeDto {
     }
 
     /**
+     * Getter for Employee phone number.
+     *
+     * @return phone number
+     */
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    /**
+     * Setter for Employee phone number.
+     *
+     * @param phoneNumber phone number
+     */
+    public void setPhoneNumber(final String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    /**
      * Overridden toString method.
      *
      * @return String
@@ -172,6 +198,7 @@ public class EmployeeDto {
                 + ", name='" + name + '\''
                 + ", username='" + username + '\''
                 + ", email='" + email + '\''
+                + ", phoneNumber='" + phoneNumber + '\''
                 + ", age=" + age
                 + '}';
     }

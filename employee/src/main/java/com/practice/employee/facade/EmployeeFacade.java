@@ -9,6 +9,9 @@ import com.practice.employee.repository.EmployeeRepository;
 import com.practice.employee.repository.RatesRegisterRepository;
 import com.practice.mail.model.Mail;
 import com.practice.mail.service.EmailService;
+import com.practice.message.factory.AbstractFactory;
+import com.practice.message.model.Content;
+import com.practice.message.service.MessagingService;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,36 +68,42 @@ public class EmployeeFacade {
     /**
      * EmployeeRepository object.
      */
-    private EmployeeRepository employeeRepository;
+    private final EmployeeRepository employeeRepository;
     /**
      * EmailService object.
      */
-    private EmailService emailService;
+    private final EmailService emailService;
     /**
      * RatesRegisterRepository object.
      */
-    private RatesRegisterRepository registerRepository;
+    private final RatesRegisterRepository registerRepository;
     /**
      * Model mapper.
      */
-    private ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
+    /**
+     * Messaging Service object.
+     */
+    private final AbstractFactory<MessagingService> abstractFactory;
 
     /**
      * Parameterized Constructor.
-     *
-     * @param employeeRepository EmployeeRepository object
+     *  @param employeeRepository EmployeeRepository object
      * @param emailService       EmailService object
      * @param registerRepository RatesRegisterRepository object
      * @param modelMapper        ModelMapper object
+     * @param abstractFactory Abstract Factory
      */
     public EmployeeFacade(final EmployeeRepository employeeRepository,
                           final EmailService emailService,
                           final RatesRegisterRepository registerRepository,
-                          final ModelMapper modelMapper) {
+                          final ModelMapper modelMapper,
+                          final AbstractFactory abstractFactory) {
         this.employeeRepository = employeeRepository;
         this.emailService = emailService;
         this.registerRepository = registerRepository;
         this.modelMapper = modelMapper;
+        this.abstractFactory = abstractFactory;
     }
 
     /**
@@ -335,4 +344,35 @@ public class EmployeeFacade {
         return SUCCESS_MESSAGE;
     }
 
+    /**
+     * To generate Otp.
+     *
+     * @param type email or message.
+     * @throws ResourceNotFoundException exception
+     */
+    public void generateOtp(final String type)
+            throws ResourceNotFoundException {
+        abstractFactory.create(type).send(getMessageContent(type));
+    }
+
+    private Content getMessageContent(final String type)
+            throws ResourceNotFoundException {
+        Content content;
+        Employee employee = getEmployeeById(40000L);
+        if (type.contentEquals("sms")) {
+            content = Content.builder()
+                    .setTo(employee.getPhoneNumber())
+                    .setBody(Map.of("otp", 123456)).createMail();
+            return content;
+        } else if (type.contentEquals("email")) {
+            content = Content.builder()
+                    .setTo(employee.getEmail())
+                    .setBody(Map.of("otp", 123456))
+                    .setSubject(EMAIL_SUBJECT)
+                    .setTemplate(MAIL_TEMPLATE)
+                    .createMail();
+            return content;
+        }
+        return null;
+    }
 }

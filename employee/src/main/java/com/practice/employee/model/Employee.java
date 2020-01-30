@@ -93,6 +93,12 @@ public class Employee {
     private String email;
 
     /**
+     * Employee phone number.
+     */
+    @NotEmpty(message = "Phone Number is required")
+    private String phoneNumber;
+
+    /**
      * Employee Age.
      */
     @Column(nullable = false)
@@ -104,20 +110,22 @@ public class Employee {
     /**
      * Parameterized constructor.
      *
-     * @param id       Employee id
-     * @param name     Employee Name
-     * @param username Employee username
-     * @param email    Employee email
-     * @param age      Employee age
+     * @param id          Employee id
+     * @param name        Employee Name
+     * @param username    Employee username
+     * @param email       Employee email
+     * @param phoneNumber Employee Phone Number
+     * @param age         Employee age
      */
     public Employee(final Long id, final String name,
                     final String username, final String email,
-                    final Integer age) {
+                    final String phoneNumber, final Integer age) {
         super();
         this.id = id;
         this.name = name;
         this.username = username;
         this.email = email;
+        this.phoneNumber = phoneNumber;
         this.age = age;
     }
 
@@ -219,6 +227,24 @@ public class Employee {
     }
 
     /**
+     * Getter for Employee phone number.
+     *
+     * @return phone number
+     */
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    /**
+     * Setter for Employee phone number.
+     *
+     * @param phoneNumber phone number
+     */
+    public void setPhoneNumber(final String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    /**
      * Overridden toString method.
      *
      * @return String
@@ -230,6 +256,7 @@ public class Employee {
                 + ", name='" + name + '\''
                 + ", username='" + username + '\''
                 + ", email='" + email + '\''
+                + ", phoneNumber='" + phoneNumber + '\''
                 + ", age=" + age
                 + '}';
     }

@@ -58,7 +58,7 @@ class EmployeeFacadeTest {
 
     EmployeeFacadeTest() {
         employee = new Employee((long) 40000, "Employee 1",
-                "employee1", "emp1@gmail.com", 25);
+                "employee1", "emp1@gmail.com", "+111111111", 25);
     }
 
     @Test
@@ -80,7 +80,7 @@ class EmployeeFacadeTest {
     void testConvertEmployeeDtoToEmployee() {
         //GIVEN
         EmployeeDto employeeDto = new EmployeeDto("Employee 1",
-                "employee1", "emp1@gmail.com", 25);
+                "employee1", "emp1@gmail.com", "+111111111", 25);
         when(modelMapper.map(employeeDto, Employee.class)).thenReturn(employee);
         //WHEN
         Employee convertedEmployee = employeeFacade.convertEmployeeDtoToEmployee(employeeDto);
@@ -126,7 +126,7 @@ class EmployeeFacadeTest {
     void testCreateEmployee() throws MessagingException {
         //GIVEN
         EmployeeDto employeeDto = new EmployeeDto("Employee 1",
-                "employee1", "emp1@gmail.com", 25);
+                "employee1", "emp1@gmail.com", "+111111111", 25);
         ArgumentCaptor<Mail> captor = ArgumentCaptor.forClass(Mail.class);
 
         when(spyEmployeeFacade.convertEmployeeDtoToEmployee(employeeDto)).thenReturn(employee);

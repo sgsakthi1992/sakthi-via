@@ -68,7 +68,7 @@ class EmployeeControllerTest {
     void testPostEmployee() throws Exception {
         //GIVEN
         EmployeeDto employeeDto = new EmployeeDto("Employee 1",
-                "employee1", "emp1@gmail.com", 25);
+                "employee1", "emp1@gmail.com", "+111111111", 25);
 
         when(employeeFacade.createEmployee(Mockito.any(EmployeeDto.class))).thenReturn(employee);
 
@@ -239,7 +239,7 @@ class EmployeeControllerTest {
     @Test
     void registerForRates() throws ResourceNotFoundException {
         //GIVEN
-        RatesRegisterDto ratesRegisterDto = new RatesRegisterDto(1L, "HUF", Set.of("INR","USD"));
+        RatesRegisterDto ratesRegisterDto = new RatesRegisterDto(1L, "HUF", Set.of("INR", "USD"));
         when(employeeFacade.registerForRates(ratesRegisterDto)).thenReturn("Success");
         //WHEN
         ResponseEntity<String> responseEntity = employeeController.registerForRates(ratesRegisterDto);

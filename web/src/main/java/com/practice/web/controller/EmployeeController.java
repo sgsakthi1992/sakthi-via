@@ -291,4 +291,18 @@ public class EmployeeController {
                 .body(employeeFacade.registerForRates(ratesRegisterDto));
     }
 
+    /**
+     * API to generate OTP.
+     *
+     * @param type by email or message
+     * @return success message
+     * @throws ResourceNotFoundException exception
+     */
+    @GetMapping("/generateOtp")
+    public ResponseEntity<String> generateOtp(@RequestParam final String type)
+            throws ResourceNotFoundException {
+        employeeFacade.generateOtp(type);
+        return ResponseEntity.status(HttpStatus.OK).body("Success");
+    }
+
 }

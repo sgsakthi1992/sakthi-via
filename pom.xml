@@ -27,6 +27,7 @@
         <module>currencyconverter</module>
         <module>exception</module>
         <module>web</module>
+        <module>message</module>
     </modules>
 
     <dependencies>
