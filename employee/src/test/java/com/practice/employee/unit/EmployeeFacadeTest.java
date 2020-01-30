@@ -13,9 +13,9 @@ import com.practice.mail.service.EmailService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Example;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import javax.mail.MessagingException;
 import java.util.HashSet;
@@ -32,7 +32,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(SpringExtension.class)
+@ExtendWith(MockitoExtension.class)
 class EmployeeFacadeTest {
 
     @InjectMocks
@@ -223,8 +223,6 @@ class EmployeeFacadeTest {
         //GIVEN
         Example<Employee> example = employeeFacade.getExample(employee.getUsername(), employee.getEmail());
         Mockito.doReturn(example).when(spyEmployeeFacade).getExample(employee.getUsername(), employee.getEmail());
-        Mockito.doReturn(example).when(spyEmployeeFacade).getExample(employee.getUsername(), null);
-        Mockito.doReturn(example).when(spyEmployeeFacade).getExample(null, employee.getEmail());
         when(employeeRepository.findAll(example))
                 .thenReturn(Stream.of(employee).collect(Collectors.toList()));
 
@@ -239,8 +237,6 @@ class EmployeeFacadeTest {
                 -> spyEmployeeFacade.getEmployeeByUsernameOrEmail("new", "new")).printStackTrace();
         assertThrows(ResourceNotFoundException.class, ()
                 -> spyEmployeeFacade.getEmployeeByUsernameOrEmail(null, null));
-        assertDoesNotThrow(() -> spyEmployeeFacade.getEmployeeByUsernameOrEmail(employee.getUsername(), null));
-        assertDoesNotThrow(() -> spyEmployeeFacade.getEmployeeByUsernameOrEmail(null, employee.getEmail()));
     }
 
     @Test

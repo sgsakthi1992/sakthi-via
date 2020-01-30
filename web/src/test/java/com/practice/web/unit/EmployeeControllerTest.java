@@ -1,10 +1,10 @@
 package com.practice.web.unit;
 
-import com.practice.employee.model.dto.RatesRegisterDto;
-import com.practice.exception.ResourceNotFoundException;
 import com.practice.employee.facade.EmployeeFacade;
 import com.practice.employee.model.Employee;
 import com.practice.employee.model.dto.EmployeeDto;
+import com.practice.employee.model.dto.RatesRegisterDto;
+import com.practice.exception.ResourceNotFoundException;
 import com.practice.web.controller.EmployeeController;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,8 +12,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.List;
 import java.util.Objects;
@@ -24,7 +24,7 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(SpringExtension.class)
+@ExtendWith(MockitoExtension.class)
 class EmployeeControllerTest {
 
     private static final String EMPLOYEE_ID_NOT_FOUND = "Employee Id not found";
@@ -71,7 +71,6 @@ class EmployeeControllerTest {
                 "employee1", "emp1@gmail.com", 25);
 
         when(employeeFacade.createEmployee(Mockito.any(EmployeeDto.class))).thenReturn(employee);
-        when(employeeFacade.checkUsername(employeeDto.getUsername())).thenReturn(true);
 
         //WHEN
         ResponseEntity<Employee> responseEntity = employeeController.createEmployee(employeeDto);

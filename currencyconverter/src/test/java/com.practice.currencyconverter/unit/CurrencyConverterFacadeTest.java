@@ -1,15 +1,15 @@
 package com.practice.currencyconverter.unit;
 
-import com.practice.exception.ResourceNotFoundException;
 import com.practice.currencyconverter.facade.CurrencyConverterFacade;
 import com.practice.currencyconverter.model.CurrencyConverter;
+import com.practice.exception.ResourceNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
 
@@ -21,7 +21,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(SpringExtension.class)
+@ExtendWith(MockitoExtension.class)
 class CurrencyConverterFacadeTest {
 
     @Mock
