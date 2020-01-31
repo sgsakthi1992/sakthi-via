@@ -39,6 +39,10 @@ CurrencyConverter:
 * Spring Scheduler
 * Spring Cache - Simple cache
 
+**Maven**
+* Multi modules - web, employee, currencyconverter, mail, exception
+* Plugins - checkstyle, jacoco & heroku - to deploy
+
 **Additional**
 * Validation with JSR303 - Annotations + Custom Annotation (to check Unique Username)
 * Slf4j with Logback (logback-spring.xml) - Configured Heroku with Papertrail and logs can be viewed in `https://my.papertrailapp.com/events` 

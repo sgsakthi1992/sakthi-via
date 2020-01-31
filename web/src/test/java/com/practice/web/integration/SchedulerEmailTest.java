@@ -3,7 +3,7 @@ package com.practice.web.integration;
 import com.icegreen.greenmail.util.GreenMail;
 import com.icegreen.greenmail.util.ServerSetup;
 import com.practice.VIAApplication;
-import com.practice.employee.facade.SchedulerFacade;
+import com.practice.employee.service.DailyAlertSchedulerService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,15 +34,15 @@ import static org.junit.jupiter.api.Assertions.*;
 @ActiveProfiles("test")
 public class SchedulerEmailTest {
 
-    private SchedulerFacade schedulerFacade;
+    private DailyAlertSchedulerService dailyAlertSchedulerService;
     private static GreenMail greenMail;
 
     @MockBean
     HttpRequest httpRequest;
 
     @Autowired
-    public void setSchedulerFacade(SchedulerFacade schedulerFacade) {
-        this.schedulerFacade = schedulerFacade;
+    public void setDailyAlertSchedulerService(DailyAlertSchedulerService dailyAlertSchedulerService) {
+        this.dailyAlertSchedulerService = dailyAlertSchedulerService;
     }
 
     private static void setupSMTP() {
@@ -59,7 +59,7 @@ public class SchedulerEmailTest {
         //GIVEN
         setupSMTP();
         //WHEN
-        schedulerFacade.dailyEmailAlertScheduler();
+        dailyAlertSchedulerService.dailyEmailAlertScheduler();
         //THEN
         boolean ok = greenMail.waitForIncomingEmail(0);
         if(ok) {
@@ -74,7 +74,7 @@ public class SchedulerEmailTest {
         //GIVEN
         setupSMTP();
         //WHEN
-        schedulerFacade.dailyEmailAlertScheduler();
+        dailyAlertSchedulerService.dailyEmailAlertScheduler();
         //THEN
         boolean ok = greenMail.waitForIncomingEmail(2);
         if (ok) {
@@ -96,7 +96,7 @@ public class SchedulerEmailTest {
         //GIVEN
         setupSMTP();
         //WHEN
-        schedulerFacade.dailyEmailAlertScheduler();
+        dailyAlertSchedulerService.dailyEmailAlertScheduler();
         //THEN
         boolean ok = greenMail.waitForIncomingEmail(2);
         if (ok) {

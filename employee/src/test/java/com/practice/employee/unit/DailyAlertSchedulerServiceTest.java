@@ -2,12 +2,14 @@ package com.practice.employee.unit;
 
 import com.practice.currencyconverter.facade.CurrencyConverterFacade;
 import com.practice.currencyconverter.model.CurrencyConverter;
-import com.practice.employee.facade.SchedulerFacade;
+import com.practice.employee.service.DailyAlertSchedulerService;
 import com.practice.employee.model.Employee;
 import com.practice.employee.model.RatesRegister;
 import com.practice.employee.repository.RatesRegisterRepository;
-import com.practice.mail.model.Mail;
-import com.practice.mail.service.EmailService;
+import com.practice.message.factory.AbstractFactory;
+import com.practice.message.model.Content;
+import com.practice.message.service.MessagingService;
+import com.practice.message.service.impl.EmailService;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,6 +17,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.thymeleaf.ITemplateEngine;
 
 import javax.mail.MessagingException;
 import java.time.LocalDate;
@@ -23,19 +27,22 @@ import java.util.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class SchedulerFacadeTest {
+class DailyAlertSchedulerServiceTest {
 
     @InjectMocks
-    SchedulerFacade schedulerFacade;
+    DailyAlertSchedulerService dailyAlertSchedulerService;
 
     @Mock
-    EmailService emailService;
+    AbstractFactory<MessagingService> abstractFactory;
 
     @Mock
     RatesRegisterRepository registerRepository;
 
     @Mock
     CurrencyConverterFacade currencyConverterFacade;
+
+    @Mock
+    EmailService emailService;
 
     private List<RatesRegister> ratesRegisters;
     private CurrencyConverter converterHuf;
@@ -74,30 +81,32 @@ class SchedulerFacadeTest {
     }
 
     @Test
-    void getScheduledCurrencyRate() throws MessagingException {
+    void getScheduledCurrencyRate() {
         //GIVEN
         setup();
-        ArgumentCaptor<Mail> captor = ArgumentCaptor.forClass(Mail.class);
+        ArgumentCaptor<Content> captor = ArgumentCaptor.forClass(Content.class);
         when(registerRepository.findAll()).thenReturn(ratesRegisters);
         when(currencyConverterFacade.getCurrencyRateWithTarget("HUF", Set.of("INR", "EUR")))
                 .thenReturn(converterHuf);
         when(currencyConverterFacade.getCurrencyRateWithTarget("INR", Set.of("HUF", "USD")))
                 .thenReturn(converterInr);
+        when(abstractFactory.create("email"))
+                .thenReturn(emailService);
 
         //WHEN
-        schedulerFacade.dailyEmailAlertScheduler();
+        dailyAlertSchedulerService.dailyEmailAlertScheduler();
 
         //THEN
-        verify(emailService, times(ratesRegisters.size())).sendMail(captor.capture());
+        verify(abstractFactory.create("email"), times(ratesRegisters.size())).send(captor.capture());
 
         Assertions.assertThat(captor.getAllValues().get(0))
                 .matches(mail -> mail.getTo().contentEquals(ratesRegisters.get(0).getEmployee().getEmail()))
-                .matches(mail -> mail.getContent().get("base").toString().contentEquals(ratesRegisters.get(0).getBase()))
-                .matches(mail -> mail.getContent().get("targets").toString().contentEquals(converterHuf.getRates().toString()));
+                .matches(mail -> mail.getBody().get("base").toString().contentEquals(ratesRegisters.get(0).getBase()))
+                .matches(mail -> mail.getBody().get("targets").toString().contentEquals(converterHuf.getRates().toString()));
 
         Assertions.assertThat(captor.getAllValues().get(1))
                 .matches(mail -> mail.getTo().contentEquals(ratesRegisters.get(1).getEmployee().getEmail()))
-                .matches(mail -> mail.getContent().get("base").toString().contentEquals(ratesRegisters.get(1).getBase()))
-                .matches(mail -> mail.getContent().get("targets").toString().contentEquals(converterInr.getRates().toString()));
+                .matches(mail -> mail.getBody().get("base").toString().contentEquals(ratesRegisters.get(1).getBase()))
+                .matches(mail -> mail.getBody().get("targets").toString().contentEquals(converterInr.getRates().toString()));
     }
 }

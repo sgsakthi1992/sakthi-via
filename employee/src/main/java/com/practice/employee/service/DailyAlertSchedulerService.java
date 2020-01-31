@@ -1,18 +1,18 @@
-package com.practice.employee.facade;
+package com.practice.employee.service;
 
 import com.practice.currencyconverter.facade.CurrencyConverterFacade;
 import com.practice.currencyconverter.model.CurrencyConverter;
 import com.practice.employee.model.Employee;
 import com.practice.employee.model.RatesRegister;
 import com.practice.employee.repository.RatesRegisterRepository;
-import com.practice.mail.model.Mail;
-import com.practice.mail.service.EmailService;
+import com.practice.message.factory.AbstractFactory;
+import com.practice.message.model.Content;
+import com.practice.message.service.MessagingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import javax.mail.MessagingException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -21,12 +21,12 @@ import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 @Service
-public class SchedulerFacade {
+public class DailyAlertSchedulerService {
     /**
      * Logger Object to log the details.
      */
     private static final Logger LOGGER = LoggerFactory
-            .getLogger(SchedulerFacade.class);
+            .getLogger(DailyAlertSchedulerService.class);
     /**
      * Scheduler mail subject.
      */
@@ -37,9 +37,9 @@ public class SchedulerFacade {
      */
     private static final String MAIL_TEMPLATE = "schedulerMailTemplate";
     /**
-     * EmailService object.
+     * Messaging Service object.
      */
-    private final EmailService emailService;
+    private final AbstractFactory<MessagingService> abstractFactory;
     /**
      * RatesRegisterRepository object.
      */
@@ -52,15 +52,17 @@ public class SchedulerFacade {
     /**
      * Parameterized constructor to bind the objects.
      *
-     * @param emailService            EmailService object
+     * @param abstractFactory         Abstract Factory of type Messaging Service
      * @param registerRepository      RatesRegisterRepository object
      * @param currencyConverterFacade CurrencyConverterFacade object
      */
-    public SchedulerFacade(final EmailService emailService,
-                           final RatesRegisterRepository registerRepository,
-                           final CurrencyConverterFacade
-                                   currencyConverterFacade) {
-        this.emailService = emailService;
+    public DailyAlertSchedulerService(final AbstractFactory<MessagingService>
+                                              abstractFactory,
+                                      final RatesRegisterRepository
+                                              registerRepository,
+                                      final CurrencyConverterFacade
+                                              currencyConverterFacade) {
+        this.abstractFactory = abstractFactory;
         this.registerRepository = registerRepository;
         this.currencyConverterFacade = currencyConverterFacade;
     }
@@ -119,16 +121,14 @@ public class SchedulerFacade {
     private void sendMail(final String key,
                           final Map<String, Double> targets,
                           final StringJoiner toAddress) {
-        try {
-            emailService.sendMail(Mail.builder()
-                    .setTo(toAddress.toString())
-                    .setSubject(EMAIL_SUBJECT)
-                    .setContent(Map.of("base", key, "targets", targets))
-                    .setTemplate(MAIL_TEMPLATE)
-                    .createMail());
-        } catch (MessagingException e) {
-            LOGGER.error("Exception in Schedule Mail", e);
-        }
+
+        abstractFactory.create("email").send(Content.builder()
+                .setTo(toAddress.toString())
+                .setSubject(EMAIL_SUBJECT)
+                .setBody(Map.of("base", key, "targets", targets))
+                .setTemplate(MAIL_TEMPLATE)
+                .createMail());
+
     }
 
 }

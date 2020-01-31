@@ -10,6 +10,7 @@ import com.practice.VIAApplication;
 import com.practice.employee.model.dto.EmployeeDto;
 import com.practice.employee.model.dto.RatesRegisterDto;
 import com.practice.employee.repository.EmployeeRepository;
+import com.practice.employee.service.OtpService;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -24,15 +25,16 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import javax.mail.BodyPart;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -54,6 +56,9 @@ class EmployeeAPITest {
 
     @Autowired
     private EmployeeRepository employeeRepository;
+
+    @Autowired
+    private OtpService otpService;
 
     private static GreenMail greenMail;
 
@@ -353,10 +358,23 @@ class EmployeeAPITest {
     }
 
     @Test
+    void testGenerateOtp() throws Exception {
+        //GIVEN
+        setupSMTP();
+        //WHEN
+        ResultActions resultActions = mockMvc.perform(
+                get("/api/v1/generateOtp/1?type=email"));
+        //THEN
+        validateOkResponse(resultActions);
+        assertTrue(greenMail.waitForIncomingEmail(1));
+        tearDownSMTP();
+    }
+
+    @Test
     void testRegisterForRates() throws Exception {
         //GIVEN
         RatesRegisterDto ratesRegisterDto = new RatesRegisterDto(1L, "HUF",
-                new HashSet<>(Arrays.asList("INR", "USD")));
+                new HashSet<>(Arrays.asList("INR", "USD")), (Integer)otpService.generateOTP(1L));
         String requestJson = convertDtoToJson(ratesRegisterDto);
         //WHEN
         ResultActions resultActions = mockMvc.perform(
@@ -371,7 +389,7 @@ class EmployeeAPITest {
     void testRegisterForRatesWithInvalidEmployeeId() throws Exception {
         //GIVEN
         RatesRegisterDto ratesRegisterDto = new RatesRegisterDto(10L, "HUF",
-                new HashSet<>(Arrays.asList("INR", "USD")));
+                new HashSet<>(Arrays.asList("INR", "USD")), 10000);
         String requestJson = convertDtoToJson(ratesRegisterDto);
         //WHEN
         ResultActions resultActions = mockMvc.perform(
@@ -386,7 +404,7 @@ class EmployeeAPITest {
     void testRegisterForRatesWithInvalidTargetCode() throws Exception {
         //GIVEN
         RatesRegisterDto ratesRegisterDto = new RatesRegisterDto(1L, "HUF",
-                new HashSet<>(Arrays.asList("III", "USD")));
+                new HashSet<>(Arrays.asList("III", "USD")), 10000);
         String requestJson = convertDtoToJson(ratesRegisterDto);
         //WHEN
         ResultActions resultActions = mockMvc.perform(
@@ -401,7 +419,7 @@ class EmployeeAPITest {
     void testRegisterForRatesWithInvalidBaseCodeSize() throws Exception {
         //GIVEN
         RatesRegisterDto ratesRegisterDto = new RatesRegisterDto(1L, "H",
-                Set.of("INR", "USD"));
+                Set.of("INR", "USD"), 10000);
         String requestJson = convertDtoToJson(ratesRegisterDto);
         //WHEN
         ResultActions resultActions = mockMvc.perform(

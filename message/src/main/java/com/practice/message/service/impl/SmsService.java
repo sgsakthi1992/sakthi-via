@@ -1,7 +1,3 @@
-/*
- * Copyright (c) 2020.
- */
-
 package com.practice.message.service.impl;
 
 import com.practice.message.model.Content;
@@ -32,10 +28,13 @@ public class SmsService implements MessagingService {
      */
     public void send(final Content content) {
         Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
-        Message message = Message.creator(
+        Message.creator(
                 new PhoneNumber(content.getTo()),
                 new PhoneNumber(TWILIO_NUMBER),
-                content.getBody().get("otp").toString())
+                String.format("Otp generated at %s : %s. It will expire at %s",
+                        content.getBody().get("startTime"),
+                        content.getBody().get("otp"),
+                        content.getBody().get("expiryTime")))
                 .create();
     }
 }

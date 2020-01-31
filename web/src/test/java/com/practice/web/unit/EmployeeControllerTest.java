@@ -239,7 +239,7 @@ class EmployeeControllerTest {
     @Test
     void registerForRates() throws ResourceNotFoundException {
         //GIVEN
-        RatesRegisterDto ratesRegisterDto = new RatesRegisterDto(1L, "HUF", Set.of("INR", "USD"));
+        RatesRegisterDto ratesRegisterDto = new RatesRegisterDto(1L, "HUF", Set.of("INR", "USD"), 10000);
         when(employeeFacade.registerForRates(ratesRegisterDto)).thenReturn("Success");
         //WHEN
         ResponseEntity<String> responseEntity = employeeController.registerForRates(ratesRegisterDto);

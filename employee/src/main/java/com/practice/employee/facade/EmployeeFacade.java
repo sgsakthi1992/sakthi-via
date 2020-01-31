@@ -1,14 +1,13 @@
 package com.practice.employee.facade;
 
-import com.practice.exception.ResourceNotFoundException;
 import com.practice.employee.model.Employee;
 import com.practice.employee.model.RatesRegister;
 import com.practice.employee.model.dto.EmployeeDto;
 import com.practice.employee.model.dto.RatesRegisterDto;
 import com.practice.employee.repository.EmployeeRepository;
 import com.practice.employee.repository.RatesRegisterRepository;
-import com.practice.mail.model.Mail;
-import com.practice.mail.service.EmailService;
+import com.practice.employee.service.OtpService;
+import com.practice.exception.ResourceNotFoundException;
 import com.practice.message.factory.AbstractFactory;
 import com.practice.message.model.Content;
 import com.practice.message.service.MessagingService;
@@ -23,7 +22,7 @@ import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 
-import javax.mail.MessagingException;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,21 +57,26 @@ public class EmployeeFacade {
      */
     private static final String SUCCESS_MESSAGE = "Success";
     /**
-     * Email Subject.
+     * Welcome Email Subject.
      */
     private static final String EMAIL_SUBJECT = "Welcome to SAKTHI-VIA!!";
+    /**
+     * Otp Email Subject.
+     */
+    private static final String OTP_EMAIL_SUBJECT =
+            "One Time Password (OTP) on Sakthi-VIA";
     /**
      * Scheduler mail template.
      */
     private static final String MAIL_TEMPLATE = "welcomeMailTemplate";
     /**
+     * Otp mail template.
+     */
+    private static final String OTP_MAIL_TEMPLATE = "otpMailTemplate";
+    /**
      * EmployeeRepository object.
      */
     private final EmployeeRepository employeeRepository;
-    /**
-     * EmailService object.
-     */
-    private final EmailService emailService;
     /**
      * RatesRegisterRepository object.
      */
@@ -85,25 +89,31 @@ public class EmployeeFacade {
      * Messaging Service object.
      */
     private final AbstractFactory<MessagingService> abstractFactory;
+    /**
+     * OtpService object.
+     */
+    private final OtpService otpService;
 
     /**
      * Parameterized Constructor.
-     *  @param employeeRepository EmployeeRepository object
-     * @param emailService       EmailService object
+     *
+     * @param employeeRepository EmployeeRepository object
      * @param registerRepository RatesRegisterRepository object
      * @param modelMapper        ModelMapper object
-     * @param abstractFactory Abstract Factory
+     * @param abstractFactory    Abstract Factory of type Messaging Service
+     * @param otpService         Otp Service object
      */
     public EmployeeFacade(final EmployeeRepository employeeRepository,
-                          final EmailService emailService,
                           final RatesRegisterRepository registerRepository,
                           final ModelMapper modelMapper,
-                          final AbstractFactory abstractFactory) {
+                          final AbstractFactory<MessagingService>
+                                  abstractFactory,
+                          final OtpService otpService) {
         this.employeeRepository = employeeRepository;
-        this.emailService = emailService;
         this.registerRepository = registerRepository;
         this.modelMapper = modelMapper;
         this.abstractFactory = abstractFactory;
+        this.otpService = otpService;
     }
 
     /**
@@ -159,10 +169,8 @@ public class EmployeeFacade {
      *
      * @param employeeDto Employee details
      * @return Employee
-     * @throws MessagingException exception
      */
-    public Employee createEmployee(final EmployeeDto employeeDto)
-            throws MessagingException {
+    public Employee createEmployee(final EmployeeDto employeeDto) {
         Employee employee = convertEmployeeDtoToEmployee(employeeDto);
         employeeRepository.save(employee);
         LOGGER.debug("Created Employee: {}", employee);
@@ -172,10 +180,10 @@ public class EmployeeFacade {
         content.put("age", employee.getAge());
         content.put("email", employee.getEmail());
 
-        emailService.sendMail(Mail.builder()
+        abstractFactory.create("email").send(Content.builder()
                 .setTo(employee.getEmail())
                 .setSubject(EMAIL_SUBJECT)
-                .setContent(content)
+                .setBody(content)
                 .setTemplate(MAIL_TEMPLATE)
                 .createMail());
 
@@ -322,57 +330,88 @@ public class EmployeeFacade {
      */
     public String registerForRates(final RatesRegisterDto ratesRegisterDto)
             throws ResourceNotFoundException {
-        RatesRegister ratesRegister = convertRatesRegisterDtoToRatesRegister(
-                ratesRegisterDto);
+        RatesRegister ratesRegister =
+                convertRatesRegisterDtoToRatesRegister(
+                        ratesRegisterDto);
+        if (validateOtp(ratesRegisterDto)) {
+            ExampleMatcher exampleMatcher = ExampleMatcher.matchingAll()
+                    .withMatcher("employee_id", contains().ignoreCase())
+                    .withMatcher("base", contains().ignoreCase());
+            Example<RatesRegister> example = Example
+                    .of(ratesRegister, exampleMatcher);
+            Optional<RatesRegister> register = registerRepository
+                    .findOne(example);
 
-        ExampleMatcher exampleMatcher = ExampleMatcher.matchingAll()
-                .withMatcher("employee_id", contains().ignoreCase())
-                .withMatcher("base", contains().ignoreCase());
-        Example<RatesRegister> example = Example
-                .of(ratesRegister, exampleMatcher);
-        Optional<RatesRegister> register = registerRepository.findOne(example);
+            register.ifPresentOrElse(record -> {
+                LOGGER.debug("Combination available, updating");
+                ratesRegister.getTarget().forEach(
+                        record.getTarget()::add);
+                registerRepository.save(record);
+            }, () -> {
+                LOGGER.debug("New record");
+                registerRepository.save(ratesRegister);
+            });
+            return SUCCESS_MESSAGE;
+        } else {
+            LOGGER.error("Not a valid Otp");
+            throw new ResourceNotFoundException(
+                    "Not a valid Otp. Please generate the Otp & try again.");
+        }
+    }
 
-        register.ifPresentOrElse(record -> {
-            LOGGER.debug("Combination available, updating");
-            ratesRegister.getTarget().forEach(
-                    record.getTarget()::add);
-            registerRepository.save(record);
-        }, () -> {
-            LOGGER.debug("New record");
-            registerRepository.save(ratesRegister);
-        });
-        return SUCCESS_MESSAGE;
+    private boolean validateOtp(final RatesRegisterDto ratesRegisterDto) {
+        Object otp = otpService.getOtp(ratesRegisterDto.getId());
+        if (!otp.equals(0) && otp.equals(ratesRegisterDto.getOtp())) {
+            otpService.clearOTP(ratesRegisterDto.getId());
+            return true;
+        }
+        return false;
     }
 
     /**
      * To generate Otp.
      *
+     * @param id   Employee id
      * @param type email or message.
      * @throws ResourceNotFoundException exception
      */
-    public void generateOtp(final String type)
+    public void generateOtp(final Long id, final String type)
             throws ResourceNotFoundException {
-        abstractFactory.create(type).send(getMessageContent(type));
+        Employee employee = getEmployeeById(id);
+        abstractFactory.create(type).send(getMessageContent(employee,
+                getBody(employee.getId()), type));
     }
 
-    private Content getMessageContent(final String type)
-            throws ResourceNotFoundException {
+    private Content getMessageContent(final Employee employee,
+                                      final Map<String, Object> body,
+                                      final String type) {
         Content content;
-        Employee employee = getEmployeeById(40000L);
         if (type.contentEquals("sms")) {
             content = Content.builder()
                     .setTo(employee.getPhoneNumber())
-                    .setBody(Map.of("otp", 123456)).createMail();
+                    .setBody(body).createMail();
             return content;
         } else if (type.contentEquals("email")) {
             content = Content.builder()
                     .setTo(employee.getEmail())
-                    .setBody(Map.of("otp", 123456))
-                    .setSubject(EMAIL_SUBJECT)
-                    .setTemplate(MAIL_TEMPLATE)
+                    .setBody(body)
+                    .setSubject(OTP_EMAIL_SUBJECT)
+                    .setTemplate(OTP_MAIL_TEMPLATE)
                     .createMail();
             return content;
         }
         return null;
+    }
+
+    private Map<String, Object> getBody(final Long id) {
+        DateTimeFormatter formatter = DateTimeFormatter
+                .ofPattern("yyyy-MM-dd HH:mm:ss");
+        Map<String, Object> body = new HashMap<>();
+        body.put("otp", otpService.getOtp(id).equals(0)
+                ? otpService.generateOTP(id) : otpService.getOtp(id));
+        body.put("startTime", otpService.getOtpStartTime(id));
+        body.put("expiryTime", otpService.getOtpExpiryTime(id));
+        LOGGER.debug("body: {}", body);
+        return body;
     }
 }

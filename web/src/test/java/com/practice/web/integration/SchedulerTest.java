@@ -3,8 +3,9 @@ package com.practice.web.integration;
 import com.practice.VIAApplication;
 import com.practice.currencyconverter.facade.CurrencyConverterFacade;
 import com.practice.employee.repository.RatesRegisterRepository;
-import com.practice.mail.service.EmailService;
-import com.practice.employee.facade.SchedulerFacade;
+import com.practice.employee.service.DailyAlertSchedulerService;
+import com.practice.message.factory.AbstractFactory;
+import com.practice.message.service.MessagingService;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -21,10 +22,10 @@ import java.time.Duration;
 class SchedulerTest {
 
     @SpyBean
-    private SchedulerFacade schedulerFacade;
+    private DailyAlertSchedulerService dailyAlertSchedulerService;
 
     @MockBean
-    EmailService emailService;
+    AbstractFactory<MessagingService> abstractFactory;
 
     @MockBean
     RatesRegisterRepository registerRepository;
@@ -35,7 +36,7 @@ class SchedulerTest {
     @Test
     void testScheduler() {
         Awaitility.await().atMost(Duration.ofSeconds(10))
-                .untilAsserted(() -> Mockito.verify(schedulerFacade,
+                .untilAsserted(() -> Mockito.verify(dailyAlertSchedulerService,
                         Mockito.atMost(5)).dailyEmailAlertScheduler());
     }
 }

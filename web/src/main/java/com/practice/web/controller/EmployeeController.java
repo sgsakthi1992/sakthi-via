@@ -1,10 +1,10 @@
 package com.practice.web.controller;
 
-import com.practice.exception.ResourceNotFoundException;
 import com.practice.employee.facade.EmployeeFacade;
 import com.practice.employee.model.Employee;
 import com.practice.employee.model.dto.EmployeeDto;
 import com.practice.employee.model.dto.RatesRegisterDto;
+import com.practice.exception.ResourceNotFoundException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -294,14 +294,17 @@ public class EmployeeController {
     /**
      * API to generate OTP.
      *
+     * @param id Employee id
      * @param type by email or message
      * @return success message
      * @throws ResourceNotFoundException exception
      */
-    @GetMapping("/generateOtp")
-    public ResponseEntity<String> generateOtp(@RequestParam final String type)
+    @GetMapping("/generateOtp/{id}")
+    public ResponseEntity<String> generateOtp(
+            @Valid @PathVariable(value = "id") final Long id,
+            @RequestParam final String type)
             throws ResourceNotFoundException {
-        employeeFacade.generateOtp(type);
+        employeeFacade.generateOtp(id, type);
         return ResponseEntity.status(HttpStatus.OK).body("Success");
     }
 

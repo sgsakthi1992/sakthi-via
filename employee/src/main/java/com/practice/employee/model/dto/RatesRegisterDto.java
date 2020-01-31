@@ -26,6 +26,10 @@ public class RatesRegisterDto {
      */
     @TargetCode
     private Set<String> target;
+    /**
+     * Generated otp.
+     */
+    private Integer otp;
 
     /**
      * Getter for employee id.
@@ -82,17 +86,38 @@ public class RatesRegisterDto {
     }
 
     /**
+     * Getter for otp.
+     *
+     * @return otp.
+     */
+    public Integer getOtp() {
+        return otp;
+    }
+
+    /**
+     * Setter for otp.
+     *
+     * @param otp otp.
+     */
+    public void setOtp(final Integer otp) {
+        this.otp = otp;
+    }
+
+    /**
      * Parameterized constructor.
      *
      * @param id     employee id
      * @param base   currency code
      * @param target currency codes
+     * @param otp    Generated otp
      */
     public RatesRegisterDto(final Long id, final String base,
-                            final Set<String> target) {
+                            final Set<String> target,
+                            final Integer otp) {
         this.id = id;
         this.base = base;
         this.target = target;
+        this.otp = otp;
     }
 
     /**
@@ -104,8 +129,9 @@ public class RatesRegisterDto {
     public String toString() {
         return "RatesRegister{"
                 + "id=" + id
-                + ", base='" + base + '\''
+                + ", base='" + base
                 + ", target=" + target
+                + ", otp='" + otp
                 + '}';
     }
 }

@@ -1,5 +1,6 @@
 package com.practice.employee.unit;
 
+import com.practice.employee.service.OtpService;
 import com.practice.exception.ResourceNotFoundException;
 import com.practice.employee.facade.EmployeeFacade;
 import com.practice.employee.model.Employee;
@@ -8,14 +9,18 @@ import com.practice.employee.model.dto.EmployeeDto;
 import com.practice.employee.model.dto.RatesRegisterDto;
 import com.practice.employee.repository.EmployeeRepository;
 import com.practice.employee.repository.RatesRegisterRepository;
-import com.practice.mail.model.Mail;
-import com.practice.mail.service.EmailService;
+import com.practice.message.factory.AbstractFactory;
+import com.practice.message.model.Content;
+import com.practice.message.service.MessagingService;
+import com.practice.message.service.impl.EmailService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Example;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.thymeleaf.ITemplateEngine;
 
 import javax.mail.MessagingException;
 import java.util.HashSet;
@@ -45,10 +50,16 @@ class EmployeeFacadeTest {
     RatesRegisterRepository ratesRegisterRepository;
 
     @Mock
-    EmailService emailService;
+    AbstractFactory<MessagingService> abstractFactory;
 
     @Mock
     ModelMapper modelMapper;
+
+    @Mock
+    OtpService otpService;
+
+    @Mock
+    EmailService emailService;
 
     @Spy
     @InjectMocks
@@ -96,7 +107,7 @@ class EmployeeFacadeTest {
     void testConvertRatesRegisterDtoToRatesRegister() throws ResourceNotFoundException {
         //GIVEN
         RatesRegisterDto ratesRegisterDto = new RatesRegisterDto(40000L,
-                "HUF", Set.of("INR", "EUR"));
+                "HUF", Set.of("INR", "EUR"), 10000);
         when(modelMapper.map(ratesRegisterDto, RatesRegister.class)).thenReturn(
                 new RatesRegister(1, employee, "HUF", Set.of("INR", "EUR")));
         when(employeeRepository.findById(ratesRegisterDto.getId()))
@@ -115,7 +126,7 @@ class EmployeeFacadeTest {
     void testConvertRatesRegisterDtoToRatesRegisterWithNewId() {
         //GIVEN
         RatesRegisterDto ratesRegisterDto = new RatesRegisterDto(40000L,
-                "HUF", Set.of("INR", "EUR"));
+                "HUF", Set.of("INR", "EUR"), 10000);
         //WHEN
         //THEN
         assertThrows(ResourceNotFoundException.class,
@@ -123,20 +134,22 @@ class EmployeeFacadeTest {
     }
 
     @Test
-    void testCreateEmployee() throws MessagingException {
+    void testCreateEmployee() {
         //GIVEN
         EmployeeDto employeeDto = new EmployeeDto("Employee 1",
                 "employee1", "emp1@gmail.com", "+111111111", 25);
-        ArgumentCaptor<Mail> captor = ArgumentCaptor.forClass(Mail.class);
+        ArgumentCaptor<Content> captor = ArgumentCaptor.forClass(Content.class);
 
         when(spyEmployeeFacade.convertEmployeeDtoToEmployee(employeeDto)).thenReturn(employee);
         when(employeeRepository.save(employee)).thenReturn(employee);
+        when(abstractFactory.create("email"))
+                .thenReturn(emailService);
 
         //WHEN
         Employee createdEmployee = spyEmployeeFacade.createEmployee(employeeDto);
 
         //THEN
-        verify(emailService).sendMail(captor.capture());
+        verify(abstractFactory.create("email")).send(captor.capture());
         assertEquals(employee.getEmail(), captor.getValue().getTo());
         assertEquals(employee.getName(), createdEmployee.getName());
         assertEquals(employee.getUsername(), createdEmployee.getUsername());
@@ -243,12 +256,13 @@ class EmployeeFacadeTest {
     void registerForRates() throws ResourceNotFoundException {
         //GIVEN
         RatesRegisterDto ratesRegisterDto = new RatesRegisterDto(40000L,
-                "HUF", Set.of("INR", "EUR"));
+                "HUF", Set.of("INR", "EUR"), 10000);
         when(modelMapper.map(ratesRegisterDto, RatesRegister.class)).thenReturn(
                 new RatesRegister(1, employee, "HUF", Set.of("INR", "EUR")));
         when(employeeRepository.findById(ratesRegisterDto.getId()))
                 .thenReturn(Optional.ofNullable(employee));
         when(ratesRegisterRepository.findOne(any(Example.class))).thenReturn(Optional.empty());
+        when(otpService.getOtp(ratesRegisterDto.getId())).thenReturn(10000);
         //WHEN
         String message = employeeFacade.registerForRates(ratesRegisterDto);
         //THEN
@@ -259,7 +273,7 @@ class EmployeeFacadeTest {
     void registerForRatesWithExistingBase() throws ResourceNotFoundException {
         //GIVEN
         RatesRegisterDto ratesRegisterDto = new RatesRegisterDto(40000L,
-                "HUF", Set.of("INR", "EUR"));
+                "HUF", Set.of("INR", "EUR"), 10000);
 
         Set<String> target = new HashSet<>();
         target.add("USD");
@@ -271,6 +285,7 @@ class EmployeeFacadeTest {
                 .thenReturn(Optional.ofNullable(employee));
         when(ratesRegisterRepository.findOne(any(Example.class)))
                 .thenReturn(Optional.of(register));
+        when(otpService.getOtp(ratesRegisterDto.getId())).thenReturn(10000);
         //WHEN
         String message = employeeFacade.registerForRates(ratesRegisterDto);
         //THEN
