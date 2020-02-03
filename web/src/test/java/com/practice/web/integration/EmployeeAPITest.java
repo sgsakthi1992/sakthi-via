@@ -25,10 +25,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import javax.mail.BodyPart;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;

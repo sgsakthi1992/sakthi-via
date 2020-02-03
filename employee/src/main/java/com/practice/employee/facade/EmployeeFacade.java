@@ -22,6 +22,7 @@ import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.List;
@@ -321,6 +322,7 @@ public class EmployeeFacade {
             @CacheEvict(cacheNames = "employeeCache", key = "#id"),
             @CacheEvict(cacheNames = "employeeCache", key = "#email")
     })
+    @Transactional
     public String updateEmployeeEmail(final Long id, final String email)
             throws ResourceNotFoundException {
         Employee employee = getEmployeeById(id);
