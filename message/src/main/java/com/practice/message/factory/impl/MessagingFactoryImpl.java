@@ -25,7 +25,7 @@ public class MessagingFactoryImpl implements AbstractFactory<MessagingService> {
      * @param javaMailSender JavaMailSender object
      * @param templateEngine TemplateEngine object
      */
-    MessagingFactoryImpl(final JavaMailSender javaMailSender,
+    public MessagingFactoryImpl(final JavaMailSender javaMailSender,
                          final ITemplateEngine templateEngine) {
         this.javaMailSender = javaMailSender;
         this.templateEngine = templateEngine;

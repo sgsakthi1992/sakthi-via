@@ -4,7 +4,6 @@ import com.practice.message.model.Content;
 import com.practice.message.service.MessagingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.thymeleaf.ITemplateEngine;
@@ -40,26 +39,6 @@ public class EmailService implements MessagingService {
     public EmailService(final JavaMailSender javaMailSender,
                         final ITemplateEngine templateEngine) {
         this.javaMailSender = javaMailSender;
-        this.templateEngine = templateEngine;
-    }
-
-    /**
-     * Setter to bind JavaMailSender object.
-     *
-     * @param javaMailSender JavaMailSender object
-     */
-    @Autowired
-    public void setJavaMailSender(final JavaMailSender javaMailSender) {
-        this.javaMailSender = javaMailSender;
-    }
-
-    /**
-     * Setter to bing TemplateEngine object.
-     *
-     * @param templateEngine TemplateEngine object
-     */
-    @Autowired
-    public void setTemplateEngine(final ITemplateEngine templateEngine) {
         this.templateEngine = templateEngine;
     }
 

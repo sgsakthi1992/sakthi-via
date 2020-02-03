@@ -23,7 +23,6 @@
 
     <modules>
         <module>employee</module>
-        <module>mail</module>
         <module>currencyconverter</module>
         <module>exception</module>
         <module>web</module>

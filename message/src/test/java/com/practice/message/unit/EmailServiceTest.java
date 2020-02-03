@@ -1,7 +1,7 @@
-package com.practice.mail.unit;
+package com.practice.message.unit;
 
-import com.practice.mail.model.Mail;
-import com.practice.mail.service.impl.EmailServiceImpl;
+import com.practice.message.factory.impl.MessagingFactoryImpl;
+import com.practice.message.model.Content;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -26,8 +26,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class EmailServiceImplTest {
-
+class EmailServiceTest {
     @Mock
     JavaMailSender javaMailSender;
 
@@ -35,28 +34,29 @@ class EmailServiceImplTest {
     ITemplateEngine templateEngine;
 
     @InjectMocks
-    EmailServiceImpl emailService;
+    MessagingFactoryImpl messagingFactory;
 
     @Test
-    void sendMail() throws MessagingException {
+    void send() throws MessagingException {
         //GIVEN
         ArgumentCaptor<MimeMessage> captor = ArgumentCaptor.forClass(MimeMessage.class);
-        Mail.MailBuilder builder = Mail.builder();
-        builder.setTo("employee@gmail.com,employee1@gmail.com");
-        builder.setSubject("EMAIL_SUBJECT");
-        builder.setContent(Map.of("name", "employee"));
-        builder.setTemplate("MAIL_TEMPLATE");
+        Content content = Content.builder()
+                .setTo("employee@gmail.com,employee1@gmail.com")
+                .setSubject("EMAIL_SUBJECT")
+                .setBody(Map.of("name", "employee"))
+                .setTemplate("MAIL_TEMPLATE").createMail();
 
         when(templateEngine.process(eq("MAIL_TEMPLATE"), any(Context.class))).thenReturn("content");
         when(javaMailSender.createMimeMessage()).thenReturn(new JavaMailSenderImpl().createMimeMessage());
 
         //WHEN
-        emailService.sendMail(builder.createMail());
+        messagingFactory.create("email").send(content);
         //THEN
         verify(javaMailSender).send(captor.capture());
         assertEquals("EMAIL_SUBJECT", captor.getValue().getSubject());
         assertEquals(2, captor.getValue().getAllRecipients().length);
         assertTrue(Arrays.stream(captor.getValue().getAllRecipients())
-                .allMatch(to -> "employee@gmail.com,employee1@gmail.com" .contains(to.toString())));
+                .allMatch(to -> "employee@gmail.com,employee1@gmail.com".contains(to.toString())));
     }
+
 }

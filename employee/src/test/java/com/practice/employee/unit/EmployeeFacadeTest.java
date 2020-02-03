@@ -1,7 +1,5 @@
 package com.practice.employee.unit;
 
-import com.practice.employee.service.OtpService;
-import com.practice.exception.ResourceNotFoundException;
 import com.practice.employee.facade.EmployeeFacade;
 import com.practice.employee.model.Employee;
 import com.practice.employee.model.RatesRegister;
@@ -9,20 +7,22 @@ import com.practice.employee.model.dto.EmployeeDto;
 import com.practice.employee.model.dto.RatesRegisterDto;
 import com.practice.employee.repository.EmployeeRepository;
 import com.practice.employee.repository.RatesRegisterRepository;
+import com.practice.employee.service.OtpService;
+import com.practice.exception.ResourceNotFoundException;
 import com.practice.message.factory.AbstractFactory;
 import com.practice.message.model.Content;
 import com.practice.message.service.MessagingService;
 import com.practice.message.service.impl.EmailService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.*;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Example;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.thymeleaf.ITemplateEngine;
 
-import javax.mail.MessagingException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -60,10 +60,6 @@ class EmployeeFacadeTest {
 
     @Mock
     EmailService emailService;
-
-    @Spy
-    @InjectMocks
-    EmployeeFacade spyEmployeeFacade;
 
     private Employee employee;
 
@@ -140,13 +136,14 @@ class EmployeeFacadeTest {
                 "employee1", "emp1@gmail.com", "+111111111", 25);
         ArgumentCaptor<Content> captor = ArgumentCaptor.forClass(Content.class);
 
-        when(spyEmployeeFacade.convertEmployeeDtoToEmployee(employeeDto)).thenReturn(employee);
+        //when(spyEmployeeFacade.convertEmployeeDtoToEmployee(employeeDto)).thenReturn(employee);
+        when(modelMapper.map(employeeDto, Employee.class)).thenReturn(employee);
         when(employeeRepository.save(employee)).thenReturn(employee);
         when(abstractFactory.create("email"))
                 .thenReturn(emailService);
 
         //WHEN
-        Employee createdEmployee = spyEmployeeFacade.createEmployee(employeeDto);
+        Employee createdEmployee = employeeFacade.createEmployee(employeeDto);
 
         //THEN
         verify(abstractFactory.create("email")).send(captor.capture());
@@ -234,22 +231,17 @@ class EmployeeFacadeTest {
     @Test
     void testGetEmployeeByUsernameOrEmail() throws ResourceNotFoundException {
         //GIVEN
-        Example<Employee> example = employeeFacade.getExample(employee.getUsername(), employee.getEmail());
-        Mockito.doReturn(example).when(spyEmployeeFacade).getExample(employee.getUsername(), employee.getEmail());
-        when(employeeRepository.findAll(example))
+        when(employeeRepository.findAll(any(Example.class)))
                 .thenReturn(Stream.of(employee).collect(Collectors.toList()));
 
         //WHEN
-        List<Employee> employeeByUsernameOrEmail = spyEmployeeFacade
+        List<Employee> employeeByUsernameOrEmail = employeeFacade
                 .getEmployeeByUsernameOrEmail(employee.getUsername(), employee.getEmail());
 
         //THEN
         assertThat(employeeByUsernameOrEmail, hasSize(1));
-
         assertThrows(ResourceNotFoundException.class, ()
-                -> spyEmployeeFacade.getEmployeeByUsernameOrEmail("new", "new")).printStackTrace();
-        assertThrows(ResourceNotFoundException.class, ()
-                -> spyEmployeeFacade.getEmployeeByUsernameOrEmail(null, null));
+                -> employeeFacade.getEmployeeByUsernameOrEmail(null, null));
     }
 
     @Test

@@ -1,8 +1,8 @@
 package com.practice.currencyconverter.facade;
 
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
-import com.practice.exception.ResourceNotFoundException;
 import com.practice.currencyconverter.model.CurrencyConverter;
+import com.practice.exception.ResourceNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,10 +16,8 @@ import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @CacheConfig(cacheNames = "CurrencyConverterCache")
@@ -109,8 +107,7 @@ public class CurrencyConverterFacade {
     @Cacheable(keyGenerator = "customKeyGenerator")
     public CurrencyConverter getCurrencyRateWithTarget(
             final String base, final Set<String> targets) {
-        String target = targets.stream().map(Objects::toString)
-                .collect(Collectors.joining(","));
+        String target = String.join(",", targets);
         String url = String.format(currencyRateWithTargetsUrl, target, base);
         LOGGER.debug("Currency Converter With Targets API URL: {}", url);
         CurrencyConverter currencyRate = restTemplate

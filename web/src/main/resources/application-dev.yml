@@ -36,6 +36,13 @@ via:
     cache:
       evict:
         value: 600000
+  sms:
+    twilo:
+      phonenumber: +15416124108
+      auth:
+        token: 931b13a6891249783d03bf5c96c9650c
+      account:
+        sid: AC3708314765ca28d112fa81ee56492103
 logging:
   level:
     org:

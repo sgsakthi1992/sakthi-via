@@ -22,7 +22,6 @@ import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 
-import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -404,8 +403,6 @@ public class EmployeeFacade {
     }
 
     private Map<String, Object> getBody(final Long id) {
-        DateTimeFormatter formatter = DateTimeFormatter
-                .ofPattern("yyyy-MM-dd HH:mm:ss");
         Map<String, Object> body = new HashMap<>();
         body.put("otp", otpService.getOtp(id).equals(0)
                 ? otpService.generateOTP(id) : otpService.getOtp(id));
