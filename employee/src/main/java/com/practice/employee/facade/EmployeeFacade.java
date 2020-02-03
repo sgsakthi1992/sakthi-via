@@ -194,8 +194,6 @@ public class EmployeeFacade {
         Map<String, Object> body = new HashMap<>();
         body.put("name", employee.getName());
         body.put("username", employee.getUsername());
-        body.put("age", employee.getAge());
-        body.put("email", employee.getEmail());
         return body;
     }
 
