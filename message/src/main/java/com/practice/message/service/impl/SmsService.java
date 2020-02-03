@@ -5,8 +5,6 @@ import com.practice.message.service.MessagingService;
 import com.twilio.Twilio;
 import com.twilio.rest.api.v2010.account.Message;
 import com.twilio.type.PhoneNumber;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 
 public class SmsService implements MessagingService {
@@ -25,11 +23,6 @@ public class SmsService implements MessagingService {
      */
     @Value("${via.sms.twilo.phonenumber}")
     private String twiloPhoneNumber;
-    /**
-     * Logger Object to log the details.
-     */
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(SmsService.class);
 
     /**
      * Overridden method to implement text message service.
@@ -38,7 +31,7 @@ public class SmsService implements MessagingService {
      */
     public void send(final Content content) {
         Twilio.init(accountSid, authToken);
-        Message message = Message.creator(
+        Message.creator(
                 new PhoneNumber(content.getTo()),
                 new PhoneNumber(twiloPhoneNumber),
                 String.format("Otp generated at %s : %s. It will expire at %s",
@@ -46,6 +39,5 @@ public class SmsService implements MessagingService {
                         content.getBody().get("otp"),
                         content.getBody().get("expiryTime")))
                 .create();
-        LOGGER.debug(String.valueOf(message));
     }
 }

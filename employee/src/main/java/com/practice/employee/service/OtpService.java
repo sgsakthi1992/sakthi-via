@@ -3,11 +3,12 @@ package com.practice.employee.service;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import com.practice.employee.facade.EmployeeFacade;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -20,7 +21,7 @@ public class OtpService {
      * Logger Object to log the details.
      */
     private static final Logger LOGGER = LoggerFactory.
-            getLogger(EmployeeFacade.class);
+            getLogger(OtpService.class);
     /**
      * LadingCache from Guava.
      */
@@ -37,14 +38,28 @@ public class OtpService {
      * Otp random next int.
      */
     private static final Integer RANDOM_NEXT_INT = 900000;
+    /**
+     * Cache key format for start time.
+     */
+    private static final String START_TIME_FORMAT = "%d-startTime";
+    /**
+     * Cache key format for expiry time.
+     */
+    private static final String EXPIRY_TIME_FORMAT = "%d-expiryTime";
+    /**
+     * To generate random number.
+     */
+    private Random random;
 
     /**
      * Default constructor to build the cache builder.
+     * @throws NoSuchAlgorithmException exception for secure random
      */
-    public OtpService() {
+    public OtpService() throws NoSuchAlgorithmException {
+        random = SecureRandom.getInstanceStrong();
         otpCache = CacheBuilder.newBuilder()
                 .expireAfterWrite(OTP_EXPIRE_MINUTES, TimeUnit.MINUTES)
-                .build(new CacheLoader<Object, Object>() {
+                .build(new CacheLoader<>() {
                     @Override
                     public Integer load(final Object key) {
                         return 0;
@@ -60,14 +75,13 @@ public class OtpService {
      * @return generated otp
      */
     public Object generateOTP(final Long key) {
-        Random random = new Random();
         int otp = RANDOM_BASE_NUMBER + random.nextInt(RANDOM_NEXT_INT);
         DateTimeFormatter formatter = DateTimeFormatter
                 .ofPattern("yyyy-MM-dd HH:mm:ss");
         otpCache.put(key, otp);
-        otpCache.put(String.format("%d-startTime", key),
+        otpCache.put(String.format(START_TIME_FORMAT, key),
                 LocalDateTime.now().format(formatter));
-        otpCache.put(String.format("%d-expiryTime", key),
+        otpCache.put(String.format(EXPIRY_TIME_FORMAT, key),
                 LocalDateTime.now()
                         .plus(OTP_EXPIRE_MINUTES, ChronoUnit.MINUTES)
                         .format(formatter));
@@ -98,7 +112,7 @@ public class OtpService {
     public Object getOtpStartTime(final Long key) {
         try {
             if (!otpCache.get(key).equals(0)) {
-                return otpCache.get(String.format("%d-startTime", key));
+                return otpCache.get(String.format(START_TIME_FORMAT, key));
             }
         } catch (Exception e) {
             return 0;
@@ -115,7 +129,7 @@ public class OtpService {
     public Object getOtpExpiryTime(final Long key) {
         try {
             if (!otpCache.get(key).equals(0)) {
-                return otpCache.get(String.format("%d-expiryTime", key));
+                return otpCache.get(String.format(EXPIRY_TIME_FORMAT, key));
             }
         } catch (Exception e) {
             return 0;
@@ -130,7 +144,7 @@ public class OtpService {
      */
     public void clearOTP(final Long key) {
         otpCache.invalidate(key);
-        otpCache.invalidate(String.format("%d-startTime", key));
-        otpCache.invalidate(String.format("%d-expiryTime", key));
+        otpCache.invalidate(String.format(START_TIME_FORMAT, key));
+        otpCache.invalidate(String.format(EXPIRY_TIME_FORMAT, key));
     }
 }

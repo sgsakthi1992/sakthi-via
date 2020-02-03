@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -14,7 +15,11 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(MockitoExtension.class)
 class OtpServiceTest {
 
-    OtpService otpService = new OtpService();
+    private OtpService otpService;
+
+    OtpServiceTest() throws NoSuchAlgorithmException {
+        otpService = new OtpService();
+    }
 
     @Test
     void generateOTP() {

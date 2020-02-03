@@ -10,6 +10,7 @@ import com.practice.employee.service.OtpService;
 import com.practice.exception.ResourceNotFoundException;
 import com.practice.message.factory.AbstractFactory;
 import com.practice.message.model.Content;
+import com.practice.message.model.OtpDetails;
 import com.practice.message.service.MessagingService;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -72,6 +73,14 @@ public class EmployeeFacade {
      * Otp mail template.
      */
     private static final String OTP_MAIL_TEMPLATE = "otpMailTemplate";
+    /**
+     * Messaging type email.
+     */
+    private static final String TYPE_EMAIL = "email";
+    /**
+     * Messaging type sms.
+     */
+    private static final String TYPE_SMS = "sms";
     /**
      * EmployeeRepository object.
      */
@@ -173,20 +182,21 @@ public class EmployeeFacade {
         Employee employee = convertEmployeeDtoToEmployee(employeeDto);
         employeeRepository.save(employee);
         LOGGER.debug("Created Employee: {}", employee);
-        Map<String, Object> content = new HashMap<>();
-        content.put("name", employee.getName());
-        content.put("username", employee.getUsername());
-        content.put("age", employee.getAge());
-        content.put("email", employee.getEmail());
-
-        abstractFactory.create("email").send(Content.builder()
-                .setTo(employee.getEmail())
-                .setSubject(EMAIL_SUBJECT)
-                .setBody(content)
-                .setTemplate(MAIL_TEMPLATE)
-                .createMail());
+        sendMessage(TYPE_EMAIL,
+                getContentByType(employee, getWelcomeMailBody(employee),
+                        TYPE_EMAIL, EMAIL_SUBJECT, MAIL_TEMPLATE));
 
         return employee;
+    }
+
+    private Map<String, Object> getWelcomeMailBody(
+            final Employee employee) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("name", employee.getName());
+        body.put("username", employee.getUsername());
+        body.put("age", employee.getAge());
+        body.put("email", employee.getEmail());
+        return body;
     }
 
     /**
@@ -377,37 +387,48 @@ public class EmployeeFacade {
     public void generateOtp(final Long id, final String type)
             throws ResourceNotFoundException {
         Employee employee = getEmployeeById(id);
-        abstractFactory.create(type).send(getMessageContent(employee,
-                getBody(employee.getId()), type));
+        OtpDetails otpDetails = new OtpDetails(otpService.getOtp(id).equals(0)
+                ? otpService.generateOTP(id) : otpService.getOtp(id),
+                otpService.getOtpStartTime(id),
+                otpService.getOtpExpiryTime(id));
+        sendMessage(type,
+                getContentByType(employee,
+                        getOtpMessageBody(otpDetails), type,
+                        OTP_EMAIL_SUBJECT, OTP_MAIL_TEMPLATE));
     }
 
-    private Content getMessageContent(final Employee employee,
-                                      final Map<String, Object> body,
-                                      final String type) {
+    private void sendMessage(final String type, final Content body) {
+        abstractFactory.create(type).send(body);
+    }
+
+    private Content getContentByType(final Employee employee,
+                                     final Map<String, Object> body,
+                                     final String type, final String subject,
+                                     final String template) {
         Content content;
-        if (type.contentEquals("sms")) {
+        if (type.contentEquals(TYPE_SMS)) {
             content = Content.builder()
                     .setTo(employee.getPhoneNumber())
                     .setBody(body).createMail();
             return content;
-        } else if (type.contentEquals("email")) {
+        } else if (type.contentEquals(TYPE_EMAIL)) {
             content = Content.builder()
                     .setTo(employee.getEmail())
                     .setBody(body)
-                    .setSubject(OTP_EMAIL_SUBJECT)
-                    .setTemplate(OTP_MAIL_TEMPLATE)
+                    .setSubject(subject)
+                    .setTemplate(template)
                     .createMail();
             return content;
         }
         return null;
     }
 
-    private Map<String, Object> getBody(final Long id) {
+    private Map<String, Object> getOtpMessageBody(
+            final OtpDetails otpDetails) {
         Map<String, Object> body = new HashMap<>();
-        body.put("otp", otpService.getOtp(id).equals(0)
-                ? otpService.generateOTP(id) : otpService.getOtp(id));
-        body.put("startTime", otpService.getOtpStartTime(id));
-        body.put("expiryTime", otpService.getOtpExpiryTime(id));
+        body.put("otp", otpDetails.getOtp());
+        body.put("startTime", otpDetails.getOtpStartTime());
+        body.put("expiryTime", otpDetails.getOtpExpiryTime());
         LOGGER.debug("body: {}", body);
         return body;
     }
