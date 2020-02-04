@@ -75,13 +75,17 @@ public class EmployeeFacade {
      */
     private static final String OTP_MAIL_TEMPLATE = "otpMailTemplate";
     /**
-     * Messaging type email.
+     * Type email.
      */
-    private static final String TYPE_EMAIL = "email";
+    private static final String EMAIL = "email";
+    /**
+     * Type sms.
+     */
+    private static final String SMS = "sms";
     /**
      * Messaging type sms.
      */
-    private static final String TYPE_SMS = "sms";
+    private static final String USERNAME = "username";
     /**
      * EmployeeRepository object.
      */
@@ -183,9 +187,9 @@ public class EmployeeFacade {
         Employee employee = convertEmployeeDtoToEmployee(employeeDto);
         employeeRepository.save(employee);
         LOGGER.debug("Created Employee: {}", employee);
-        sendMessage(TYPE_EMAIL,
+        sendMessage(EMAIL,
                 getContentByType(employee, getWelcomeMailBody(employee),
-                        TYPE_EMAIL, EMAIL_SUBJECT, MAIL_TEMPLATE));
+                        EMAIL, EMAIL_SUBJECT, MAIL_TEMPLATE));
 
         return employee;
     }
@@ -194,7 +198,7 @@ public class EmployeeFacade {
             final Employee employee) {
         Map<String, Object> body = new HashMap<>();
         body.put("name", employee.getName());
-        body.put("username", employee.getUsername());
+        body.put(USERNAME, employee.getUsername());
         return body;
     }
 
@@ -303,8 +307,8 @@ public class EmployeeFacade {
         employee.setUsername(username);
         employee.setEmail(email);
         ExampleMatcher exampleMatcher = ExampleMatcher.matchingAny()
-                .withMatcher("email", contains().ignoreCase())
-                .withMatcher("username", contains().ignoreCase());
+                .withMatcher(EMAIL, contains().ignoreCase())
+                .withMatcher(USERNAME, contains().ignoreCase());
         Example<Employee> example = Example.of(employee, exampleMatcher);
         LOGGER.debug("Example Employee: {}", example.getProbe());
         return example;
@@ -406,12 +410,12 @@ public class EmployeeFacade {
                                      final String type, final String subject,
                                      final String template) {
         Content content;
-        if (type.contentEquals(TYPE_SMS)) {
+        if (type.contentEquals(SMS)) {
             content = Content.builder()
                     .setTo(employee.getPhoneNumber())
                     .setBody(body).createMail();
             return content;
-        } else if (type.contentEquals(TYPE_EMAIL)) {
+        } else if (type.contentEquals(EMAIL)) {
             content = Content.builder()
                     .setTo(employee.getEmail())
                     .setBody(body)
