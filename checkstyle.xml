@@ -63,7 +63,7 @@ CUSTOMIZATION::
     </module>
 
     <module name="SuppressionSingleFilter">
-        <property name="files" value="SpringbootApplication.java"/>
+        <property name="files" value="VIAApplication.java"/>
         <property name="checks" value=".*"/>
     </module>
 
@@ -173,10 +173,7 @@ CUSTOMIZATION::
         <!-- See https://checkstyle.org/config_coding.html -->
         <module name="EmptyStatement"/>
         <module name="EqualsHashCode"/>
-        <module name="HiddenField">
-            <property name="ignoreSetter" value="true"/>
-            <property name="ignoreConstructorParameter" value="true"/>
-        </module>
+
         <module name="IllegalInstantiation"/>
         <module name="InnerAssignment"/>
         <module name="MagicNumber"/>

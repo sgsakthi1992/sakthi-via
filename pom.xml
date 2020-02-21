@@ -6,12 +6,12 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>2.2.2.RELEASE</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <relativePath/>
     </parent>
     <groupId>com.practice</groupId>
     <artifactId>sakthi-via</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <packaging>jar</packaging>
+    <packaging>pom</packaging>
 
     <name>sakthi-via</name>
     <url>http://maven.apache.org</url>
@@ -21,42 +21,18 @@
         <java.version>11</java.version>
     </properties>
 
+    <modules>
+        <module>employee</module>
+        <module>currencyconverter</module>
+        <module>exception</module>
+        <module>web</module>
+        <module>message</module>
+    </modules>
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-mail</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-thymeleaf</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-netflix-hystrix</artifactId>
-            <version>2.2.1.RELEASE</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-netflix-hystrix-dashboard</artifactId>
-            <version>2.2.1.RELEASE</version>
-        </dependency>
-        <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>42.2.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.modelmapper</groupId>
-            <artifactId>modelmapper</artifactId>
-            <version>2.3.6</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -96,45 +72,17 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.icegreen</groupId>
-            <artifactId>greenmail</artifactId>
-            <version>1.5.11</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-contract-wiremock</artifactId>
-            <version>2.2.1.RELEASE</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.awaitility</groupId>
-            <artifactId>awaitility</artifactId>
-            <version>4.0.2</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
             <scope>runtime</scope>
             <optional>true</optional>
         </dependency>
     </dependencies>
-
     <build>
         <plugins>
             <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>com.heroku.sdk</groupId>
-                <artifactId>heroku-maven-plugin</artifactId>
-                <version>2.0.13</version>
-            </plugin>
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId> <!-- surefire plugin version managed by Spring Boot -->
+                <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <skipTests>true</skipTests>
                 </configuration>
@@ -185,10 +133,10 @@
                         </goals>
                         <configuration>
                             <excludes>
-                                <exclude>com/practice/sakthi_via/SpringbootApplication.class</exclude>
-                                <exclude>com/practice/sakthi_via/constants/Constants.class</exclude>
+                                <exclude>com/practice/VIAApplication</exclude>
                                 <exclude>**/model/**</exclude>
                                 <exclude>**/config/*</exclude>
+                                <exclude>**/exception/*</exclude>
                             </excludes>
                         </configuration>
                     </execution>
@@ -202,14 +150,10 @@
                                 <rule>
                                     <element>CLASS</element>
                                     <excludes>
-                                        <exclude>com.practice.sakthi_via.SpringbootApplication</exclude>
-                                        <exclude>com.practice.sakthi_via.constants.Constants</exclude>
-                                        <exclude>com.practice.sakthi_via.model.Employee</exclude>
-                                        <exclude>com.practice.sakthi_via.model.RatesRegister</exclude>
-                                        <exclude>com.practice.sakthi_via.model.Mail</exclude>
-                                        <exclude>com.practice.sakthi_via.model.dto.EmployeeDto</exclude>
-                                        <exclude>com.practice.sakthi_via.model.dto.RatesRegisterDto</exclude>
-                                        <exclude>com.practice.sakthi_via.config.SwaggerConfig</exclude>
+                                        <exclude>com.practice.VIAApplication</exclude>
+                                        <exclude>*model*</exclude>
+                                        <exclude>*config*</exclude>
+                                        <exclude>*exception*</exclude>
                                     </excludes>
                                     <limits>
                                         <limit>
