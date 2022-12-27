@@ -12,19 +12,20 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @Configuration
 @EnableSwagger2
 public class SwaggerConfig {
-    /**
-     * @return Docket.
-     */
-    @Bean
-    public Docket productApi() {
-        return new Docket(DocumentationType.SWAGGER_2)
-                .apiInfo(new ApiInfoBuilder()
-                        .description("VIA Employee Management API")
-                        .version("0.1")
-                        .build())
-                .select().apis(RequestHandlerSelectors
-                        .basePackage("com.practice"))
-                .paths(PathSelectors.regex("/api/v1.*"))
-                .build();
-    }
+
+  /**
+   * @return Docket.
+   */
+  @Bean
+  public Docket productApi() {
+    return new Docket(DocumentationType.SWAGGER_2)
+        .apiInfo(new ApiInfoBuilder()
+            .description("VIA Employee Management API")
+            .version("0.1")
+            .build())
+        .select().apis(RequestHandlerSelectors
+            .basePackage("com.practice"))
+        .paths(PathSelectors.regex("/api/v1.*"))
+        .build();
+  }
 }

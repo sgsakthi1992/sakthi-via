@@ -8,4 +8,5 @@ import org.springframework.context.annotation.Configuration;
 @EnableCircuitBreaker
 @EnableHystrixDashboard
 public class CircuitBreakerConfig {
+
 }

@@ -6,10 +6,11 @@ import org.springframework.stereotype.Service;
 @FunctionalInterface
 @Service
 public interface MessagingService {
-    /**
-     * Send method.
-     *
-     * @param content Message content
-     */
-    void send(Content content);
+
+  /**
+   * Send method.
+   *
+   * @param content Message content
+   */
+  void send(Content content);
 }

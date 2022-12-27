@@ -7,13 +7,15 @@ import org.springframework.web.client.RestTemplate;
 
 @Configuration
 public class RestTemplateConfig {
-    /**
-     * Rest Template bean configuration.
-     * @param builder RestTemplateBuilder
-     * @return ret template bean
-     */
-    @Bean
-    public RestTemplate restTemplate(final RestTemplateBuilder builder) {
-        return builder.build();
-    }
+
+  /**
+   * Rest Template bean configuration.
+   *
+   * @param builder RestTemplateBuilder
+   * @return ret template bean
+   */
+  @Bean
+  public RestTemplate restTemplate(final RestTemplateBuilder builder) {
+    return builder.build();
+  }
 }

@@ -1,7 +1,13 @@
 package com.practice.currencyconverter.unit;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.when;
+
 import com.practice.currencyconverter.facade.CurrencyConverterFacade;
 import com.practice.currencyconverter.model.CurrencyConverter;
+import java.util.HashMap;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,66 +20,62 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
-
 @ExtendWith(SpringExtension.class)
 @TestPropertySource(properties = {
-        "via.countries.api.url = https://openexchangerates.org/api/currencies.json",
-        "via.currencyrate.api.url = https://api.exchangeratesapi.io/latest?base=%s",
-        "via.rateswithtargets.api.url = https://api.exchangeratesapi.io/latest?symbols=%s&base=%s"
+    "via.countries.api.url = https://openexchangerates.org/api/currencies.json",
+    "via.currencyrate.api.url = https://api.exchangeratesapi.io/latest?base=%s",
+    "via.rateswithtargets.api.url = https://api.exchangeratesapi.io/latest?symbols=%s&base=%s"
 })
 public class CurrencyConverterFallbackUnitTest {
-    @Configuration
-    @EnableAutoConfiguration
-    @EnableHystrix
-    public static class SpringConfig {
-        @Bean
-        RestTemplate restTemplate() {
-            return new RestTemplate();
-        }
 
-        @Bean
-        public CurrencyConverterFacade currencyConverterFacade() {
-            return new CurrencyConverterFacade(restTemplate());
-        }
+  @Configuration
+  @EnableAutoConfiguration
+  @EnableHystrix
+  public static class SpringConfig {
+
+    @Bean
+    RestTemplate restTemplate() {
+      return new RestTemplate();
     }
 
-    @MockBean
-    private RestTemplate restTemplate;
-
-    @Autowired
-    private CurrencyConverterFacade currencyConverterFacade;
-
-    @Test
-    void getCountriesAndCurrenciesFallBackMethod() {
-        //GIVEN
-        when(restTemplate.getForObject("https://openexchangerates.org/api/currencies.json", HashMap.class))
-                .thenThrow(RuntimeException.class);
-
-        //WHEN
-        Map countriesAndCurrencies = currencyConverterFacade.getCountriesAndCurrencies();
-
-        //THEN
-        assertNotNull(countriesAndCurrencies);
-        assertNotNull(countriesAndCurrencies.get("INR"));
-        assertNotNull(countriesAndCurrencies.get("HUF"));
+    @Bean
+    public CurrencyConverterFacade currencyConverterFacade() {
+      return new CurrencyConverterFacade(restTemplate());
     }
+  }
 
-    @Test
-    void getCurrencyRateFallBackMethod() {
-        //GIVEN
-        when(restTemplate.getForObject("https://api.exchangeratesapi.io/latest?base=HUF", CurrencyConverter.class))
-                .thenThrow(RuntimeException.class);
+  @MockBean
+  private RestTemplate restTemplate;
 
-        //WHEN
-        CurrencyConverter currencyRate = currencyConverterFacade.getCurrencyRate("HUF");
+  @Autowired
+  private CurrencyConverterFacade currencyConverterFacade;
 
-        //THEN
-        assertNotNull(currencyRate);
-        assertEquals("HUF", currencyRate.getBase());
-    }
+  @Test
+  void getCountriesAndCurrenciesFallBackMethod() {
+    //GIVEN
+    when(restTemplate.getForObject("https://openexchangerates.org/api/currencies.json", HashMap.class))
+        .thenThrow(RuntimeException.class);
+
+    //WHEN
+    Map countriesAndCurrencies = currencyConverterFacade.getCountriesAndCurrencies();
+
+    //THEN
+    assertNotNull(countriesAndCurrencies);
+    assertNotNull(countriesAndCurrencies.get("INR"));
+    assertNotNull(countriesAndCurrencies.get("HUF"));
+  }
+
+  @Test
+  void getCurrencyRateFallBackMethod() {
+    //GIVEN
+    when(restTemplate.getForObject("https://api.exchangeratesapi.io/latest?base=HUF", CurrencyConverter.class))
+        .thenThrow(RuntimeException.class);
+
+    //WHEN
+    CurrencyConverter currencyRate = currencyConverterFacade.getCurrencyRate("HUF");
+
+    //THEN
+    assertNotNull(currencyRate);
+    assertEquals("HUF", currencyRate.getBase());
+  }
 }

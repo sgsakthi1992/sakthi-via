@@ -3,149 +3,151 @@ package com.practice.message.model;
 import java.util.Map;
 
 public final class Content {
+
+  /**
+   * To email id.
+   */
+  private final String to;
+  /**
+   * Mail subject.
+   */
+  private final String subject;
+  /**
+   * Mail content.
+   */
+  private final Map<String, Object> body;
+  /**
+   * Mail template.
+   */
+  private final String template;
+
+  /**
+   * Mail parameterized constructor.
+   *
+   * @param builder Builder object
+   */
+  private Content(final MailBuilder builder) {
+    this.to = builder.to;
+    this.subject = builder.subject;
+    this.body = builder.body;
+    this.template = builder.template;
+  }
+
+  /**
+   * Getter for to.
+   *
+   * @return to email id
+   */
+  public String getTo() {
+    return to;
+  }
+
+  /**
+   * Getter for subject.
+   *
+   * @return mail subject
+   */
+  public String getSubject() {
+    return subject;
+  }
+
+  /**
+   * Getter for mail content.
+   *
+   * @return mail content
+   */
+  public Map<String, Object> getBody() {
+    return body;
+  }
+
+  /**
+   * Getter for mail template.
+   *
+   * @return mail template
+   */
+  public String getTemplate() {
+    return template;
+  }
+
+  /**
+   * MailBuilder object.
+   *
+   * @return mail builder object
+   */
+  public static MailBuilder builder() {
+    return new MailBuilder();
+  }
+
+  public static final class MailBuilder {
+
     /**
      * To email id.
      */
-    private final String to;
+    private String to;
     /**
      * Mail subject.
      */
-    private final String subject;
+    private String subject;
     /**
      * Mail content.
      */
-    private final Map<String, Object> body;
+    private Map<String, Object> body;
     /**
      * Mail template.
      */
-    private final String template;
+    private String template;
 
     /**
-     * Mail parameterized constructor.
+     * Set to address.
      *
-     * @param builder Builder object
+     * @param to email address
+     * @return to email address
      */
-    private Content(final MailBuilder builder) {
-        this.to = builder.to;
-        this.subject = builder.subject;
-        this.body = builder.body;
-        this.template = builder.template;
-    }
-
-    /**
-     * Getter for to.
-     *
-     * @return to email id
-     */
-    public String getTo() {
-        return to;
+    public MailBuilder setTo(final String to) {
+      this.to = to;
+      return this;
     }
 
     /**
-     * Getter for subject.
+     * Set subject.
      *
-     * @return mail subject
+     * @param subject subject
+     * @return subject
      */
-    public String getSubject() {
-        return subject;
+    public MailBuilder setSubject(final String subject) {
+      this.subject = subject;
+      return this;
     }
 
     /**
-     * Getter for mail content.
+     * Set content.
      *
-     * @return mail content
+     * @param body content
+     * @return content
      */
-    public Map<String, Object> getBody() {
-        return body;
+    public MailBuilder setBody(final Map<String, Object> body) {
+      this.body = body;
+      return this;
     }
 
     /**
-     * Getter for mail template.
+     * Set template.
      *
-     * @return mail template
+     * @param template template
+     * @return template
      */
-    public String getTemplate() {
-        return template;
+    public MailBuilder setTemplate(final String template) {
+      this.template = template;
+      return this;
     }
 
     /**
-     * MailBuilder object.
+     * Build mail.
      *
-     * @return mail builder object
+     * @return mail object.
      */
-    public static MailBuilder builder() {
-        return new MailBuilder();
+    public Content createMail() {
+      return new Content(this);
     }
-
-    public static final class MailBuilder {
-        /**
-         * To email id.
-         */
-        private String to;
-        /**
-         * Mail subject.
-         */
-        private String subject;
-        /**
-         * Mail content.
-         */
-        private Map<String, Object> body;
-        /**
-         * Mail template.
-         */
-        private String template;
-
-        /**
-         * Set to address.
-         *
-         * @param to email address
-         * @return to email address
-         */
-        public MailBuilder setTo(final String to) {
-            this.to = to;
-            return this;
-        }
-
-        /**
-         * Set subject.
-         *
-         * @param subject subject
-         * @return subject
-         */
-        public MailBuilder setSubject(final String subject) {
-            this.subject = subject;
-            return this;
-        }
-
-        /**
-         * Set content.
-         *
-         * @param body content
-         * @return content
-         */
-        public MailBuilder setBody(final Map<String, Object> body) {
-            this.body = body;
-            return this;
-        }
-
-        /**
-         * Set template.
-         *
-         * @param template template
-         * @return template
-         */
-        public MailBuilder setTemplate(final String template) {
-            this.template = template;
-            return this;
-        }
-
-        /**
-         * Build mail.
-         *
-         * @return mail object.
-         */
-        public Content createMail() {
-            return new Content(this);
-        }
-    }
+  }
 }

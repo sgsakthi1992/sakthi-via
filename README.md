@@ -3,6 +3,7 @@
 `https://sakthi-via.herokuapp.com/swagger-ui.html`
 
 This application provides,
+
 * GET, POST, PUT and DELETE Request methods to manipulate Employee details.
 * GET methods to check the countries, currencies and latest currency rate conversion.
 * Currency rate daily alerts via Email.
@@ -10,6 +11,7 @@ This application provides,
 **API's:**
 
 Employee:
+
 * GET: /api/v1/employees - Retrieve all the employees
 * GET: /api/v1/employees/{id} - Get Employee details by Id
 * GET: /api/v1/employeesByEmail/{email} - Get Employee Details By Email
@@ -20,16 +22,20 @@ Employee:
 * DELETE: /api/v1/employees/{id} - Delete Employee by Id
 
 CurrencyConverter:
+
 * GET: /api/v1/countries - To get the countries and their currency codes
 * GET: /api/v1/countries/{code} - To get the country for currency code
 * GET: /api/v1/rates?base={code} - To retrieve the latest currency rates
-* GET: /api/v1/highestAndLowestCurrencyRates?base={code} - To get the highest and lowest currencies for the base currency
+* GET: /api/v1/highestAndLowestCurrencyRates?base={code} - To get the highest and lowest currencies for the base
+  currency
 
 **Java Version**
+
 * Java 11
 * Java 8 streams, lambdas/method references, optionals are used where possible
 
 **Spring**
+
 * Spring Boot 2 with embedded Tomcat
 * Spring configurations through annotations - Controller, Service, Repository, Component
 * Spring Profiles: dev, test and prod
@@ -40,22 +46,28 @@ CurrencyConverter:
 * Spring Cache - Simple cache
 
 **Maven**
+
 * Multi modules - web, employee, currencyconverter, mail, exception
 * Plugins - checkstyle, jacoco & heroku - to deploy
 
 **Additional**
+
 * Validation with JSR303 - Annotations + Custom Annotation (to check Unique Username)
-* Slf4j with Logback (logback-spring.xml) - Configured Heroku with Papertrail and logs can be viewed in `https://my.papertrailapp.com/events` 
+* Slf4j with Logback (logback-spring.xml) - Configured Heroku with Papertrail and logs can be viewed
+  in `https://my.papertrailapp.com/events`
 * Swagger 2 for documentation
 * Circuit Breaking - Netflix Hystrix
 
 **Development and build tools**
+
 * Maven for dependency management
 * IntelliJ
 * Git `https://github.com/sgsakthi1992/sakthi-via`
-* CI & CD: TravisCI to deploy the code in GIT to Heroku (Only if Code Coverage rule is met). Runs SonarQube and uploads the result to configured SonarCloud
+* CI & CD: TravisCI to deploy the code in GIT to Heroku (Only if Code Coverage rule is met). Runs SonarQube and uploads
+  the result to configured SonarCloud
 
 **Testing**
+
 * Unit and Integration tests
 * Mocking with Mockito
 * Hamcrest, AssertJ for assertions
